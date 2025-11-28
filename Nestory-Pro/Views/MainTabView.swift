@@ -34,24 +34,28 @@ struct MainTabView: View {
                     Label(AppTab.inventory.rawValue, systemImage: AppTab.inventory.iconName)
                 }
                 .tag(AppTab.inventory)
+                .accessibilityIdentifier("mainTab.inventory")
             
             CaptureTab()
                 .tabItem {
                     Label(AppTab.capture.rawValue, systemImage: AppTab.capture.iconName)
                 }
                 .tag(AppTab.capture)
+                .accessibilityIdentifier("mainTab.capture")
             
             ReportsTab()
                 .tabItem {
                     Label(AppTab.reports.rawValue, systemImage: AppTab.reports.iconName)
                 }
                 .tag(AppTab.reports)
+                .accessibilityIdentifier("mainTab.reports")
             
             SettingsTab()
                 .tabItem {
                     Label(AppTab.settings.rawValue, systemImage: AppTab.settings.iconName)
                 }
                 .tag(AppTab.settings)
+                .accessibilityIdentifier("mainTab.settings")
         }
         .tint(.accentColor)
     }
