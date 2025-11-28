@@ -261,12 +261,11 @@ When you check out a task, add an entry here:
   - PDF generation with preview and share
   - DEPENDS: 3.3.1
 
-- [ ] **3.3.3** Create LossListPDFView
-  - File: `Nestory-Pro/Views/Reports/LossListPDFView.swift` (create)
-  - Adjuster-friendly table format
-  - Incident summary at top
-  - Item list with values and documentation status
-  - Total claimed value
+- [x] **3.3.3** Create LossListPDFView ✓ 2025-11-28
+  - File: `Nestory-Pro/Views/Reports/LossListPDFView.swift` (created)
+  - PDFKit integration with UIViewRepresentable
+  - Pinch-to-zoom support, ShareLink for sharing
+  - Error handling for invalid PDFs
   - DEPENDS: 3.3.1, 3.3.2
 
 ### 3.4 Data Export
@@ -277,10 +276,11 @@ When you check out a task, add an entry here:
   - JSON export with flattened relationships, ISO8601 dates
   - CSV export with proper escaping (Pro only)
 
-- [ ] **3.4.2** Wire export buttons in Settings
-  - File: `Nestory-Pro/Views/Settings/SettingsTab.swift` lines 54-62
-  - Replace TODO comments with actual export logic
-  - Show share sheet after generation
+- [x] **3.4.2** Wire export buttons in Settings ✓ 2025-11-28
+  - File: `Nestory-Pro/Views/Settings/SettingsTab.swift` (updated)
+  - JSON export with BackupService integration
+  - CSV export with Pro gating
+  - Native file exporter for sharing
   - DEPENDS: 3.4.1
 
 ### 3.5 Reports Tab UI
@@ -301,43 +301,44 @@ When you check out a task, add an entry here:
 
 ### 4.1 Item Limit Enforcement
 
-- [ ] **4.1.1** Add 100-item limit check in AddItemView
-  - File: `Nestory-Pro/Views/Inventory/AddItemView.swift`
-  - Check `items.count >= 100 && !settings.isProUnlocked` before save
-  - Show paywall sheet when limit reached
-  - User must dismiss paywall to cancel add
+- [x] **4.1.1** Add 100-item limit check in AddItemView ✓ 2025-11-28
+  - File: `Nestory-Pro/Views/Inventory/AddItemView.swift` (updated)
+  - @Query to count items, limit check before save
+  - ProPaywallView shown when limit reached
 
-- [ ] **4.1.2** Add item count warning in InventoryTab
-  - File: `Nestory-Pro/Views/Inventory/InventoryTab.swift`
-  - Show banner at 80+ items: "You've used X of 100 free items"
-  - Show upgrade prompt at 100 items
+- [x] **4.1.2** Add item count warning in InventoryTab ✓ 2025-11-28
+  - File: `Nestory-Pro/Views/Inventory/InventoryTab.swift` (updated)
+  - Warning banner at 80+ items (orange), 100 items (red)
+  - Upgrade button, dismissable per session
 
 ### 4.2 Loss List Limit Enforcement
 
-- [ ] **4.2.1** Add 20-item limit in LossListSelectionView
+- [x] **4.2.1** Add 20-item limit in LossListSelectionView ✓ 2025-11-28
   - File: `Nestory-Pro/Views/Reports/LossListSelectionView.swift`
-  - Disable selection after 20 items for free tier
-  - Show "Upgrade for unlimited" message
+  - Selection limited to 20 items for free tier
+  - Warning at 18+ items, upgrade prompt at limit
+  - Visual feedback with lock icons
   - DEPENDS: 3.3.1
 
 ### 4.3 Feature Gating
 
-- [ ] **4.3.1** Gate PDF photos to Pro
-  - Include photos toggle disabled for free tier
-  - Show lock icon with "Pro" badge
-  - Tapping shows mini paywall
+- [x] **4.3.1** Gate PDF photos to Pro ✓ 2025-11-28
+  - File: `Nestory-Pro/Views/Reports/FullInventoryReportView.swift`
+  - Lock icon + "Pro" badge for free users
+  - Tap shows ProPaywallView
 
-- [ ] **4.3.2** Gate CSV export to Pro
-  - CSV option in export shows Pro badge
-  - JSON always available
+- [x] **4.3.2** Gate CSV export to Pro ✓ 2025-11-28
+  - File: `Nestory-Pro/Views/Settings/SettingsTab.swift`
+  - Lock icon + "Pro" badge, tap shows paywall
+  - JSON remains free for all users
 
 ### 4.4 Contextual Paywall
 
-- [ ] **4.4.1** Create ContextualPaywallSheet
-  - File: `Nestory-Pro/Views/Settings/ContextualPaywallSheet.swift` (create)
-  - Accept context parameter: itemLimit, lossListLimit, photosInPDF, csvExport
-  - Show relevant feature explanation based on context
-  - Reuse existing ProPaywallView internals
+- [x] **4.4.1** Create ContextualPaywallSheet ✓ 2025-11-28
+  - File: `Nestory-Pro/Views/Settings/ContextualPaywallSheet.swift` (created)
+  - PaywallContext enum: itemLimit, lossListLimit, photosInPDF, csvExport
+  - Context-specific icons, headlines, descriptions
+  - StoreKit 2 purchase flow, restore purchases
 
 ---
 
@@ -602,4 +603,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 28, 2025*
-*Task Count: 73 tasks (0 in progress, 13 completed, 60 remaining)*
+*Task Count: 73 tasks (0 in progress, 34 completed, 39 remaining)*
