@@ -1,20 +1,52 @@
 # Nestory Pro
 
-> **Home Inventory for Insurance** - Make it stupidly easy to be claim-ready before something bad happens.
+<div align="center">
 
-Nestory helps you prove what you owned, what it was worth, and where it was — with the least possible work.
+![Platform](https://img.shields.io/badge/platform-iOS%2017%2B-blue)
+![Swift](https://img.shields.io/badge/Swift-6.0-orange?logo=swift)
+![SwiftUI](https://img.shields.io/badge/SwiftUI-blue?logo=swift)
+![License](https://img.shields.io/badge/license-Proprietary-red)
+![Status](https://img.shields.io/badge/status-Active%20Development-green)
 
-## Overview
+**Home Inventory for Insurance** — Make it stupidly easy to be claim-ready before something bad happens.
 
-Nestory is a native iOS app (iOS 17+) designed to help people create comprehensive home inventories for insurance purposes. Built with SwiftUI and modern Apple frameworks, it provides fast item capture, receipt OCR, clear documentation status, and insurance-ready PDF exports.
+[Features](#features) • [Installation](#getting-started) • [Documentation](#documentation) • [Roadmap](#roadmap)
 
-### Core Features (v1)
+</div>
 
-- **📸 Fast Item Capture** - Photos with minimal required fields
-- **🧾 Receipt OCR** - Automatic extraction of date, vendor, and amount
-- **✅ Documentation Status** - Clear badges and scoring system
-- **📄 Insurance-Ready PDFs** - Full inventory and loss list exports
-- **☁️ iCloud Sync** - Local-first storage with optional cloud backup
+---
+
+## 📖 Table of Contents
+
+- [About](#about)
+- [Features](#features)
+- [Technical Stack](#technical-stack)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Architecture](#architecture)
+- [Monetization](#monetization)
+- [Roadmap](#roadmap)
+- [Documentation](#documentation)
+- [Privacy & Security](#privacy--security)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
+
+## About
+
+Nestory Pro is a native iOS app (iOS 17+) designed to help people create comprehensive home inventories for insurance purposes. Built with SwiftUI and modern Apple frameworks, it provides fast item capture, receipt OCR, clear documentation status, and insurance-ready PDF exports.
+
+**Core Value Proposition:** Prove what you owned, what it was worth, and where it was — with the least possible work.
+
+## Features
+
+### 🎯 Core Features (v1)
+
+- **📸 Fast Item Capture** — Photos with minimal required fields
+- **🧾 Receipt OCR** — Automatic extraction of date, vendor, and amount using Vision framework
+- **✅ Documentation Status** — Clear badges and scoring system to track completeness
+- **📄 Insurance-Ready PDFs** — Full inventory and loss list exports
+- **☁️ iCloud Sync** — Local-first storage with optional cloud backup via CloudKit
 
 ## Technical Stack
 
@@ -62,6 +94,100 @@ Nestory-Pro/
 
 - iCloud container: `iCloud.com.drunkonjava.nestory`
 - IAP product ID: `com.drunkonjava.nestory.pro`
+
+## Development
+
+### Building and Running
+
+```bash
+# Open the project in Xcode
+open Nestory-Pro.xcodeproj
+
+# Build from command line (Debug)
+xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -configuration Debug
+
+# Build for simulator
+xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,name=iPhone 15'
+```
+
+### Testing
+
+```bash
+# Run all tests via fastlane (recommended)
+bundle exec fastlane test
+
+# Run tests directly with xcodebuild
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -destination 'platform=iOS Simulator,name=iPhone 15'
+
+# Run specific test target
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -only-testing:Nestory-ProTests
+
+# Run UI tests
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -only-testing:Nestory-ProUITests
+```
+
+### Deployment
+
+```bash
+# Deploy to TestFlight (increments build number automatically)
+bundle exec fastlane beta
+
+# Deploy to App Store
+bundle exec fastlane release
+
+# Bump version numbers
+bundle exec fastlane bump_version              # Patch: 1.0.0 → 1.0.1
+bundle exec fastlane bump_version type:minor   # Minor: 1.0.0 → 1.1.0
+bundle exec fastlane bump_version type:major   # Major: 1.0.0 → 2.0.0
+```
+
+> **Note:** Pushing to `main` branch automatically triggers TestFlight upload via GitHub Actions.
+
+### CI/CD
+
+The project uses GitHub Actions for continuous deployment:
+
+- **Workflow:** `.github/workflows/beta.yml`
+- **Trigger:** Push to `main` branch or manual workflow dispatch
+- **Action:** Automatically builds and uploads to TestFlight
+
+Required GitHub Secrets:
+- `FASTLANE_APPLE_ID`
+- `APP_STORE_CONNECT_KEY_ID`
+- `APP_STORE_CONNECT_ISSUER_ID`
+- `APP_STORE_CONNECT_API_KEY_CONTENT`
+
+## Architecture
+
+### Design Pattern
+
+**MVVM with Clean Layer Separation:**
+
+- **Model Layer:** SwiftData `@Model` types for persistence
+- **Repository Layer:** Data access abstraction (future enhancement)
+- **Service Layer:** Business logic (OCR, Reports, Backup, AppLock)
+- **Presentation Layer:** SwiftUI Views with `@Observable` ViewModels
+
+### Key Architectural Decisions
+
+1. **SwiftData + CloudKit:** Primary persistence with automatic cloud sync
+2. **Swift 6 Strict Concurrency:** Type-safe concurrent programming
+3. **Offline-First:** All features work without network connectivity
+4. **File-Based Photo Storage:** Images stored as files, not Data blobs
+5. **Feature-Oriented Organization:** Code organized by feature, not layer
+
+### Core Models
+
+- **Item:** Inventory items with photos, receipts, metadata
+- **Category:** Predefined and custom item categories
+- **Room:** Physical locations for item organization
+- **Receipt:** OCR-extracted receipt data
+- **ItemPhoto:** Photo metadata with file references
 
 ## Features Breakdown
 
@@ -133,9 +259,17 @@ Nestory-Pro/
 
 ## Documentation
 
-- [Product Specification](PRODUCT-SPEC.md) - Detailed product and technical specs
-- Architecture documentation - Coming soon
-- API documentation - Coming soon
+Comprehensive project documentation:
+
+- **[WARP.md](WARP.md)** — Development guide for Warp AI agent
+- **[PRODUCT-SPEC.md](PRODUCT-SPEC.md)** — Complete product and technical specifications
+- **[FASTLANE_README.md](FASTLANE_README.md)** — Deployment automation setup and usage
+
+### Additional Resources
+
+- [Apple SwiftData Documentation](https://developer.apple.com/documentation/swiftdata)
+- [Apple Vision Framework](https://developer.apple.com/documentation/vision)
+- [Fastlane Documentation](https://docs.fastlane.tools/)
 
 ## Privacy & Security
 
@@ -146,16 +280,39 @@ Nestory-Pro/
 
 ## Contributing
 
-This is currently a personal project. Contributions guidelines will be added in the future.
+This is currently a personal project. While external contributions are not actively solicited at this time, feedback and suggestions are welcome through GitHub Issues.
+
+### Development Guidelines
+
+If contributing:
+
+1. Follow Swift 6 strict concurrency guidelines
+2. Maintain SwiftUI-first approach (no UIKit unless necessary)
+3. Write unit tests for business logic
+4. Keep views small and composable
+5. Use `@Observable` for view models (not `@StateObject`)
+6. Document public APIs and complex logic
 
 ## License
 
-Copyright © 2024 DrunkOnJava. All rights reserved.
+Copyright © 2024-2025 DrunkOnJava. All rights reserved.
+
+This is proprietary software. Unauthorized copying, modification, distribution, or use of this software is strictly prohibited.
 
 ## Support
 
-For questions or support, please contact: [Your support email]
+For questions, bug reports, or feature requests:
+
+- **Issues:** [GitHub Issues](https://github.com/DrunkOnJava/Nestory-Pro/issues)
+- **Email:** Contact via GitHub profile
+- **Documentation:** See [WARP.md](WARP.md) for development guidance
 
 ---
 
+<div align="center">
+
 Built with ❤️ by [@DrunkOnJava](https://github.com/DrunkOnJava)
+
+**[⬆ back to top](#nestory-pro)**
+
+</div>
