@@ -64,7 +64,7 @@ When you check out a task, add an entry here:
 
 | Task ID | Agent ID | Checkout Time | Notes |
 |---------|----------|---------------|-------|
-| 5.2.1   | warp-28nov | 2025-11-28 23:13 | Creating AppEnvironment DI container |
+| _none_  | -        | -             | All tasks available |
 
 ---
 
@@ -376,8 +376,8 @@ When you check out a task, add an entry here:
 
 ### 5.2 Dependency Injection
 
-- [~] **5.2.1** [AGENT-warp-28nov] Create AppEnvironment container
-  - File: `Nestory-Pro/AppEnvironment.swift` (create)
+- [x] **5.2.1** Create AppEnvironment container ✓ 2025-11-28
+  - File: `Nestory-Pro/AppEnvironment.swift` (created)
   - Hold all services: SettingsManager, IAPValidator, PhotoStorage, OCR, etc.
   - Inject via @Environment in app root
 
@@ -555,6 +555,7 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 
 ### November 28, 2025
 
+- [x] **5.2.1** Create AppEnvironment DI container (completed 2025-11-28)
 - [x] **Legacy** Move Pro status to Keychain (`KeychainManager.swift`)
 - [x] **Legacy** Add Privacy Manifest (`PrivacyInfo.xcprivacy`)
 - [x] **Legacy** Implement IAP receipt validation (`IAPValidator.swift`)
@@ -603,4 +604,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 28, 2025*
-*Task Count: 73 tasks (0 in progress, 34 completed, 39 remaining)*
+*Task Count: 73 tasks (0 in progress, 35 completed, 38 remaining)*
