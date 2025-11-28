@@ -136,18 +136,43 @@ struct TestFixtures {
         )
     }
     
-    // MARK: - Test Dates
-    
+    // MARK: - Test Dates (Deterministic)
+
+    /// Fixed reference date for all tests: January 1, 2024 at noon UTC
+    static let referenceDate: Date = {
+        var components = DateComponents()
+        components.year = 2024
+        components.month = 1
+        components.day = 1
+        components.hour = 12
+        components.minute = 0
+        components.second = 0
+        components.timeZone = TimeZone(identifier: "UTC")
+        return Calendar.current.date(from: components)!
+    }()
+
     static var testDateInPast: Date {
-        Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        Calendar.current.date(byAdding: .year, value: -1, to: referenceDate)!
     }
-    
+
     static var testDateInFuture: Date {
-        Calendar.current.date(byAdding: .year, value: 1, to: Date())!
+        Calendar.current.date(byAdding: .year, value: 1, to: referenceDate)!
     }
-    
+
     static var testDateRecent: Date {
-        Calendar.current.date(byAdding: .day, value: -7, to: Date())!
+        Calendar.current.date(byAdding: .day, value: -7, to: referenceDate)!
+    }
+
+    static var testWarrantyExpired: Date {
+        Calendar.current.date(byAdding: .day, value: -1, to: referenceDate)!
+    }
+
+    static var testWarrantyExpiringToday: Date {
+        referenceDate
+    }
+
+    static var testWarrantyExpiringTomorrow: Date {
+        Calendar.current.date(byAdding: .day, value: 1, to: referenceDate)!
     }
 }
 

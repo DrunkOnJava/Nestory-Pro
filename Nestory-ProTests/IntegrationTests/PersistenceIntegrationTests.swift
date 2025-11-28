@@ -217,7 +217,7 @@ final class PersistenceIntegrationTests: XCTestCase {
         let context = container.mainContext
         
         let categoryDescriptor = FetchDescriptor<Nestory_Pro.Category>()
-        let category = try context.fetch(categoryDescriptor).first!
+        let category = try XCTUnwrap(context.fetch(categoryDescriptor).first, "Category should exist")
         
         let item1 = TestFixtures.testItem(name: "MacBook", category: category)
         let item2 = TestFixtures.testItem(name: "iPhone", category: category)
