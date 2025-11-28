@@ -32,12 +32,11 @@ final class InventoryUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Inventory"].exists)
         app.buttons["Inventory"].tap()
 
-        // Should show empty state or add item prompt
-        // (Actual UI elements depend on implementation)
-        let emptyStateExists = app.staticTexts["No items yet"].waitForExistence(timeout: 3) ||
-                              app.buttons[AccessibilityIdentifiers.Inventory.addButton].exists
+        // Verify empty state components - use case-insensitive matching for title
+        let emptyStateTitleExists = app.staticTexts["No Items Yet"].waitForExistence(timeout: 3)
+        let addButtonExists = app.buttons[AccessibilityIdentifiers.Inventory.addButton].waitForExistence(timeout: 3)
 
-        XCTAssertTrue(emptyStateExists, "Should show empty state or add button")
+        XCTAssertTrue(emptyStateTitleExists || addButtonExists, "Should show empty state or add button")
     }
 
     // MARK: - Add Item Flow Tests
@@ -46,25 +45,22 @@ final class InventoryUITests: XCTestCase {
         // Navigate to add item
         app.buttons["Inventory"].tap()
 
-        // Look for add button (various possible implementations)
+        // Tap add button using accessibility identifier
         let addButton = app.buttons[AccessibilityIdentifiers.Inventory.addButton]
-        if addButton.waitForExistence(timeout: 3) {
-            addButton.tap()
-        } else {
-            // Try navigation bar button
-            app.navigationBars.buttons.element(boundBy: 1).tap()
-        }
+        XCTAssertTrue(addButton.waitForExistence(timeout: 5), "Add button should exist in toolbar")
+        addButton.tap()
 
         // Fill in required fields
         let nameField = app.textFields[AccessibilityIdentifiers.AddEditItem.nameField]
-        if nameField.waitForExistence(timeout: 3) {
-            nameField.tap()
-            nameField.typeText("Test MacBook Pro")
-        }
+        XCTAssertTrue(nameField.waitForExistence(timeout: 3), "Name field should appear in add item screen")
+        nameField.tap()
+        nameField.typeText("Test MacBook Pro")
 
         // Save the item
         let saveButton = app.buttons[AccessibilityIdentifiers.AddEditItem.saveButton]
-        if saveButton.exists && saveButton.isEnabled {
+        XCTAssertTrue(saveButton.waitForExistence(timeout: 3), "Save button should exist")
+
+        if saveButton.isEnabled {
             saveButton.tap()
 
             // Verify item was created

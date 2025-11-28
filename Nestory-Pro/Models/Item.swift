@@ -9,14 +9,27 @@ import Foundation
 import SwiftData
 
 /// Condition scale for items
-enum ItemCondition: String, Codable, CaseIterable {
+enum ItemCondition: String, Codable, CaseIterable, Sendable {
     case new = "New"
     case likeNew = "Like New"
     case good = "Good"
     case fair = "Fair"
     case poor = "Poor"
-    
-    var displayName: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .new:
+            return String(localized: "New", comment: "Item condition: brand new")
+        case .likeNew:
+            return String(localized: "Like New", comment: "Item condition: barely used")
+        case .good:
+            return String(localized: "Good", comment: "Item condition: good quality")
+        case .fair:
+            return String(localized: "Fair", comment: "Item condition: fair quality")
+        case .poor:
+            return String(localized: "Poor", comment: "Item condition: poor quality")
+        }
+    }
 }
 
 @Model
@@ -88,6 +101,45 @@ final class Item {
     }
 }
 
+// MARK: - Validation
+extension Item {
+    enum ValidationError: LocalizedError, Sendable {
+        case emptyName
+        case negativePurchasePrice
+        case invalidCurrencyCode
+
+        var errorDescription: String? {
+            switch self {
+            case .emptyName:
+                return String(localized: "Item name cannot be empty", comment: "Validation error: item name is empty")
+            case .negativePurchasePrice:
+                return String(localized: "Purchase price must be positive", comment: "Validation error: negative price")
+            case .invalidCurrencyCode:
+                return String(localized: "Invalid currency code", comment: "Validation error: currency code format is invalid")
+            }
+        }
+    }
+
+    /// Validates the item's data integrity
+    func validate() throws {
+        // Name must not be empty
+        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            throw ValidationError.emptyName
+        }
+
+        // Purchase price must be positive if set
+        if let price = purchasePrice, price < 0 {
+            throw ValidationError.negativePurchasePrice
+        }
+
+        // Currency code must be 3 uppercase letters (ISO 4217)
+        let currencyPattern = "^[A-Z]{3}$"
+        if currencyCode.range(of: currencyPattern, options: .regularExpression) == nil {
+            throw ValidationError.invalidCurrencyCode
+        }
+    }
+}
+
 // MARK: - Documentation Status
 extension Item {
     var hasPhoto: Bool { !photos.isEmpty }
@@ -96,12 +148,12 @@ extension Item {
     var hasSerial: Bool { serialNumber != nil && !serialNumber!.isEmpty }
     var hasLocation: Bool { room != nil }
     var hasCategory: Bool { category != nil }
-    
+
     /// Item is "documented" if it has photo, value, category, and room
     var isDocumented: Bool {
         hasPhoto && hasValue && hasCategory && hasLocation
     }
-    
+
     var documentationScore: Double {
         var score = 0.0
         if hasPhoto { score += 0.25 }
@@ -110,15 +162,75 @@ extension Item {
         if hasLocation { score += 0.25 }
         return score
     }
-    
+
+    /// Returns documentation fields missing for insurance purposes.
+    /// Aligned with `documentationScore` - only the 4 core fields: Photo, Value, Room, Category
     var missingDocumentation: [String] {
         var missing: [String] = []
         if !hasPhoto { missing.append("Photo") }
         if !hasValue { missing.append("Value") }
-        if !hasReceipt { missing.append("Receipt") }
-        if !hasSerial { missing.append("Serial Number") }
         if !hasLocation { missing.append("Room") }
         if !hasCategory { missing.append("Category") }
         return missing
+    }
+}
+
+// MARK: - Optimized Fetch Descriptors
+extension Item {
+    /// Optimized fetch descriptor for list views with prefetched relationships
+    /// Loads category, room, and photos in a single query to avoid N+1 performance issues
+    static var optimizedListFetch: FetchDescriptor<Item> {
+        var descriptor = FetchDescriptor<Item>(
+            sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
+        )
+
+        // Prefetch relationships to avoid lazy loading
+        descriptor.relationshipKeyPathsForPrefetching = [
+            \Item.category,
+            \Item.room,
+            \Item.photos
+        ]
+
+        return descriptor
+    }
+
+    /// Optimized fetch descriptor for detail views with all relationships prefetched
+    /// Includes receipts in addition to basic relationships
+    static var optimizedDetailFetch: FetchDescriptor<Item> {
+        var descriptor = FetchDescriptor<Item>(
+            sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
+        )
+
+        // Prefetch all relationships for detail view
+        descriptor.relationshipKeyPathsForPrefetching = [
+            \Item.category,
+            \Item.room,
+            \Item.photos,
+            \Item.receipts
+        ]
+
+        return descriptor
+    }
+
+    /// Creates a fetch descriptor with custom sorting and relationship prefetching
+    static func fetchDescriptor(
+        sortBy: [SortDescriptor<Item>] = [SortDescriptor(\.updatedAt, order: .reverse)],
+        predicate: Predicate<Item>? = nil,
+        prefetchRelationships: Bool = true
+    ) -> FetchDescriptor<Item> {
+        var descriptor = FetchDescriptor<Item>(
+            predicate: predicate,
+            sortBy: sortBy
+        )
+
+        if prefetchRelationships {
+            descriptor.relationshipKeyPathsForPrefetching = [
+                \Item.category,
+                \Item.room,
+                \Item.photos
+            ]
+        }
+
+        return descriptor
     }
 }

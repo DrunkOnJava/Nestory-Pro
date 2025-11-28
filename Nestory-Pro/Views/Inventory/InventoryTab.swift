@@ -140,6 +140,8 @@ struct InventoryTab: View {
                     Button(action: { showingAddItem = true }) {
                         Image(systemName: "plus")
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.addButton)
+                    .accessibilityLabel("Add Item")
                 }
             }
             .searchable(text: $searchText, prompt: "Search items...")

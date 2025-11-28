@@ -165,7 +165,7 @@ final class ItemTests: XCTestCase {
     
     @MainActor
     func testMissingDocumentation_IncompleteItem_ReturnsCorrectFields() {
-        // Arrange
+        // Arrange - item has value but missing photo, room, and category
         let item = Item(
             name: "Test Item",
             purchasePrice: Decimal(100),
@@ -173,14 +173,15 @@ final class ItemTests: XCTestCase {
             room: nil,
             condition: .good
         )
-        
+
         // Act
         let missing = item.missingDocumentation
-        
-        // Assert
-        XCTAssertEqual(missing.count, 2)
+
+        // Assert - should be missing Photo, Room, and Category (3 fields)
+        XCTAssertEqual(missing.count, 3)
         XCTAssertTrue(missing.contains("Photo"))
         XCTAssertTrue(missing.contains("Room"))
+        XCTAssertTrue(missing.contains("Category"))
     }
     
     // MARK: - Initialization Tests

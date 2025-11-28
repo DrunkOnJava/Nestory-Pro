@@ -87,7 +87,7 @@ struct TestFixtures {
         )
     }
     
-    /// Item with complete documentation
+    /// Item with complete documentation (has photo, value, category, and room)
     static func testDocumentedItem(category: Nestory_Pro.Category, room: Room) -> Item {
         let item = Item(
             name: "Fully Documented Item",
@@ -100,6 +100,9 @@ struct TestFixtures {
             room: room,
             condition: .likeNew
         )
+        // Add photo to make item fully documented
+        let photo = testItemPhoto()
+        item.photos.append(photo)
         return item
     }
     
