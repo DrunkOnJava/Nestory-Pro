@@ -48,14 +48,8 @@ struct Nestory_ProApp: App {
     }
 
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-            ItemPhoto.self,
-            Receipt.self,
-            Category.self,
-            Room.self
-        ])
-        
+        let schema = Schema(versionedSchema: SchemaV2.self)
+
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
@@ -63,7 +57,11 @@ struct Nestory_ProApp: App {
         )
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(
+                for: schema,
+                migrationPlan: NestoryMigrationPlan.self,
+                configurations: [modelConfiguration]
+            )
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
