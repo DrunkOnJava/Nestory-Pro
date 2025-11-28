@@ -30,13 +30,13 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:../../../Downloads/Nestory-Pro.xctestplan"
+            reference = "container:Nestory-Pro.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
       <Testables>
          <TestableReference
-            skipped = "YES"
+            skipped = "NO"
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
@@ -47,7 +47,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "YES"
+            skipped = "NO"
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
