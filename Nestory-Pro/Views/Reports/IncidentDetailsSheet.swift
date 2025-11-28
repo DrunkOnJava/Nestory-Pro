@@ -191,7 +191,7 @@ private struct PDFPreviewView: View {
 
     var body: some View {
         NavigationStack {
-            PDFKitView(url: pdfURL)
+            IncidentPDFKitView(url: pdfURL)
                 .navigationTitle("Loss List Report")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -218,7 +218,7 @@ private struct PDFPreviewView: View {
 
 // MARK: - PDFKit View Wrapper
 
-private struct PDFKitView: UIViewRepresentable {
+private struct IncidentPDFKitView: UIViewRepresentable {
     let url: URL
 
     func makeUIView(context: Context) -> PDFView {
