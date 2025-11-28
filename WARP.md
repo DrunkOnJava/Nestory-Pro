@@ -374,8 +374,178 @@ final class ItemTests: XCTestCase {
 
 See [PreviewExamples.md](PreviewExamples.md) for comprehensive documentation and examples.
 
+## Test Suite Structure
+
+### Test Organization
+
+```
+Nestory-ProTests/              # Unit & Integration Tests
+├── UnitTests/
+│   ├── Models/
+│   │   └── ItemTests.swift
+│   └── Services/
+│       └── SettingsManagerTests.swift
+├── IntegrationTests/
+│   └── PersistenceIntegrationTests.swift
+├── PerformanceTests/
+│   └── DocumentationScorePerformanceTests.swift
+├── TestUtilities/
+│   ├── TestFixtures.swift
+│   ├── MockServices.swift
+│   └── TestHelpers.swift
+└── Nestory_ProTests.swift
+
+Nestory-ProUITests/            # UI Tests
+├── Flows/
+│   └── TabNavigationUITests.swift
+└── TestUtilities/
+    └── AccessibilityIdentifiers.swift
+```
+
+### Test Types & Coverage Goals
+
+- **Unit Tests** (50-70%) - Isolated component testing, < 0.1s per test
+- **Integration Tests** (20-30%) - Component interaction testing, < 1s per test
+- **UI Tests** (10-20%) - Critical user workflows, 1-10s per test
+- **Performance Tests** - Benchmark critical operations, track regressions
+
+### Running Tests
+
+```bash
+# All tests
+bundle exec fastlane test
+
+# Unit tests only
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -only-testing:Nestory-ProTests/UnitTests
+
+# Integration tests
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -only-testing:Nestory-ProTests/IntegrationTests
+
+# Performance tests
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -only-testing:Nestory-ProTests/PerformanceTests
+
+# UI tests
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -only-testing:Nestory-ProUITests
+
+# Specific test class
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -only-testing:Nestory-ProTests/ItemTests
+```
+
+### Example Tests
+
+**Unit Test** - Fast, isolated, mocked dependencies:
+```swift
+@MainActor
+func testDocumentationScore_AllFieldsFilled_Returns1() throws {
+    let container = TestContainer.empty()
+    let context = container.mainContext
+    
+    let item = TestFixtures.testDocumentedItem(
+        category: TestFixtures.testCategory(),
+        room: TestFixtures.testRoom()
+    )
+    
+    XCTAssertEqual(item.documentationScore, 1.0)
+}
+```
+
+**Integration Test** - Component interactions:
+```swift
+@MainActor
+func testItemDelete_WithPhotos_CascadesDelete() throws {
+    let container = TestContainer.empty()
+    let context = container.mainContext
+    
+    let item = TestFixtures.testItem()
+    context.insert(item)
+    
+    let photo = TestFixtures.testItemPhoto()
+    photo.item = item
+    context.insert(photo)
+    try context.save()
+    
+    context.delete(item)
+    try context.save()
+    
+    let photos = try context.fetch(FetchDescriptor<ItemPhoto>())
+    XCTAssertEqual(photos.count, 0)
+}
+```
+
+**UI Test** - User workflows:
+```swift
+func testTabNavigation_SwitchBetweenTabs() throws {
+    app.buttons["Capture"].tap()
+    XCTAssertTrue(app.staticTexts["Capture"].exists)
+    
+    app.buttons["Reports"].tap()
+    XCTAssertTrue(app.staticTexts["Reports"].exists)
+}
+```
+
+**Performance Test** - Benchmarking:
+```swift
+@MainActor
+func testDocumentationScore_1000Items_Performance() throws {
+    let container = TestContainer.withManyItems(count: 1000)
+    let items = try container.mainContext.fetch(FetchDescriptor<Item>())
+    
+    measure {
+        let scores = items.map { $0.documentationScore }
+        XCTAssertEqual(scores.count, 1000)
+    }
+}
+```
+
+### Test Naming Convention
+
+Pattern: `test<What>_<Condition>_<ExpectedResult>()`
+
+✅ Good:
+- `testDocumentationScore_AllFieldsFilled_Returns1()`
+- `testItemDelete_WithPhotos_CascadesDelete()`
+- `testFetchItems_WithPredicate_ReturnsMatchingItems()`
+
+❌ Bad:
+- `testItem()`
+- `test1()`
+- `testDocumentation()`
+
+### Accessibility Identifiers
+
+All UI elements for testing use centralized identifiers:
+
+```swift
+// Adding to views
+Button("Add Item") { }
+    .accessibilityIdentifier("inventory.addButton")
+
+// Using in tests
+app.buttons["inventory.addButton"].tap()
+```
+
+See `AccessibilityIdentifiers.swift` for all identifiers.
+
+### Test Best Practices
+
+1. **Use in-memory databases** - Never test against production data
+2. **Keep tests fast** - Unit tests < 0.1s, Integration < 1s
+3. **Test one thing** - Single assertion per test when possible
+4. **Arrange-Act-Assert** - Clear test structure
+5. **Descriptive names** - Explain what, when, and expected result
+6. **No shared state** - Each test is independent
+7. **Use TestFixtures** - Consistent, predictable test data
+
+See [TestingStrategy.md](TestingStrategy.md) for complete testing documentation.
+
 ## References
 
 - [Product Specification](PRODUCT-SPEC.md) - Detailed product and technical specs
 - [Fastlane README](FASTLANE_README.md) - Deployment automation details
 - [Preview Examples](PreviewExamples.md) - Fixtures and preview strategy guide
+- [Testing Strategy](TestingStrategy.md) - Comprehensive testing documentation
