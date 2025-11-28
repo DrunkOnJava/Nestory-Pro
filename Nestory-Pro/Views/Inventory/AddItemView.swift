@@ -6,41 +6,34 @@
 //
 
 // ============================================================================
-// CLAUDE CODE AGENT: MONETIZATION ENFORCEMENT NEEDED - SEE TODO.md Phase 4
+// TASK 4.1.1 COMPLETED: 100-item free tier limit enforcement added
 // ============================================================================
-// CRITICAL: This view is missing 100-item limit enforcement!
+// Implementation:
+// - Added @Query for items count
+// - Added @State showingPaywall for limit enforcement
+// - Check items.count >= maxFreeItems before saving
+// - Show ProPaywallView if limit reached (user must dismiss or upgrade)
 //
-// TASK 4.1.1 REQUIRED:
-// Before saving an item, check:
-//   if items.count >= settings.maxFreeItems && !settings.isProUnlocked {
-//       // Show ContextualPaywallSheet with .itemLimit context
-//       // DO NOT save the item until user upgrades or dismisses
-//   }
-//
-// ADDITIONAL TASKS:
+// REMAINING TASKS:
 // - Task 5.1.2: Extract form state to AddItemViewModel
 // - Task 6.1.2: Pre-select default room from settings
 // - Task 7.1.x: Add accessibility labels to all form fields
 //
-// CURRENT ISSUES:
-// - Uses SettingsManager.shared (singleton, needs DI refactor)
-// - No @Query for items.count check
-// - No paywall sheet state
-//
-// SEE: TODO.md Task 4.1.1 | Services/SettingsManager.swift maxFreeItems
+// TECHNICAL NOTES:
+// - Uses SettingsManager.shared (singleton, needs DI refactor in future)
+// - ProPaywallView dismisses automatically on successful purchase
 // ============================================================================
 
 import SwiftUI
 import SwiftData
 
 struct AddItemView: View {
-    // TODO: Task 4.1.1 - Add @Query for item count to enforce 100-item limit
-    // TODO: Task 4.1.1 - Add @State showingPaywall for limit enforcement
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    
+
     @Query(sort: \Category.sortOrder) private var categories: [Category]
     @Query(sort: \Room.sortOrder) private var rooms: [Room]
+    @Query private var items: [Item] // Task 4.1.1: Count existing items for free tier limit
     
     @State private var name = ""
     @State private var brand = ""
@@ -55,7 +48,8 @@ struct AddItemView: View {
     @State private var conditionNotes = ""
     @State private var warrantyExpiryDate = Date()
     @State private var hasWarranty = false
-    
+    @State private var showingPaywall = false // Task 4.1.1: Show paywall when free tier limit reached
+
     private let settings = SettingsManager.shared
     
     private var canSave: Bool {
@@ -150,13 +144,22 @@ struct AddItemView: View {
                     .disabled(!canSave)
                 }
             }
+            .sheet(isPresented: $showingPaywall) {
+                ProPaywallView()
+            }
         }
     }
-    
+
     private func saveItem() {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return }
-        
+
+        // Task 4.1.1: Enforce 100-item free tier limit
+        if items.count >= settings.maxFreeItems && !settings.isProUnlocked {
+            showingPaywall = true
+            return // Don't save until user upgrades or dismisses
+        }
+
         let item = Item(
             name: trimmedName,
             brand: brand.isEmpty ? nil : brand,
@@ -171,7 +174,7 @@ struct AddItemView: View {
             conditionNotes: conditionNotes.isEmpty ? nil : conditionNotes,
             warrantyExpiryDate: hasWarranty ? warrantyExpiryDate : nil
         )
-        
+
         modelContext.insert(item)
         dismiss()
     }
