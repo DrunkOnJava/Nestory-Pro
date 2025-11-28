@@ -127,7 +127,7 @@ final class ItemTests: XCTestCase {
     @MainActor
     func testHasValue_NoPrice_ReturnsFalse() {
         // Arrange
-        let item = TestFixtures.testItem(purchasePrice: nil)
+        let item = TestFixtures.testItem(purchasePrice: Optional<Decimal>.none)
         
         // Act & Assert
         XCTAssertFalse(item.hasValue)
@@ -246,7 +246,7 @@ final class ItemTests: XCTestCase {
         XCTAssertEqual(item.purchaseDate, date)
         XCTAssertEqual(item.category?.name, "Test Category")
         XCTAssertEqual(item.room?.name, "Test Room")
-        XCTAssertEqual(item.condition, .likeNew)
+        XCTAssertEqual(item.condition, ItemCondition.likeNew)
         XCTAssertEqual(item.tags.count, 2)
     }
 }

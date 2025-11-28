@@ -21,8 +21,8 @@ struct TestFixtures {
         colorHex: String = "#FF0000",
         isCustom: Bool = false,
         sortOrder: Int = 0
-    ) -> Category {
-        Category(
+    ) -> Nestory_Pro.Category {
+        Nestory_Pro.Category(
             name: name,
             iconName: iconName,
             colorHex: colorHex,
@@ -54,7 +54,7 @@ struct TestFixtures {
         serialNumber: String? = "SN-TEST-12345",
         purchasePrice: Decimal? = Decimal(100.00),
         purchaseDate: Date? = Date(),
-        category: Category? = nil,
+        category: Nestory_Pro.Category? = nil,
         room: Room? = nil,
         condition: ItemCondition = .good
     ) -> Item {
@@ -88,7 +88,7 @@ struct TestFixtures {
     }
     
     /// Item with complete documentation
-    static func testDocumentedItem(category: Category, room: Room) -> Item {
+    static func testDocumentedItem(category: Nestory_Pro.Category, room: Room) -> Item {
         let item = Item(
             name: "Fully Documented Item",
             brand: "Test Brand",
@@ -113,27 +113,26 @@ struct TestFixtures {
         confidence: Double = 0.95,
         linkedItem: Item? = nil
     ) -> Receipt {
-        Receipt(
+        let receipt = Receipt(
+            imageIdentifier: "test-receipt-\(UUID().uuidString)",
             vendor: vendor,
             total: total,
             taxAmount: taxAmount,
             purchaseDate: purchaseDate,
-            imageIdentifier: "test-receipt-\(UUID().uuidString)",
             rawText: "Test receipt text",
-            confidence: confidence,
-            linkedItem: linkedItem
+            confidence: confidence
         )
+        receipt.linkedItem = linkedItem
+        return receipt
     }
     
     // MARK: - Test Item Photos
-    
+
     static func testItemPhoto(
-        imageIdentifier: String? = nil,
-        caption: String? = nil
+        imageIdentifier: String? = nil
     ) -> ItemPhoto {
         ItemPhoto(
-            imageIdentifier: imageIdentifier ?? "test-photo-\(UUID().uuidString)",
-            caption: caption
+            imageIdentifier: imageIdentifier ?? "test-photo-\(UUID().uuidString)"
         )
     }
     
@@ -202,9 +201,9 @@ struct TestContainer {
         let context = container.mainContext
         
         // Fetch category and room
-        let categoryDescriptor = FetchDescriptor<Category>()
+        let categoryDescriptor = FetchDescriptor<Nestory_Pro.Category>()
         let roomDescriptor = FetchDescriptor<Room>()
-        
+
         guard let category = try? context.fetch(categoryDescriptor).first,
               let room = try? context.fetch(roomDescriptor).first else {
             return container
@@ -221,6 +220,35 @@ struct TestContainer {
             context.insert(item)
         }
         
+        try? context.save()
+        return container
+    }
+
+    /// Creates container with many items for performance testing
+    static func withManyItems(count: Int) -> ModelContainer {
+        let container = withBasicData()
+        let context = container.mainContext
+
+        // Fetch category and room
+        let categoryDescriptor = FetchDescriptor<Nestory_Pro.Category>()
+        let roomDescriptor = FetchDescriptor<Room>()
+
+        let category = try? context.fetch(categoryDescriptor).first
+        let room = try? context.fetch(roomDescriptor).first
+
+        // Add items
+        for i in 0..<count {
+            let item = Item(
+                name: "Item \(i + 1)",
+                brand: i % 2 == 0 ? "Brand A" : "Brand B",
+                purchasePrice: Decimal(Double(i + 1) * 10),
+                category: i % 3 == 0 ? category : nil,
+                room: i % 4 == 0 ? room : nil,
+                condition: .good
+            )
+            context.insert(item)
+        }
+
         try? context.save()
         return container
     }
@@ -246,8 +274,8 @@ extension XCTestCase {
     
     /// Helper to fetch all categories from context
     @MainActor
-    func fetchAllCategories(from context: ModelContext) throws -> [Category] {
-        let descriptor = FetchDescriptor<Category>()
+    func fetchAllCategories(from context: ModelContext) throws -> [Nestory_Pro.Category] {
+        let descriptor = FetchDescriptor<Nestory_Pro.Category>()
         return try context.fetch(descriptor)
     }
     

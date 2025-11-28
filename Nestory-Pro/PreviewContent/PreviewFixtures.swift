@@ -226,52 +226,50 @@ struct PreviewFixtures {
     // MARK: - Receipts
     
     static func sampleReceipt(linkedItem: Item? = nil) -> Receipt {
-        Receipt(
+        let receipt = Receipt(
+            imageIdentifier: "receipt-\(UUID().uuidString)",
             vendor: "Apple Store",
             total: Decimal(2999.00),
             taxAmount: Decimal(239.92),
             purchaseDate: Calendar.current.date(byAdding: .month, value: -8, to: Date()),
-            imageIdentifier: "receipt-\(UUID().uuidString)",
             rawText: """
             Apple Store
             123 Main Street
             San Francisco, CA 94102
-            
+
             Date: \(DateFormatter.shortDate.string(from: Date()))
-            
+
             MacBook Pro 16-inch M3 Max
             Qty: 1                    $2,999.00
-            
+
             Subtotal:                 $2,999.00
             Tax (8%):                   $239.92
             Total:                    $3,238.92
-            
+
             Payment: Visa ****1234
             """,
-            confidence: 0.92,
-            linkedItem: linkedItem
+            confidence: 0.92
         )
+        receipt.linkedItem = linkedItem
+        return receipt
     }
     
     static func sampleReceiptWithLowConfidence() -> Receipt {
         Receipt(
+            imageIdentifier: "receipt-\(UUID().uuidString)",
             vendor: "Unknown Store",
             total: Decimal(89.99),
             purchaseDate: Date(),
-            imageIdentifier: "receipt-\(UUID().uuidString)",
             rawText: "Unclear text...",
             confidence: 0.45
         )
     }
     
     // MARK: - Item Photos
-    
+
     static func sampleItemPhotos(count: Int = 3) -> [ItemPhoto] {
-        (0..<count).map { index in
-            ItemPhoto(
-                imageIdentifier: "photo-\(UUID().uuidString)",
-                caption: index == 0 ? "Front view" : nil
-            )
+        (0..<count).map { _ in
+            ItemPhoto(imageIdentifier: "photo-\(UUID().uuidString)")
         }
     }
 }

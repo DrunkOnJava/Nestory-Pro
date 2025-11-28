@@ -18,51 +18,15 @@ extension PreviewDevice {
     static let iPadPro12 = PreviewDevice(rawValue: "iPad Pro (12.9-inch) (6th generation)")
 }
 
-// MARK: - Preview Trait Helpers
+// MARK: - Preview Configuration Constants
 
-extension PreviewTrait where T == Preview.ViewTraits {
-    /// Standard preview sizes for common devices
-    static var previewDevices: [PreviewTrait<Preview.ViewTraits>] {
-        [
-            .previewDevice("iPhone 15 Pro"),
-            .previewDevice("iPhone 15 Pro Max"),
-            .previewDevice("iPhone SE (3rd generation)")
-        ]
-    }
-    
-    /// Preview with different color schemes
-    static var colorSchemes: [PreviewTrait<Preview.ViewTraits>] {
-        [
-            .previewDisplayName("Light"),
-            .previewDisplayName("Dark")
-                .previewColorScheme(.dark)
-        ]
-    }
-    
-    /// Preview with different Dynamic Type sizes
-    static var dynamicTypeSizes: [PreviewTrait<Preview.ViewTraits>] {
-        [
-            .previewDisplayName("XS")
-                .previewDynamicTypeSize(.xSmall),
-            .previewDisplayName("Default")
-                .previewDynamicTypeSize(.medium),
-            .previewDisplayName("Accessibility XXXL")
-                .previewDynamicTypeSize(.xxxLarge)
-        ]
-    }
-    
-    /// Compact device with dark mode
-    static var compactDark: PreviewTrait<Preview.ViewTraits> {
-        .previewDevice("iPhone SE (3rd generation)")
-            .previewDisplayName("iPhone SE - Dark")
-            .previewColorScheme(.dark)
-    }
-    
-    /// Large device with light mode
-    static var largeLight: PreviewTrait<Preview.ViewTraits> {
-        .previewDevice("iPhone 15 Pro Max")
-            .previewDisplayName("iPhone 15 Pro Max - Light")
-    }
+/// Common preview configurations
+enum PreviewConfig {
+    /// Standard device names for previews
+    static let iPhoneSE = "iPhone SE (3rd generation)"
+    static let iPhone15Pro = "iPhone 15 Pro"
+    static let iPhone15ProMax = "iPhone 15 Pro Max"
+    static let iPadPro12 = "iPad Pro (12.9-inch) (6th generation)"
 }
 
 // MARK: - View Modifiers for Previews

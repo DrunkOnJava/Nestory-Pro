@@ -82,19 +82,6 @@ struct MainTabView: View {
         .modelContainer(PreviewContainer.withManyItems(count: 50))
 }
 
-#Preview("iPhone SE - Dark") {
-    MainTabView()
-        .modelContainer(PreviewContainer.withSampleData())
-        .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
-        .preferredColorScheme(.dark)
-}
-
-#Preview("iPhone 15 Pro Max") {
-    MainTabView()
-        .modelContainer(PreviewContainer.withSampleData())
-        .previewDevice(PreviewDevice(rawValue: "iPhone 15 Pro Max"))
-}
-
 #Preview("Large Text") {
     MainTabView()
         .modelContainer(PreviewContainer.withSampleData())

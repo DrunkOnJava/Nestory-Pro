@@ -216,12 +216,12 @@ final class PersistenceIntegrationTests: XCTestCase {
         let container = TestContainer.withBasicData()
         let context = container.mainContext
         
-        let categoryDescriptor = FetchDescriptor<Category>()
+        let categoryDescriptor = FetchDescriptor<Nestory_Pro.Category>()
         let category = try context.fetch(categoryDescriptor).first!
         
         let item1 = TestFixtures.testItem(name: "MacBook", category: category)
         let item2 = TestFixtures.testItem(name: "iPhone", category: category)
-        let item3 = TestFixtures.testItem(name: "iPad", category: nil)
+        let item3 = TestFixtures.testItem(name: "iPad", category: Optional<Nestory_Pro.Category>.none)
         
         context.insert(item1)
         context.insert(item2)
@@ -257,7 +257,7 @@ final class PersistenceIntegrationTests: XCTestCase {
         try context.save()
         
         // Act
-        var descriptor = FetchDescriptor<Item>(
+        let descriptor = FetchDescriptor<Item>(
             sortBy: [SortDescriptor(\.name, order: .forward)]
         )
         let sortedItems = try context.fetch(descriptor)
