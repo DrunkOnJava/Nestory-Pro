@@ -15,16 +15,16 @@ open Nestory-Pro.xcodeproj
 # Build (Debug)
 xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -configuration Debug
 
-# Build for simulator
+# Build for simulator (always use iPhone 17 Pro Max)
 xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
-  -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15'
+  -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 
 # Run all tests (recommended)
 bundle exec fastlane test
 
 # Run tests with xcodebuild
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
-  -destination 'platform=iOS Simulator,name=iPhone 15'
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 
 # Run specific test target
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
@@ -154,3 +154,4 @@ GitHub Actions workflow (`.github/workflows/beta.yml`) requires secrets:
 - [TestingStrategy.md](TestingStrategy.md) - Comprehensive testing guide
 - [WARP.md](WARP.md) - Extended development guide
 - [PreviewExamples.md](PreviewExamples.md) - Preview and fixtures documentation
+- we use iphone 17 pro max always as the simulator
