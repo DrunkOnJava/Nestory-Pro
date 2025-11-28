@@ -57,7 +57,48 @@ struct MainTabView: View {
     }
 }
 
-#Preview {
+#Preview("Default - Light") {
     MainTabView()
-        .modelContainer(for: [Item.self, Category.self, Room.self], inMemory: true)
+        .modelContainer(PreviewContainer.withSampleData())
+}
+
+#Preview("Default - Dark") {
+    MainTabView()
+        .modelContainer(PreviewContainer.withSampleData())
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Empty Inventory") {
+    MainTabView()
+        .modelContainer(PreviewContainer.emptyInventory())
+}
+
+#Preview("Many Items") {
+    MainTabView()
+        .modelContainer(PreviewContainer.withManyItems(count: 50))
+}
+
+#Preview("iPhone SE - Dark") {
+    MainTabView()
+        .modelContainer(PreviewContainer.withSampleData())
+        .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
+        .preferredColorScheme(.dark)
+}
+
+#Preview("iPhone 15 Pro Max") {
+    MainTabView()
+        .modelContainer(PreviewContainer.withSampleData())
+        .previewDevice(PreviewDevice(rawValue: "iPhone 15 Pro Max"))
+}
+
+#Preview("Large Text") {
+    MainTabView()
+        .modelContainer(PreviewContainer.withSampleData())
+        .environment(\.dynamicTypeSize, .xxxLarge)
+}
+
+#Preview("Small Text") {
+    MainTabView()
+        .modelContainer(PreviewContainer.withSampleData())
+        .environment(\.dynamicTypeSize, .xSmall)
 }
