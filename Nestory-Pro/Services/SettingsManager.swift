@@ -9,11 +9,12 @@ import Foundation
 import SwiftUI
 
 /// Manages user preferences using AppStorage and Keychain
-// TODO: Refactor to remove static shared singleton - use @Environment injection instead
-// FIXME: SettingsProviding protocol exists but views still use .shared pattern
+/// Now supports dependency injection via AppEnvironment
+/// Legacy .shared still available for gradual migration (Task 5.2.2)
 @Observable
 @MainActor
 final class SettingsManager: SettingsProviding {
+    // Legacy singleton - will be removed in Task 5.2.2
     static let shared = SettingsManager()
 
     // MARK: - Pro Status (stored securely in Keychain)
@@ -61,7 +62,8 @@ final class SettingsManager: SettingsProviding {
     let maxFreeItems: Int = 100
     let maxFreeLossListItems: Int = 20
     
-    private init() {}
+    // Public initializer for dependency injection
+    init() {}
 }
 
 // MARK: - Theme Preference

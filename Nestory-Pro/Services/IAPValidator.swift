@@ -31,7 +31,8 @@ final class IAPValidator {
 
     // MARK: - Initialization
 
-    private init() {
+    // Public initializer for dependency injection
+    init() {
         // Initialize Pro status from Keychain
         self.isProUnlocked = KeychainManager.isProUnlocked()
     }

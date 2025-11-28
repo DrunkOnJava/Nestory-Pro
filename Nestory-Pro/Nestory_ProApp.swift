@@ -10,21 +10,20 @@
 // ============================================================================
 // This is the app entry point. Key architecture notes:
 //
-// CURRENT STATE (Needs Refactoring - See TODO.md Phase 5):
-// - SettingsManager.shared and IAPValidator.shared are SINGLETONS
-// - These should be replaced with AppEnvironment DI (Task 5.2.1)
-// - DO NOT add more singletons - this pattern is being phased out
+// ARCHITECTURE (Task 5.2.1 - COMPLETED):
+// - AppEnvironment DI container holds all services
+// - Injected at root via .environment(appEnv)
+// - Views access via @Environment(AppEnvironment.self)
 //
 // WHEN ADDING NEW SERVICES:
 // 1. Create the service conforming to its protocol
-// 2. Add to future AppEnvironment container (not as singleton)
+// 2. Add to AppEnvironment container
 // 3. Inject via @Environment, not .shared
 //
 // SEEDING BEHAVIOR:
 // - Default categories and rooms are seeded on first launch
-// - When adding Room.isDefault (Task 1.1.3), update seeding here
 //
-// SEE: TODO.md for task details | CLAUDE.md for development guidelines
+// SEE: AppEnvironment.swift | TODO.md Task 5.2.1 | WARP.md Architecture
 // ============================================================================
 
 import SwiftUI
@@ -32,15 +31,16 @@ import SwiftData
 
 @main
 struct Nestory_ProApp: App {
-    let settings = SettingsManager.shared
-    let iapValidator = IAPValidator.shared
+    // Dependency injection container with all services
+    let appEnv = AppEnvironment()
 
     init() {
         // Migrate Pro status from UserDefaults to Keychain (one-time migration)
         KeychainManager.migrateProStatusFromUserDefaults()
 
         // Start listening for IAP transactions
-        let validator = iapValidator
+        // Capture validator before Task to avoid capturing self
+        let validator = appEnv.iapValidator
         Task { @MainActor in
             validator.startTransactionListener()
             await validator.updateProStatus()
@@ -72,7 +72,8 @@ struct Nestory_ProApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
-                .preferredColorScheme(settings.themePreference.colorScheme)
+                .environment(appEnv)
+                .preferredColorScheme(appEnv.settings.themePreference.colorScheme)
                 .onAppear {
                     seedDefaultDataIfNeeded()
                 }
