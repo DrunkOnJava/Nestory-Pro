@@ -83,23 +83,41 @@ struct SettingsTab: View {
                     .disabled(isExportingJSON || isExportingCSV)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.exportDataButton)
 
-                    // CSV Export (Pro only)
-                    if settings.isProUnlocked {
-                        Button {
+                    // CSV Export (Pro only) - Task 4.3.2: Gate CSV export to Pro
+                    Button {
+                        if settings.isProUnlocked {
                             Task {
                                 await exportToCSV()
                             }
-                        } label: {
-                            HStack {
-                                Text("Export to CSV")
-                                Spacer()
-                                if isExportingCSV {
-                                    ProgressView()
-                                }
+                        } else {
+                            showingProPaywall = true
+                        }
+                    } label: {
+                        HStack {
+                            Text("Export to CSV")
+
+                            if !settings.isProUnlocked {
+                                Image(systemName: "lock.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+
+                                Text("Pro")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.orange)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.orange.opacity(0.15))
+                                    .clipShape(Capsule())
+                            }
+
+                            Spacer()
+                            if isExportingCSV {
+                                ProgressView()
                             }
                         }
-                        .disabled(isExportingJSON || isExportingCSV)
                     }
+                    .disabled(isExportingCSV || isExportingJSON && settings.isProUnlocked)
 
                     Button("Import Data") {
                         // TODO: Import data (Task 3.4.3)
