@@ -82,6 +82,17 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
+# Fastlane - Sensitive files (NEVER COMMIT!)
+fastlane/.env
+fastlane/.env.*
+fastlane/*.p8
+fastlane/AuthKey_*.p8
+fastlane/builds/
+
+# Bundler
+vendor/bundle
+.bundle
+
 # Code Injection
 #
 # After new code Injection tools there's a generated folder /iOSInjectionProject
@@ -112,3 +123,5 @@ iOSInjectionProject/
 Network Trash Folder
 Temporary Items
 .apdisk
+fastlane/.env
+fastlane/*.p8
