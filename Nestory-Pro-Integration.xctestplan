@@ -1,0 +1,45 @@
+{
+  "configurations" : [
+    {
+      "id" : "B2C3D4E5-F6G7-8901-BCDE-F23456789012",
+      "name" : "Integration Tests Configuration",
+      "options" : {
+        "testTimeoutsEnabled" : true,
+        "defaultTestExecutionTimeAllowance" : 120,
+        "maximumTestExecutionTimeAllowance" : 300
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:Nestory-Pro.xcodeproj",
+          "identifier" : "85B6C28A2ED9E32B006F56EA",
+          "name" : "Nestory-Pro"
+        }
+      ]
+    },
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Nestory-Pro.xcodeproj",
+      "identifier" : "85B6C28A2ED9E32B006F56EA",
+      "name" : "Nestory-Pro"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "selectedTests" : [
+        "PersistenceIntegrationTests",
+        "ConcurrencyTests"
+      ],
+      "target" : {
+        "containerPath" : "container:Nestory-Pro.xcodeproj",
+        "identifier" : "85B6C29B2ED9E32D006F56EA",
+        "name" : "Nestory-ProTests"
+      }
+    }
+  ],
+  "version" : 1
+}

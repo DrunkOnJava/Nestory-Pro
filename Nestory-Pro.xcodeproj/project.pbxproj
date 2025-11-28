@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8573C15B2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */; };
+		8573C15C2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */; };
+		8573C15D2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		85B6C29D2ED9E32D006F56EA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nestory-Pro.xctestplan"; sourceTree = "<group>"; };
 		85B6C28B2ED9E32B006F56EA /* Nestory-Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nestory-Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85B6C29C2ED9E32D006F56EA /* Nestory-ProTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Nestory-ProTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85B6C2A62ED9E32D006F56EA /* Nestory-ProUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Nestory-ProUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,6 +95,7 @@
 		85B6C2822ED9E32B006F56EA = {
 			isa = PBXGroup;
 			children = (
+				8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */,
 				85B6C28D2ED9E32B006F56EA /* Nestory-Pro */,
 				85B6C29F2ED9E32D006F56EA /* Nestory-ProTests */,
 				85B6C2A92ED9E32D006F56EA /* Nestory-ProUITests */,
@@ -225,6 +233,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8573C15D2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,6 +241,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8573C15B2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +249,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8573C15C2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

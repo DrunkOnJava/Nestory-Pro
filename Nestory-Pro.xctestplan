@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "047F6433-5D8B-46AF-84FF-96B1EEFF9E05",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Nestory-Pro.xcodeproj",
+      "identifier" : "85B6C28A2ED9E32B006F56EA",
+      "name" : "Nestory-Pro"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Nestory-Pro.xcodeproj",
+        "identifier" : "85B6C29B2ED9E32D006F56EA",
+        "name" : "Nestory-ProTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Nestory-Pro.xcodeproj",
+        "identifier" : "85B6C2A52ED9E32D006F56EA",
+        "name" : "Nestory-ProUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,0 +1,32 @@
+{
+  "configurations" : [
+    {
+      "id" : "D4E5F6G7-H8I9-0123-DEFG-456789012345",
+      "name" : "UI Tests Configuration",
+      "options" : {
+        "testTimeoutsEnabled" : true,
+        "defaultTestExecutionTimeAllowance" : 180,
+        "maximumTestExecutionTimeAllowance" : 600
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Nestory-Pro.xcodeproj",
+      "identifier" : "85B6C28A2ED9E32B006F56EA",
+      "name" : "Nestory-Pro"
+    },
+    "uiTestingScreenshotsLifetime" : "keepAlways"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Nestory-Pro.xcodeproj",
+        "identifier" : "85B6C2A52ED9E32D006F56EA",
+        "name" : "Nestory-ProUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
