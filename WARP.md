@@ -260,7 +260,122 @@ Score is calculated as percentage (0.25 points each).
 - **v1.2**: Incident mode for claims, claim pack generation
 - **v2**: Household sharing, professional white-label exports, video walkthrough analysis, AI-assisted identification
 
+## Testing & Previews
+
+### Preview System
+
+The project uses a comprehensive fixtures and preview system to avoid mixing real and fake data:
+
+**Structure:**
+```
+Nestory-Pro/PreviewContent/
+├── PreviewFixtures.swift      # Sample data factory
+├── PreviewContainer.swift     # In-memory SwiftData containers
+└── PreviewHelpers.swift       # Preview utilities
+
+Nestory-ProTests/
+└── TestFixtures.swift          # Test-specific fixtures
+```
+
+**Key Components:**
+- `PreviewFixtures` - Realistic sample data for all models
+- `PreviewContainer` - In-memory containers (never touch production data)
+- `PreviewHelpers` - Utilities for device sizes, color schemes, dynamic type
+- `TestFixtures` - Predictable test data with XCTest extensions
+
+### Using Previews
+
+```swift
+// Basic preview with sample data
+#Preview("Default") {
+    MyView()
+        .modelContainer(PreviewContainer.withSampleData())
+}
+
+// Dark mode
+#Preview("Dark Mode") {
+    MyView()
+        .modelContainer(PreviewContainer.withSampleData())
+        .preferredColorScheme(.dark)
+}
+
+// Different device sizes
+#Preview("iPhone SE") {
+    MyView()
+        .modelContainer(PreviewContainer.withSampleData())
+        .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
+}
+
+// Empty state
+#Preview("Empty") {
+    MyView()
+        .modelContainer(PreviewContainer.emptyInventory())
+}
+
+// Large text accessibility
+#Preview("Large Text") {
+    MyView()
+        .modelContainer(PreviewContainer.withSampleData())
+        .environment(\.dynamicTypeSize, .xxxLarge)
+}
+```
+
+### Available Container Types
+
+- `PreviewContainer.empty()` - No data
+- `PreviewContainer.withBasicData()` - Categories and rooms only
+- `PreviewContainer.withSampleData()` - Full sample dataset
+- `PreviewContainer.withManyItems(count: 50)` - Stress testing
+- `PreviewContainer.emptyInventory()` - Categories/rooms but no items
+
+### Writing Unit Tests
+
+```swift
+import XCTest
+@testable import Nestory_Pro
+
+final class ItemTests: XCTestCase {
+    
+    @MainActor
+    func testDocumentationScore() throws {
+        let container = TestContainer.empty()
+        let context = container.mainContext
+        
+        let category = TestFixtures.testCategory()
+        let room = TestFixtures.testRoom()
+        context.insert(category)
+        context.insert(room)
+        
+        let item = TestFixtures.testDocumentedItem(
+            category: category,
+            room: room
+        )
+        context.insert(item)
+        
+        // Add photo for full documentation
+        let photo = TestFixtures.testItemPhoto()
+        photo.item = item
+        context.insert(photo)
+        
+        XCTAssertEqual(item.documentationScore, 1.0)
+        XCTAssertTrue(item.isDocumented)
+    }
+}
+```
+
+### Best Practices
+
+1. **Never use production container in previews** - Always use `PreviewContainer`
+2. **Create multiple preview variations** - Test light/dark, different devices, dynamic type
+3. **Test empty states** - Use `PreviewContainer.emptyInventory()`
+4. **Name previews descriptively** - `#Preview("Dark Mode - Large Text")` not `#Preview("Test 1")`
+5. **Wrap fixtures in `#if DEBUG`** - Exclude from release builds
+6. **Use TestFixtures for unit tests** - Predictable, simple test data
+
+See [PreviewExamples.md](PreviewExamples.md) for comprehensive documentation and examples.
+
 ## References
 
 - [Product Specification](PRODUCT-SPEC.md) - Detailed product and technical specs
 - [Fastlane README](FASTLANE_README.md) - Deployment automation details
+- [Preview Examples](PreviewExamples.md) - Fixtures and preview strategy guide
