@@ -512,7 +512,7 @@ struct ReceiptCaptureView: View {
     private func formatCurrency(_ amount: Decimal) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = "USD" // TODO: Use SettingsManager.shared.preferredCurrencyCode
+        formatter.currencyCode = "USD" // TODO: Use env.settings.preferredCurrencyCode from @Environment
         return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
     }
 

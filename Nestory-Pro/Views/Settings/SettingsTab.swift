@@ -11,7 +11,7 @@ import SwiftData
 import UniformTypeIdentifiers
 
 struct SettingsTab: View {
-    @State private var settings = SettingsManager.shared
+    @Environment(AppEnvironment.self) private var env
     @State private var showingProPaywall = false
 
     // Export state - Task 3.4.2: Wire up BackupService export
@@ -28,11 +28,12 @@ struct SettingsTab: View {
     @Query private var allReceipts: [Receipt]
 
     var body: some View {
+        @Bindable var settings = env.settings
         NavigationStack {
             List {
                 // Account & Pro
                 Section {
-                    if settings.isProUnlocked {
+                    if env.settings.isProUnlocked {
                         HStack {
                             Label("Nestory Pro", systemImage: "star.fill")
                                 .foregroundStyle(.orange)
@@ -85,7 +86,7 @@ struct SettingsTab: View {
 
                     // CSV Export (Pro only) - Task 4.3.2: Gate CSV export to Pro
                     Button {
-                        if settings.isProUnlocked {
+                        if env.settings.isProUnlocked {
                             Task {
                                 await exportToCSV()
                             }
@@ -96,7 +97,7 @@ struct SettingsTab: View {
                         HStack {
                             Text("Export to CSV")
 
-                            if !settings.isProUnlocked {
+                            if !env.settings.isProUnlocked {
                                 Image(systemName: "lock.fill")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
@@ -117,7 +118,7 @@ struct SettingsTab: View {
                             }
                         }
                     }
-                    .disabled(isExportingCSV || isExportingJSON && settings.isProUnlocked)
+                    .disabled(isExportingCSV || isExportingJSON && env.settings.isProUnlocked)
 
                     Button("Import Data") {
                         // TODO: Import data (Task 3.4.3)
@@ -151,7 +152,7 @@ struct SettingsTab: View {
                     Toggle("Require Face ID / Touch ID", isOn: $settings.requiresBiometrics)
                         .accessibilityIdentifier(AccessibilityIdentifiers.Settings.appLockToggle)
 
-                    if settings.requiresBiometrics {
+                    if env.settings.requiresBiometrics {
                         Toggle("Lock After Inactivity", isOn: $settings.lockAfterInactivity)
                     }
                 } header: {
@@ -165,7 +166,7 @@ struct SettingsTab: View {
                     Toggle("Documentation Reminders", isOn: $settings.enableDocumentationReminders)
                         .accessibilityIdentifier(AccessibilityIdentifiers.Settings.notificationsToggle)
 
-                    if settings.enableDocumentationReminders {
+                    if env.settings.enableDocumentationReminders {
                         Toggle("Weekly Summary", isOn: $settings.weeklyReminderEnabled)
                             .accessibilityIdentifier(AccessibilityIdentifiers.Settings.weeklyReminderToggle)
                     }
@@ -261,7 +262,7 @@ struct SettingsTab: View {
         defer { isExportingJSON = false }
 
         do {
-            let fileURL = try await BackupService.shared.exportToJSON(
+            let fileURL = try await env.backupService.exportToJSON(
                 items: allItems,
                 categories: allCategories,
                 rooms: allRooms,
@@ -277,7 +278,7 @@ struct SettingsTab: View {
     /// Export items to CSV format (Pro only)
     @MainActor
     private func exportToCSV() async {
-        guard settings.isProUnlocked else {
+        guard env.settings.isProUnlocked else {
             exportError = NSError(
                 domain: "com.drunkonjava.nestory",
                 code: 403,
@@ -291,7 +292,7 @@ struct SettingsTab: View {
         defer { isExportingCSV = false }
 
         do {
-            let fileURL = try await BackupService.shared.exportToCSV(items: allItems)
+            let fileURL = try await env.backupService.exportToCSV(items: allItems)
             exportedFileURL = fileURL
         } catch {
             exportError = error
@@ -345,7 +346,7 @@ struct ExportedFile: FileDocument {
 // MARK: - Pro Paywall
 struct ProPaywallView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var iapValidator = IAPValidator.shared
+    @Environment(AppEnvironment.self) private var env
     @State private var product: Product?
     @State private var isLoadingProduct = true
     @State private var showingError = false
@@ -434,7 +435,7 @@ struct ProPaywallView: View {
                             await purchasePro()
                         }
                     }) {
-                        if iapValidator.isPurchasing {
+                        if env.iapValidator.isPurchasing {
                             ProgressView()
                                 .progressViewStyle(.circular)
                                 .tint(.white)
@@ -450,7 +451,7 @@ struct ProPaywallView: View {
                     .background(Color.accentColor)
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .disabled(iapValidator.isPurchasing || isLoadingProduct)
+                    .disabled(env.iapValidator.isPurchasing || isLoadingProduct)
                     .padding(.horizontal, 24)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Pro.purchaseButton)
 
@@ -461,7 +462,7 @@ struct ProPaywallView: View {
                     }
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .disabled(iapValidator.isPurchasing)
+                    .disabled(env.iapValidator.isPurchasing)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Pro.restorePurchasesButton)
                     
                     Text("Free tier includes up to 100 items with all core features.")
@@ -487,7 +488,7 @@ struct ProPaywallView: View {
             } message: {
                 Text(errorMessage)
             }
-            .onChange(of: iapValidator.isProUnlocked) { _, isUnlocked in
+            .onChange(of: env.iapValidator.isProUnlocked) { _, isUnlocked in
                 if isUnlocked {
                     dismiss()
                 }
@@ -501,7 +502,7 @@ struct ProPaywallView: View {
         isLoadingProduct = true
 
         do {
-            product = try await iapValidator.fetchProduct()
+            product = try await env.iapValidator.fetchProduct()
         } catch {
             errorMessage = "Failed to load product: \(error.localizedDescription)"
             showingError = true
@@ -512,7 +513,7 @@ struct ProPaywallView: View {
 
     private func purchasePro() async {
         do {
-            try await iapValidator.purchase()
+            try await env.iapValidator.purchase()
             // Success - dismiss handled by onChange
         } catch {
             errorMessage = error.localizedDescription
@@ -522,7 +523,7 @@ struct ProPaywallView: View {
 
     private func restorePurchases() async {
         do {
-            try await iapValidator.restorePurchases()
+            try await env.iapValidator.restorePurchases()
             // Success - dismiss handled by onChange
         } catch {
             errorMessage = error.localizedDescription

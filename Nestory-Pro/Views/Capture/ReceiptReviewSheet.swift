@@ -56,8 +56,8 @@ struct ReceiptReviewSheet: View {
     /// Image identifier for the receipt photo
     let imageIdentifier: String
 
-    /// Settings for currency formatting
-    private let settings = SettingsManager.shared
+    /// Dependencies from environment
+    @Environment(AppEnvironment.self) private var env
 
     // MARK: - State
 
@@ -81,14 +81,14 @@ struct ReceiptReviewSheet: View {
 
     /// Parsed decimal from total amount string
     private var parsedTotal: Decimal? {
-        let cleaned = totalAmount.replacingOccurrences(of: settings.currencySymbol, with: "")
+        let cleaned = totalAmount.replacingOccurrences(of: env.settings.currencySymbol, with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         return Decimal(string: cleaned)
     }
 
     /// Parsed decimal from tax amount string
     private var parsedTax: Decimal? {
-        let cleaned = taxAmount.replacingOccurrences(of: settings.currencySymbol, with: "")
+        let cleaned = taxAmount.replacingOccurrences(of: env.settings.currencySymbol, with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         return Decimal(string: cleaned)
     }

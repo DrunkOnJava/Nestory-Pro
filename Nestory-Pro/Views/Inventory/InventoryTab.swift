@@ -67,7 +67,7 @@ struct InventoryTab: View {
     @State private var showingProPaywall = false
     @State private var itemLimitBannerDismissed = false
 
-    private let settings = SettingsManager.shared
+    @Environment(AppEnvironment.self) private var env
     
     private var filteredItems: [Item] {
         var result = items
@@ -129,7 +129,7 @@ struct InventoryTab: View {
     // MARK: - Item Limit Warning Logic (Task 4.1.2)
 
     private var shouldShowItemLimitWarning: Bool {
-        !settings.isProUnlocked && items.count >= 80 && !itemLimitBannerDismissed
+        !env.settings.isProUnlocked && items.count >= 80 && !itemLimitBannerDismissed
     }
 
     private var itemLimitWarningLevel: ItemLimitWarningLevel {
@@ -270,7 +270,7 @@ struct InventoryTab: View {
                 
                 SummaryCard(
                     title: "Estimated Value",
-                    value: settings.formatCurrency(totalValue),
+                    value: env.settings.formatCurrency(totalValue),
                     subtitle: "Based on entered values",
                     iconName: "dollarsign.circle.fill",
                     color: .green
@@ -359,7 +359,7 @@ struct InventoryTab: View {
             LazyVStack(spacing: 8) {
                 ForEach(filteredItems) { item in
                     NavigationLink(destination: ItemDetailView(item: item)) {
-                        ItemListCell(item: item, settings: settings)
+                        ItemListCell(item: item, settings: env.settings)
                     }
                     .buttonStyle(.plain)
                     .contextMenu {
@@ -376,7 +376,7 @@ struct InventoryTab: View {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(filteredItems) { item in
                     NavigationLink(destination: ItemDetailView(item: item)) {
-                        ItemGridCell(item: item, settings: settings)
+                        ItemGridCell(item: item, settings: env.settings)
                     }
                     .buttonStyle(.plain)
                     .contextMenu {

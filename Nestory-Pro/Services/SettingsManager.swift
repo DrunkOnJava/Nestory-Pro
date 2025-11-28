@@ -9,13 +9,10 @@ import Foundation
 import SwiftUI
 
 /// Manages user preferences using AppStorage and Keychain
-/// Now supports dependency injection via AppEnvironment
-/// Legacy .shared still available for gradual migration (Task 5.2.2)
+/// Uses dependency injection via AppEnvironment (Task 5.2.2 complete)
 @Observable
 @MainActor
 final class SettingsManager: SettingsProviding {
-    // Legacy singleton - will be removed in Task 5.2.2
-    static let shared = SettingsManager()
 
     // MARK: - Pro Status (stored securely in Keychain)
     var isProUnlocked: Bool {

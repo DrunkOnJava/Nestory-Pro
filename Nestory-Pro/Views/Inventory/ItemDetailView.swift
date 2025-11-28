@@ -18,7 +18,7 @@ struct ItemDetailView: View {
     @State private var showingAddPhoto = false
     @State private var showingAddReceipt = false
     
-    private let settings = SettingsManager.shared
+    @Environment(AppEnvironment.self) private var env
     
     var body: some View {
         ScrollView {
@@ -208,7 +208,7 @@ struct ItemDetailView: View {
             
             VStack(spacing: 0) {
                 if let price = item.purchasePrice {
-                    infoRow(label: "Purchase Price", value: settings.formatCurrency(price))
+                    infoRow(label: "Purchase Price", value: env.settings.formatCurrency(price))
                 }
                 
                 if let date = item.purchaseDate {
@@ -291,7 +291,7 @@ struct ItemDetailView: View {
                             Text(receipt.vendor ?? "Unknown Vendor")
                                 .font(.subheadline)
                             if let total = receipt.total {
-                                Text(settings.formatCurrency(total))
+                                Text(env.settings.formatCurrency(total))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }

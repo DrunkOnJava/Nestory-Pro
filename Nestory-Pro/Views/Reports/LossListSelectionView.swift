@@ -64,7 +64,7 @@ struct LossListSelectionView: View {
 
     // MARK: - Dependencies
 
-    private let settings = SettingsManager.shared
+    @Environment(AppEnvironment.self) private var env
 
     // MARK: - State
 
@@ -95,16 +95,16 @@ struct LossListSelectionView: View {
 
     /// Whether user can add more items to selection (based on Pro status)
     private var canSelectMore: Bool {
-        if settings.isProUnlocked {
+        if env.settings.isProUnlocked {
             return true
         } else {
-            return selectedCount < settings.maxFreeLossListItems
+            return selectedCount < env.settings.maxFreeLossListItems
         }
     }
 
     /// Whether to show warning about approaching limit
     private var shouldShowLimitWarning: Bool {
-        !settings.isProUnlocked && selectedCount >= 18 && selectedCount < settings.maxFreeLossListItems
+        !env.settings.isProUnlocked && selectedCount >= 18 && selectedCount < env.settings.maxFreeLossListItems
     }
 
     /// Whether "Continue" button should be enabled
@@ -177,7 +177,7 @@ struct LossListSelectionView: View {
                 }
                 Button("Not Now", role: .cancel) { }
             } message: {
-                Text("Free accounts are limited to \(settings.maxFreeLossListItems) items per loss report. Upgrade to Pro for unlimited items.")
+                Text("Free accounts are limited to \(env.settings.maxFreeLossListItems) items per loss report. Upgrade to Pro for unlimited items.")
             }
         }
     }
@@ -268,7 +268,7 @@ struct LossListSelectionView: View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
-            Text("Approaching limit: \(selectedCount) of \(settings.maxFreeLossListItems) items")
+            Text("Approaching limit: \(selectedCount) of \(env.settings.maxFreeLossListItems) items")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -333,8 +333,8 @@ struct LossListSelectionView: View {
                 .font(.headline)
                 .fontWeight(.semibold)
                 .foregroundStyle(selectedCount > 0 ? .primary : .secondary)
-            if !settings.isProUnlocked {
-                Text("/ \(settings.maxFreeLossListItems)")
+            if !env.settings.isProUnlocked {
+                Text("/ \(env.settings.maxFreeLossListItems)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -421,7 +421,7 @@ private struct ItemRow: View {
     let canSelect: Bool
     let onTap: () -> Void
 
-    private let settings = SettingsManager.shared
+    @Environment(AppEnvironment.self) private var env
 
     var body: some View {
         Button {
@@ -442,7 +442,7 @@ private struct ItemRow: View {
                     HStack(spacing: 8) {
                         // Value
                         if let value = item.purchasePrice {
-                            Text(settings.formatCurrency(value))
+                            Text(env.settings.formatCurrency(value))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }

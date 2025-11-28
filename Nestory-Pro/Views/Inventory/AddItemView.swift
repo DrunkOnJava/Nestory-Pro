@@ -50,7 +50,7 @@ struct AddItemView: View {
     @State private var hasWarranty = false
     @State private var showingPaywall = false // Task 4.1.1: Show paywall when free tier limit reached
 
-    private let settings = SettingsManager.shared
+    @Environment(AppEnvironment.self) private var env
     
     private var canSave: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -89,7 +89,7 @@ struct AddItemView: View {
                 // Value & Date
                 Section("Purchase Information") {
                     HStack {
-                        Text(settings.currencySymbol)
+                        Text(env.settings.currencySymbol)
                             .foregroundStyle(.secondary)
                         TextField("Purchase Price", text: $purchasePrice)
                             .keyboardType(.decimalPad)
@@ -155,7 +155,7 @@ struct AddItemView: View {
         guard !trimmedName.isEmpty else { return }
 
         // Task 4.1.1: Enforce 100-item free tier limit
-        if items.count >= settings.maxFreeItems && !settings.isProUnlocked {
+        if items.count >= env.settings.maxFreeItems && !env.settings.isProUnlocked {
             showingPaywall = true
             return // Don't save until user upgrades or dismisses
         }
@@ -167,7 +167,7 @@ struct AddItemView: View {
             serialNumber: serialNumber.isEmpty ? nil : serialNumber,
             purchasePrice: Decimal(string: purchasePrice),
             purchaseDate: hasPurchaseDate ? purchaseDate : nil,
-            currencyCode: settings.preferredCurrencyCode,
+            currencyCode: env.settings.preferredCurrencyCode,
             category: selectedCategory,
             room: selectedRoom,
             condition: condition,
@@ -200,9 +200,9 @@ struct EditItemView: View {
     @State private var condition: ItemCondition
     @State private var conditionNotes: String
     @State private var warrantyExpiryDate: Date
-    @State private var hasWarranty: Bool
-    
-    private let settings = SettingsManager.shared
+    @State private var hasWarranty = false
+
+    @Environment(AppEnvironment.self) private var env
     
     init(item: Item) {
         self.item = item
@@ -255,7 +255,7 @@ struct EditItemView: View {
                 
                 Section("Purchase Information") {
                     HStack {
-                        Text(settings.currencySymbol)
+                        Text(env.settings.currencySymbol)
                             .foregroundStyle(.secondary)
                         TextField("Purchase Price", text: $purchasePrice)
                             .keyboardType(.decimalPad)

@@ -60,8 +60,7 @@ struct FullInventoryReportView: View {
 
     // MARK: - Dependencies
 
-    private let reportService = ReportGeneratorService.shared
-    private let settings = SettingsManager.shared
+    @Environment(AppEnvironment.self) private var env
 
     // MARK: - State
 
@@ -161,7 +160,7 @@ struct FullInventoryReportView: View {
             } header: {
                 Text("Report Options")
             } footer: {
-                if !settings.isProUnlocked {
+                if !env.settings.isProUnlocked {
                     Text("Tap 'Include Photos' to upgrade to Pro and add item photos to your PDF reports.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -197,7 +196,7 @@ struct FullInventoryReportView: View {
                         Text("Total Value")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text(settings.formatCurrency(totalValue))
+                        Text(env.settings.formatCurrency(totalValue))
                             .font(.title3)
                             .fontWeight(.semibold)
                             .foregroundStyle(.blue)
@@ -220,7 +219,7 @@ struct FullInventoryReportView: View {
     // Task 4.3.1: Gate "Include Photos" to Pro with contextual paywall
     private var includePhotosToggle: some View {
         Button {
-            if settings.isProUnlocked {
+            if env.settings.isProUnlocked {
                 includePhotos.toggle()
             } else {
                 showingPhotosPaywall = true
@@ -228,10 +227,10 @@ struct FullInventoryReportView: View {
         } label: {
             HStack {
                 Toggle("Include Photos", isOn: $includePhotos)
-                    .disabled(!settings.isProUnlocked)
+                    .disabled(!env.settings.isProUnlocked)
                     .allowsHitTesting(false) // Button handles taps
 
-                if !settings.isProUnlocked {
+                if !env.settings.isProUnlocked {
                     Image(systemName: "lock.fill")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -295,11 +294,11 @@ struct FullInventoryReportView: View {
             do {
                 let options = ReportOptions(
                     grouping: selectedGrouping,
-                    includePhotos: settings.isProUnlocked && includePhotos,
+                    includePhotos: env.settings.isProUnlocked && includePhotos,
                     includeReceipts: includeReceipts
                 )
 
-                let pdfURL = try await reportService.generateFullInventoryPDF(
+                let pdfURL = try await env.reportGenerator.generateFullInventoryPDF(
                     items: allItems,
                     options: options
                 )

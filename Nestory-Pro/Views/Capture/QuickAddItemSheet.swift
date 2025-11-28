@@ -54,11 +54,8 @@ struct QuickAddItemSheet: View {
     /// The photo to attach to the new item
     let capturedImage: UIImage
 
-    /// Photo storage service for saving images to disk
-    private let photoStorage = PhotoStorageService.shared
-
-    /// Settings for currency preferences
-    private let settings = SettingsManager.shared
+    /// Dependencies from environment
+    @Environment(AppEnvironment.self) private var env
 
     // MARK: - State
 
@@ -158,7 +155,7 @@ struct QuickAddItemSheet: View {
 
         do {
             // 1. Save photo to disk via PhotoStorageService
-            let photoIdentifier = try await photoStorage.savePhoto(capturedImage)
+            let photoIdentifier = try await env.photoStorage.savePhoto(capturedImage)
 
             // 2. Create ItemPhoto model
             let itemPhoto = ItemPhoto(
@@ -171,7 +168,7 @@ struct QuickAddItemSheet: View {
             let trimmedName = itemName.trimmingCharacters(in: .whitespacesAndNewlines)
             let newItem = Item(
                 name: trimmedName,
-                currencyCode: settings.preferredCurrencyCode,
+                currencyCode: env.settings.preferredCurrencyCode,
                 room: selectedRoom
             )
 

@@ -39,7 +39,7 @@ struct ReportsTab: View {
 
     // MARK: - Dependencies
 
-    @State private var settings = SettingsManager.shared
+    @Environment(AppEnvironment.self) private var env
 
     // MARK: - State
 
@@ -120,7 +120,7 @@ struct ReportsTab: View {
                 // Total Value Stat
                 StatCard(
                     title: "Total Value",
-                    value: settings.formatCurrency(totalInventoryValue),
+                    value: env.settings.formatCurrency(totalInventoryValue),
                     icon: "dollarsign.circle.fill",
                     color: .green
                 )

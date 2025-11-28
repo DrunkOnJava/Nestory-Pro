@@ -10,10 +10,10 @@ import StoreKit
 
 /// Actor-based In-App Purchase validator using StoreKit 2
 /// Handles purchase verification, transaction listening, and Pro status updates
+/// Uses dependency injection via AppEnvironment (Task 5.2.3 complete)
 @MainActor
 @Observable
 final class IAPValidator {
-    static let shared = IAPValidator()
 
     // MARK: - Product Configuration
 

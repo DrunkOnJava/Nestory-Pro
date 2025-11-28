@@ -63,7 +63,7 @@ struct ContextualPaywallSheet: View {
     let context: PaywallContext
 
     @Environment(\.dismiss) private var dismiss
-    @State private var iapValidator = IAPValidator.shared
+    @Environment(AppEnvironment.self) private var env
     @State private var product: Product?
     @State private var isLoadingProduct = true
     @State private var showingError = false
@@ -74,7 +74,7 @@ struct ContextualPaywallSheet: View {
             ScrollView {
                 VStack(spacing: 32) {
                     // Already Pro State
-                    if iapValidator.isProUnlocked {
+                    if env.iapValidator.isProUnlocked {
                         alreadyProView
                     } else {
                         // Upgrade Required State
@@ -98,7 +98,7 @@ struct ContextualPaywallSheet: View {
             } message: {
                 Text(errorMessage)
             }
-            .onChange(of: iapValidator.isProUnlocked) { _, isUnlocked in
+            .onChange(of: env.iapValidator.isProUnlocked) { _, isUnlocked in
                 if isUnlocked {
                     dismiss()
                 }
@@ -231,7 +231,7 @@ struct ContextualPaywallSheet: View {
                     await purchasePro()
                 }
             } label: {
-                if iapValidator.isPurchasing {
+                if env.iapValidator.isPurchasing {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .tint(.white)
@@ -247,7 +247,7 @@ struct ContextualPaywallSheet: View {
             .background(Color.accentColor)
             .foregroundStyle(.white)
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .disabled(iapValidator.isPurchasing || isLoadingProduct)
+            .disabled(env.iapValidator.isPurchasing || isLoadingProduct)
             .padding(.horizontal, 24)
             .accessibilityIdentifier(AccessibilityIdentifiers.Pro.purchaseButton)
 
@@ -261,7 +261,7 @@ struct ContextualPaywallSheet: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            .disabled(iapValidator.isPurchasing)
+            .disabled(env.iapValidator.isPurchasing)
             .accessibilityIdentifier(AccessibilityIdentifiers.Pro.restorePurchasesButton)
 
             // Legal Links
@@ -288,7 +288,7 @@ struct ContextualPaywallSheet: View {
         isLoadingProduct = true
 
         do {
-            product = try await iapValidator.fetchProduct()
+            product = try await env.iapValidator.fetchProduct()
         } catch {
             errorMessage = "Failed to load product: \(error.localizedDescription)"
             showingError = true
@@ -299,7 +299,7 @@ struct ContextualPaywallSheet: View {
 
     private func purchasePro() async {
         do {
-            try await iapValidator.purchase()
+            try await env.iapValidator.purchase()
             // Success - dismiss handled by onChange
         } catch {
             errorMessage = error.localizedDescription
@@ -309,11 +309,11 @@ struct ContextualPaywallSheet: View {
 
     private func restorePurchases() async {
         do {
-            try await iapValidator.restorePurchases()
+            try await env.iapValidator.restorePurchases()
             // Success - dismiss handled by onChange if Pro unlocked
 
             // If still not Pro after restore, show message
-            if !iapValidator.isProUnlocked {
+            if !env.iapValidator.isProUnlocked {
                 errorMessage = "No previous purchases found. Please purchase Nestory Pro to unlock this feature."
                 showingError = true
             }

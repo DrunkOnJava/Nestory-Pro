@@ -381,13 +381,13 @@ When you check out a task, add an entry here:
   - Hold all services: SettingsManager, IAPValidator, PhotoStorage, OCR, etc.
   - Inject via @Environment in app root
 
-- [ ] **5.2.2** Remove SettingsManager.shared singleton
+- [x] **5.2.2** Remove SettingsManager.shared singleton ✓ 2025-11-28
   - File: `Nestory-Pro/Services/SettingsManager.swift`
   - Remove `static let shared`
   - Update all callsites to use @Environment
   - DEPENDS: 5.2.1
 
-- [ ] **5.2.3** Remove IAPValidator.shared singleton
+- [x] **5.2.3** Remove IAPValidator.shared singleton ✓ 2025-11-28
   - File: `Nestory-Pro/Services/IAPValidator.swift`
   - Remove `static let shared`
   - Update all callsites to use @Environment
@@ -556,6 +556,8 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ### November 28, 2025
 
 - [x] **5.2.1** Create AppEnvironment DI container (completed 2025-11-28)
+- [x] **5.2.2** Remove SettingsManager.shared singleton (completed 2025-11-28)
+- [x] **5.2.3** Remove IAPValidator.shared singleton (completed 2025-11-28)
 - [x] **Legacy** Move Pro status to Keychain (`KeychainManager.swift`)
 - [x] **Legacy** Add Privacy Manifest (`PrivacyInfo.xcprivacy`)
 - [x] **Legacy** Implement IAP receipt validation (`IAPValidator.swift`)
@@ -604,4 +606,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 28, 2025*
-*Task Count: 73 tasks (0 in progress, 35 completed, 38 remaining)*
+*Task Count: 73 tasks (0 in progress, 37 completed, 36 remaining)*
