@@ -145,6 +145,9 @@ struct InventoryTab: View {
                 }
             }
             .searchable(text: $searchText, prompt: "Search items...")
+            .onSubmit(of: .search) {
+                // Search text binding is automatically updated
+            }
             .sheet(isPresented: $showingAddItem) {
                 AddItemView()
             }
@@ -206,6 +209,7 @@ struct InventoryTab: View {
                                 selectedFilter = filter
                             }
                         }
+                        .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.filterChip)
                     }
                 }
             }
@@ -221,6 +225,7 @@ struct InventoryTab: View {
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 100)
+                .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.layoutToggle)
                 
                 Spacer()
                 
@@ -244,6 +249,7 @@ struct InventoryTab: View {
                     }
                     .foregroundStyle(.secondary)
                 }
+                .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.sortButton)
             }
         }
     }

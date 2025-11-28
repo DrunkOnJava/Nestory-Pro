@@ -32,16 +32,18 @@ struct TestFixtures {
     }
     
     // MARK: - Test Rooms
-    
+
     static func testRoom(
         name: String = "Test Room",
         iconName: String = "house",
-        sortOrder: Int = 0
+        sortOrder: Int = 0,
+        isDefault: Bool = false
     ) -> Room {
         Room(
             name: name,
             iconName: iconName,
-            sortOrder: sortOrder
+            sortOrder: sortOrder,
+            isDefault: isDefault
         )
     }
     
@@ -56,7 +58,8 @@ struct TestFixtures {
         purchaseDate: Date? = Date(),
         category: Nestory_Pro.Category? = nil,
         room: Room? = nil,
-        condition: ItemCondition = .good
+        condition: ItemCondition = .good,
+        notes: String? = nil
     ) -> Item {
         Item(
             name: name,
@@ -68,7 +71,8 @@ struct TestFixtures {
             currencyCode: "USD",
             category: category,
             room: room,
-            condition: condition
+            condition: condition,
+            notes: notes
         )
     }
     
@@ -132,10 +136,14 @@ struct TestFixtures {
     // MARK: - Test Item Photos
 
     static func testItemPhoto(
-        imageIdentifier: String? = nil
+        imageIdentifier: String? = nil,
+        sortOrder: Int = 0,
+        isPrimary: Bool = false
     ) -> ItemPhoto {
         ItemPhoto(
-            imageIdentifier: imageIdentifier ?? "test-photo-\(UUID().uuidString)"
+            imageIdentifier: imageIdentifier ?? "test-photo-\(UUID().uuidString)",
+            sortOrder: sortOrder,
+            isPrimary: isPrimary
         )
     }
     

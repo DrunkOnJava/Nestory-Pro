@@ -126,3 +126,4 @@ Temporary Items
 fastlane/.env
 fastlane/*.p8
 .codebase/
+.DS_Store

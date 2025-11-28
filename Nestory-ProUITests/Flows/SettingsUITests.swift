@@ -38,8 +38,8 @@ final class SettingsUITests: XCTestCase {
         let expectedSections = ["Appearance", "Data", "About"]
         for section in expectedSections {
             // Sections might be visible or need scrolling
-            let sectionExists = app.staticTexts[section].exists ||
-                               scrollToElement(app.staticTexts[section])
+            _ = app.staticTexts[section].exists ||
+                scrollToElement(app.staticTexts[section])
             // Don't fail if sections aren't implemented yet
         }
     }
@@ -213,9 +213,9 @@ final class SettingsUITests: XCTestCase {
 
     func testProUpgrade_CellExists() throws {
         let proCell = app.cells[AccessibilityIdentifiers.Settings.proUpgradeCell]
-        let proExists = proCell.waitForExistence(timeout: 3) ||
-                       scrollToElement(proCell) ||
-                       app.staticTexts["Upgrade to Pro"].exists
+        _ = proCell.waitForExistence(timeout: 3) ||
+            scrollToElement(proCell) ||
+            app.staticTexts["Upgrade to Pro"].exists
 
         // This test just verifies the UI element exists
         // Don't fail if not implemented
@@ -233,8 +233,8 @@ final class SettingsUITests: XCTestCase {
         aboutCell.tap()
 
         // About screen should show version info
-        let versionExists = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Version'")).count > 0 ||
-                           app.staticTexts.matching(NSPredicate(format: "label CONTAINS '1.'")).count > 0
+        _ = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Version'")).count > 0 ||
+            app.staticTexts.matching(NSPredicate(format: "label CONTAINS '1.'")).count > 0
 
         // Navigate back if possible
         if app.navigationBars.buttons.firstMatch.exists {

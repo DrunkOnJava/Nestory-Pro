@@ -74,9 +74,9 @@ final class ReportsUITests: XCTestCase {
         }
 
         // Should show preview or options
-        let previewShown = app.staticTexts["Preview"].waitForExistence(timeout: 5) ||
-                          app.buttons["Share"].waitForExistence(timeout: 5) ||
-                          app.buttons["Export"].waitForExistence(timeout: 5)
+        _ = app.staticTexts["Preview"].waitForExistence(timeout: 5) ||
+            app.buttons["Share"].waitForExistence(timeout: 5) ||
+            app.buttons["Export"].waitForExistence(timeout: 5)
 
         // Navigate back if needed
         if app.navigationBars.buttons.firstMatch.exists {
@@ -169,8 +169,8 @@ final class ReportsUITests: XCTestCase {
 
         // Look for format options
         let pdfOption = app.buttons["PDF"]
-        let formatExists = pdfOption.waitForExistence(timeout: 3) ||
-                          app.staticTexts["PDF"].exists
+        _ = pdfOption.waitForExistence(timeout: 3) ||
+            app.staticTexts["PDF"].exists
 
         // Navigate back
         if app.navigationBars.buttons.firstMatch.exists {
@@ -187,8 +187,8 @@ final class ReportsUITests: XCTestCase {
         fullInventoryCard.tap()
 
         let csvOption = app.buttons["CSV"]
-        let formatExists = csvOption.waitForExistence(timeout: 3) ||
-                          app.staticTexts["CSV"].exists
+        _ = csvOption.waitForExistence(timeout: 3) ||
+            app.staticTexts["CSV"].exists
 
         // Navigate back
         if app.navigationBars.buttons.firstMatch.exists {
@@ -201,7 +201,7 @@ final class ReportsUITests: XCTestCase {
     func testReports_ProFeaturesBadge_ShownForFreeUsers() throws {
         // This test checks if Pro features are marked appropriately
         let proBadge = app.staticTexts["Pro"]
-        let proExists = proBadge.exists || app.images["crown"].exists
+        _ = proBadge.exists || app.images["crown"].exists
 
         // Just checking UI presence, not failing if not implemented
     }

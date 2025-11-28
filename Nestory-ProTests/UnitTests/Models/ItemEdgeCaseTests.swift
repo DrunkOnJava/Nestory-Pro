@@ -156,8 +156,8 @@ final class ItemEdgeCaseTests: XCTestCase {
         // Arrange
         let item = Item(
             name: "Expired Warranty Item",
-            warrantyExpiryDate: TestFixtures.testWarrantyExpired,
-            condition: .good
+            condition: .good,
+            warrantyExpiryDate: TestFixtures.testWarrantyExpired
         )
 
         // Assert - Just validates storage, behavior is in views
@@ -325,10 +325,10 @@ final class ItemEdgeCaseTests: XCTestCase {
     // MARK: - Missing Documentation Edge Cases
 
     @MainActor
-    func testMissingDocumentation_AlwaysIncludesReceiptAndSerial() {
-        // Arrange - Even "documented" items are missing receipt and serial
+    func testMissingDocumentation_OnlyTracksCoreFourFields() {
+        // Arrange - Item with only value set (missing Photo, Room, Category)
         let item = Item(
-            name: "No Receipt or Serial",
+            name: "Partial Documentation",
             purchasePrice: Decimal(100),
             condition: .good
         )
@@ -336,9 +336,14 @@ final class ItemEdgeCaseTests: XCTestCase {
         // Act
         let missing = item.missingDocumentation
 
-        // Assert - Receipt and Serial are always tracked
-        XCTAssertTrue(missing.contains("Receipt"))
-        XCTAssertTrue(missing.contains("Serial Number"))
+        // Assert - Only the 4 core fields are tracked (Photo, Value, Room, Category)
+        // Receipt and Serial are NOT part of the core documentation score
+        XCTAssertEqual(missing.count, 3) // Missing: Photo, Room, Category (has Value)
+        XCTAssertTrue(missing.contains("Photo"))
+        XCTAssertTrue(missing.contains("Room"))
+        XCTAssertTrue(missing.contains("Category"))
+        XCTAssertFalse(missing.contains("Receipt")) // Not in core fields
+        XCTAssertFalse(missing.contains("Serial Number")) // Not in core fields
     }
 
     // MARK: - Currency Code Edge Cases

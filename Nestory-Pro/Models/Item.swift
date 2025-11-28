@@ -5,6 +5,34 @@
 //  Created by Griffin on 11/28/25.
 //
 
+// ============================================================================
+// CLAUDE CODE AGENT: CORE MODEL - READ BEFORE MODIFYING
+// ============================================================================
+// This is the central data model. Changes here affect the entire app.
+//
+// COMPLETED MODEL UPDATES (TODO.md Phase 1):
+// - Task 1.1.1: Added `notes: String?` property (distinct from conditionNotes) ✓
+//
+// DOCUMENTATION SCORE (Lines 157-164):
+// - BLOCKED pending decision on Task 1.2.1
+// - Current: 4 fields at 25% each (Photo, Value, Room, Category)
+// - Spec option: 6-field weighted (Photo 30%, Value 25%, Room 15%,
+//   Category 10%, Receipt 10%, Serial 10%)
+// - DO NOT modify until 1.2.1 decision is made
+//
+// TESTING REQUIREMENTS:
+// - All changes must update TestFixtures.swift
+// - All changes must have corresponding ItemTests.swift updates
+// - Run: xcodebuild test -only-testing:Nestory-ProTests/ItemTests
+//
+// RELATIONSHIP RULES (DO NOT CHANGE):
+// - photos: cascade delete (delete item = delete photos)
+// - receipts: nullify (delete item = unlink receipts, keep them)
+// - category/room: optional (items can exist without)
+//
+// SEE: TODO.md Phase 1 | TestFixtures.swift | ItemTests.swift
+// ============================================================================
+
 import Foundation
 import SwiftData
 
@@ -52,7 +80,11 @@ final class Item {
     
     var condition: ItemCondition
     var conditionNotes: String?
-    
+
+    /// General notes about the item (distinct from conditionNotes which describes physical state)
+    // NOTE: Task 1.1.1 - Added for user documentation of item details, warranty info, etc.
+    var notes: String?
+
     @Relationship(deleteRule: .cascade, inverse: \ItemPhoto.item)
     var photos: [ItemPhoto]
     
@@ -77,6 +109,7 @@ final class Item {
         room: Room? = nil,
         condition: ItemCondition = .good,
         conditionNotes: String? = nil,
+        notes: String? = nil,
         warrantyExpiryDate: Date? = nil,
         tags: [String] = []
     ) {
@@ -92,6 +125,7 @@ final class Item {
         self.room = room
         self.condition = condition
         self.conditionNotes = conditionNotes
+        self.notes = notes
         self.photos = []
         self.receipts = []
         self.warrantyExpiryDate = warrantyExpiryDate

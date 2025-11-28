@@ -6,11 +6,27 @@
 //
 
 import SwiftUI
+import StoreKit
+import SwiftData
+import UniformTypeIdentifiers
 
 struct SettingsTab: View {
     @State private var settings = SettingsManager.shared
     @State private var showingProPaywall = false
-    
+
+    // Export state - Task 3.4.2: Wire up BackupService export
+    @State private var isExportingJSON = false
+    @State private var isExportingCSV = false
+    @State private var exportError: Error?
+    @State private var showingExportError = false
+    @State private var exportedFileURL: URL?
+
+    // SwiftData queries for export
+    @Query private var allItems: [Item]
+    @Query private var allCategories: [Category]
+    @Query private var allRooms: [Room]
+    @Query private var allReceipts: [Receipt]
+
     var body: some View {
         NavigationStack {
             List {
@@ -39,6 +55,7 @@ struct SettingsTab: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
+                        .accessibilityIdentifier(AccessibilityIdentifiers.Settings.proUpgradeCell)
                     }
                 } header: {
                     Text("Account")
@@ -47,14 +64,47 @@ struct SettingsTab: View {
                 // Data & Sync
                 Section {
                     Toggle("Use iCloud Sync", isOn: $settings.useICloudSync)
-                    
-                    Button("Export Data") {
-                        // TODO: Export data
+                        .accessibilityIdentifier(AccessibilityIdentifiers.Settings.iCloudSyncToggle)
+
+                    // JSON Export (Free tier)
+                    Button {
+                        Task {
+                            await exportToJSON()
+                        }
+                    } label: {
+                        HStack {
+                            Text("Export to JSON")
+                            Spacer()
+                            if isExportingJSON {
+                                ProgressView()
+                            }
+                        }
                     }
-                    
+                    .disabled(isExportingJSON || isExportingCSV)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.exportDataButton)
+
+                    // CSV Export (Pro only)
+                    if settings.isProUnlocked {
+                        Button {
+                            Task {
+                                await exportToCSV()
+                            }
+                        } label: {
+                            HStack {
+                                Text("Export to CSV")
+                                Spacer()
+                                if isExportingCSV {
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .disabled(isExportingJSON || isExportingCSV)
+                    }
+
                     Button("Import Data") {
-                        // TODO: Import data
+                        // TODO: Import data (Task 3.4.3)
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.importDataButton)
                 } header: {
                     Text("Data & Sync")
                 } footer: {
@@ -68,18 +118,21 @@ struct SettingsTab: View {
                             Text(theme.rawValue).tag(theme)
                         }
                     }
-                    
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.themeSelector)
+
                     Picker("Currency", selection: $settings.preferredCurrencyCode) {
                         ForEach(SettingsManager.supportedCurrencies, id: \.code) { currency in
                             Text("\(currency.symbol) \(currency.name)").tag(currency.code)
                         }
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.currencySelector)
                 }
                 
                 // Security & Privacy
                 Section {
                     Toggle("Require Face ID / Touch ID", isOn: $settings.requiresBiometrics)
-                    
+                        .accessibilityIdentifier(AccessibilityIdentifiers.Settings.appLockToggle)
+
                     if settings.requiresBiometrics {
                         Toggle("Lock After Inactivity", isOn: $settings.lockAfterInactivity)
                     }
@@ -92,9 +145,11 @@ struct SettingsTab: View {
                 // Notifications
                 Section {
                     Toggle("Documentation Reminders", isOn: $settings.enableDocumentationReminders)
-                    
+                        .accessibilityIdentifier(AccessibilityIdentifiers.Settings.notificationsToggle)
+
                     if settings.enableDocumentationReminders {
                         Toggle("Weekly Summary", isOn: $settings.weeklyReminderEnabled)
+                            .accessibilityIdentifier(AccessibilityIdentifiers.Settings.weeklyReminderToggle)
                     }
                 } header: {
                     Text("Notifications")
@@ -110,14 +165,14 @@ struct SettingsTab: View {
                         Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
                             .foregroundStyle(.secondary)
                     }
-                    
+
                     HStack {
                         Text("Build")
                         Spacer()
                         Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
                             .foregroundStyle(.secondary)
                     }
-                    
+
                     Link(destination: URL(string: "https://nestory.app/terms")!) {
                         HStack {
                             Text("Terms of Service")
@@ -127,7 +182,8 @@ struct SettingsTab: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
+
                     Link(destination: URL(string: "https://nestory.app/privacy")!) {
                         HStack {
                             Text("Privacy Policy")
@@ -137,7 +193,8 @@ struct SettingsTab: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
+
                     Link(destination: URL(string: "mailto:support@nestory.app")!) {
                         HStack {
                             Text("Contact Support")
@@ -147,20 +204,135 @@ struct SettingsTab: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
                 }
             }
             .navigationTitle("Settings")
             .sheet(isPresented: $showingProPaywall) {
                 ProPaywallView()
             }
+            .fileExporter(
+                isPresented: Binding(
+                    get: { exportedFileURL != nil },
+                    set: { if !$0 { exportedFileURL = nil } }
+                ),
+                document: exportedFileURL.map { ExportedFile(fileURL: $0) },
+                contentType: exportedFileURL?.pathExtension == "csv" ? .commaSeparatedText : .json,
+                defaultFilename: exportedFileURL?.lastPathComponent ?? "nestory-backup.json"
+            ) { result in
+                handleExportResult(result)
+            }
+            .alert("Export Failed", isPresented: $showingExportError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                if let error = exportError {
+                    Text(error.localizedDescription)
+                } else {
+                    Text("An unknown error occurred during export.")
+                }
+            }
         }
+    }
+
+    // MARK: - Export Actions
+
+    /// Export all data to JSON format
+    @MainActor
+    private func exportToJSON() async {
+        isExportingJSON = true
+        defer { isExportingJSON = false }
+
+        do {
+            let fileURL = try await BackupService.shared.exportToJSON(
+                items: allItems,
+                categories: allCategories,
+                rooms: allRooms,
+                receipts: allReceipts
+            )
+            exportedFileURL = fileURL
+        } catch {
+            exportError = error
+            showingExportError = true
+        }
+    }
+
+    /// Export items to CSV format (Pro only)
+    @MainActor
+    private func exportToCSV() async {
+        guard settings.isProUnlocked else {
+            exportError = NSError(
+                domain: "com.drunkonjava.nestory",
+                code: 403,
+                userInfo: [NSLocalizedDescriptionKey: "CSV export requires Nestory Pro"]
+            )
+            showingExportError = true
+            return
+        }
+
+        isExportingCSV = true
+        defer { isExportingCSV = false }
+
+        do {
+            let fileURL = try await BackupService.shared.exportToCSV(items: allItems)
+            exportedFileURL = fileURL
+        } catch {
+            exportError = error
+            showingExportError = true
+        }
+    }
+
+    /// Handle export file sharing result
+    private func handleExportResult(_ result: Result<URL, Error>) {
+        switch result {
+        case .success:
+            // File saved successfully - cleanup temp file if needed
+            if let url = exportedFileURL {
+                try? FileManager.default.removeItem(at: url)
+            }
+        case .failure(let error):
+            exportError = error
+            showingExportError = true
+        }
+        exportedFileURL = nil
+    }
+}
+
+// MARK: - Exported File Document
+
+/// File document wrapper for exported files
+struct ExportedFile: FileDocument {
+    static var readableContentTypes: [UTType] { [.json, .commaSeparatedText] }
+
+    var fileURL: URL
+
+    init(fileURL: URL) {
+        self.fileURL = fileURL
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        // Create temp file
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try data.write(to: tempURL)
+        self.fileURL = tempURL
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        return try FileWrapper(url: fileURL, options: .immediate)
     }
 }
 
 // MARK: - Pro Paywall
 struct ProPaywallView: View {
     @Environment(\.dismiss) private var dismiss
-    
+    @State private var iapValidator = IAPValidator.shared
+    @State private var product: Product?
+    @State private var isLoadingProduct = true
+    @State private var showingError = false
+    @State private var errorMessage = ""
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -217,34 +389,62 @@ struct ProPaywallView: View {
                     
                     // Price
                     VStack(spacing: 8) {
-                        Text("$19.99")
-                            .font(.system(size: 48, weight: .bold))
-                        
-                        Text("One-time payment")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        if isLoadingProduct {
+                            ProgressView()
+                                .frame(height: 60)
+                        } else if let product = product {
+                            Text(product.displayPrice)
+                                .font(.system(size: 48, weight: .bold))
+
+                            Text("One-time payment")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("$19.99")
+                                .font(.system(size: 48, weight: .bold))
+
+                            Text("One-time payment")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                     .padding(.top, 20)
                     
                     // Purchase Button
                     Button(action: {
-                        // TODO: Implement StoreKit 2 purchase
+                        Task {
+                            await purchasePro()
+                        }
                     }) {
-                        Text("Unlock Nestory Pro")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.accentColor)
-                            .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        if iapValidator.isPurchasing {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .tint(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                        } else {
+                            Text("Unlock Nestory Pro")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                        }
                     }
+                    .background(Color.accentColor)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .disabled(iapValidator.isPurchasing || isLoadingProduct)
                     .padding(.horizontal, 24)
-                    
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Pro.purchaseButton)
+
                     Button("Restore Purchases") {
-                        // TODO: Restore purchases
+                        Task {
+                            await restorePurchases()
+                        }
                     }
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .disabled(iapValidator.isPurchasing)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Pro.restorePurchasesButton)
                     
                     Text("Free tier includes up to 100 items with all core features.")
                         .font(.caption)
@@ -258,8 +458,57 @@ struct ProPaywallView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
+                        .accessibilityIdentifier(AccessibilityIdentifiers.Pro.closeButton)
                 }
             }
+            .task {
+                await loadProduct()
+            }
+            .alert("Error", isPresented: $showingError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(errorMessage)
+            }
+            .onChange(of: iapValidator.isProUnlocked) { _, isUnlocked in
+                if isUnlocked {
+                    dismiss()
+                }
+            }
+        }
+    }
+
+    // MARK: - Actions
+
+    private func loadProduct() async {
+        isLoadingProduct = true
+
+        do {
+            product = try await iapValidator.fetchProduct()
+        } catch {
+            errorMessage = "Failed to load product: \(error.localizedDescription)"
+            showingError = true
+        }
+
+        isLoadingProduct = false
+    }
+
+    private func purchasePro() async {
+        do {
+            try await iapValidator.purchase()
+            // Success - dismiss handled by onChange
+        } catch {
+            errorMessage = error.localizedDescription
+            showingError = true
+        }
+    }
+
+    private func restorePurchases() async {
+        do {
+            try await iapValidator.restorePurchases()
+            // Success - dismiss handled by onChange
+        } catch {
+            errorMessage = error.localizedDescription
+            showingError = true
         }
     }
 }

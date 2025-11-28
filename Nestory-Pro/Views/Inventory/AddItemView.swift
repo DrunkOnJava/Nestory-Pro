@@ -5,10 +5,37 @@
 //  Created by Griffin on 11/28/25.
 //
 
+// ============================================================================
+// CLAUDE CODE AGENT: MONETIZATION ENFORCEMENT NEEDED - SEE TODO.md Phase 4
+// ============================================================================
+// CRITICAL: This view is missing 100-item limit enforcement!
+//
+// TASK 4.1.1 REQUIRED:
+// Before saving an item, check:
+//   if items.count >= settings.maxFreeItems && !settings.isProUnlocked {
+//       // Show ContextualPaywallSheet with .itemLimit context
+//       // DO NOT save the item until user upgrades or dismisses
+//   }
+//
+// ADDITIONAL TASKS:
+// - Task 5.1.2: Extract form state to AddItemViewModel
+// - Task 6.1.2: Pre-select default room from settings
+// - Task 7.1.x: Add accessibility labels to all form fields
+//
+// CURRENT ISSUES:
+// - Uses SettingsManager.shared (singleton, needs DI refactor)
+// - No @Query for items.count check
+// - No paywall sheet state
+//
+// SEE: TODO.md Task 4.1.1 | Services/SettingsManager.swift maxFreeItems
+// ============================================================================
+
 import SwiftUI
 import SwiftData
 
 struct AddItemView: View {
+    // TODO: Task 4.1.1 - Add @Query for item count to enforce 100-item limit
+    // TODO: Task 4.1.1 - Add @State showingPaywall for limit enforcement
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
