@@ -73,6 +73,7 @@ struct FullInventoryReportView: View {
     @State private var showingPDFPreview: Bool = false
     @State private var showingError: Bool = false
     @State private var errorMessage: String?
+    @State private var showingPhotosPaywall: Bool = false // Task 4.3.1: Paywall for photos in PDF
 
     // MARK: - Computed Properties
 
@@ -116,6 +117,9 @@ struct FullInventoryReportView: View {
                 Text(errorMessage ?? "Failed to generate PDF report. Please try again.")
             }
             .quickLookPreview($generatedPDFURL)
+            .sheet(isPresented: $showingPhotosPaywall) {
+                ProPaywallView()
+            }
         }
     }
 
@@ -157,13 +161,10 @@ struct FullInventoryReportView: View {
             } header: {
                 Text("Report Options")
             } footer: {
-                if !settings.isProUnlocked && includePhotos {
-                    Label(
-                        "Photo inclusion requires Pro. Upgrade in Settings.",
-                        systemImage: "info.circle"
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if !settings.isProUnlocked {
+                    Text("Tap 'Include Photos' to upgrade to Pro and add item photos to your PDF reports.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
 
@@ -216,22 +217,37 @@ struct FullInventoryReportView: View {
         .pickerStyle(.segmented)
     }
 
+    // Task 4.3.1: Gate "Include Photos" to Pro with contextual paywall
     private var includePhotosToggle: some View {
-        HStack {
-            Toggle("Include Photos", isOn: $includePhotos)
-                .disabled(!settings.isProUnlocked)
+        Button {
+            if settings.isProUnlocked {
+                includePhotos.toggle()
+            } else {
+                showingPhotosPaywall = true
+            }
+        } label: {
+            HStack {
+                Toggle("Include Photos", isOn: $includePhotos)
+                    .disabled(!settings.isProUnlocked)
+                    .allowsHitTesting(false) // Button handles taps
 
-            if !settings.isProUnlocked {
-                Image(systemName: "lock.fill")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if !settings.isProUnlocked {
+                    Image(systemName: "lock.fill")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    Text("Pro")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.orange)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.orange.opacity(0.15))
+                        .clipShape(Capsule())
+                }
             }
         }
-        .onChange(of: includePhotos) { _, newValue in
-            if newValue && !settings.isProUnlocked {
-                includePhotos = false
-            }
-        }
+        .buttonStyle(.plain)
     }
 
     private var includeReceiptsToggle: some View {
