@@ -12,6 +12,7 @@ import SwiftUI
 // MARK: - Preview Device Configuration
 
 extension PreviewDevice {
+    static let iPhone17ProMax = PreviewDevice(rawValue: "iPhone 17 Pro Max")
     static let iPhone15Pro = PreviewDevice(rawValue: "iPhone 15 Pro")
     static let iPhone15ProMax = PreviewDevice(rawValue: "iPhone 15 Pro Max")
     static let iPhoneSE = PreviewDevice(rawValue: "iPhone SE (3rd generation)")
@@ -22,7 +23,9 @@ extension PreviewDevice {
 
 /// Common preview configurations
 enum PreviewConfig {
-    /// Standard device names for previews
+    /// Standard device names for previews (always use iPhone 17 Pro Max as primary)
+    static let defaultDevice = "iPhone 17 Pro Max"
+    static let iPhone17ProMax = "iPhone 17 Pro Max"
     static let iPhoneSE = "iPhone SE (3rd generation)"
     static let iPhone15Pro = "iPhone 15 Pro"
     static let iPhone15ProMax = "iPhone 15 Pro Max"
