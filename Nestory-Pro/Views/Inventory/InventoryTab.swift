@@ -38,13 +38,19 @@ enum ItemSort: String, CaseIterable {
 enum ViewMode: String, CaseIterable {
     case list = "List"
     case grid = "Grid"
-    
+
     var iconName: String {
         switch self {
         case .list: return "list.bullet"
         case .grid: return "square.grid.2x2"
         }
     }
+}
+
+enum ItemLimitWarningLevel {
+    case none
+    case approaching
+    case limitReached
 }
 
 struct InventoryTab: View {
@@ -58,7 +64,9 @@ struct InventoryTab: View {
     @State private var viewMode: ViewMode = .list
     @State private var showingAddItem = false
     @State private var showingDocumentationInfo = false
-    
+    @State private var showingProPaywall = false
+    @State private var itemLimitBannerDismissed = false
+
     private let settings = SettingsManager.shared
     
     private var filteredItems: [Item] {
@@ -117,17 +125,38 @@ struct InventoryTab: View {
     private var uniqueRoomCount: Int {
         Set(items.compactMap(\.room?.id)).count
     }
-    
+
+    // MARK: - Item Limit Warning Logic (Task 4.1.2)
+
+    private var shouldShowItemLimitWarning: Bool {
+        !settings.isProUnlocked && items.count >= 80 && !itemLimitBannerDismissed
+    }
+
+    private var itemLimitWarningLevel: ItemLimitWarningLevel {
+        if items.count >= 100 {
+            return .limitReached
+        } else if items.count >= 80 {
+            return .approaching
+        } else {
+            return .none
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
                     // Summary Cards
                     summarySection
-                    
+
+                    // Item Limit Warning Banner (Task 4.1.2)
+                    if shouldShowItemLimitWarning {
+                        itemLimitWarningBanner
+                    }
+
                     // Filter & Sort
                     filterSection
-                    
+
                     // Items List/Grid
                     itemsSection
                 }
@@ -157,9 +186,76 @@ struct InventoryTab: View {
                     documentedCount: documentedCount
                 )
             }
+            .sheet(isPresented: $showingProPaywall) {
+                ProPaywallView()
+            }
         }
     }
     
+    // MARK: - Item Limit Warning Banner (Task 4.1.2)
+
+    private var itemLimitWarningBanner: some View {
+        HStack(alignment: .top, spacing: 12) {
+            // Warning icon
+            Image(systemName: itemLimitWarningLevel == .limitReached ? "exclamationmark.triangle.fill" : "info.circle.fill")
+                .font(.title3)
+                .foregroundStyle(itemLimitWarningLevel == .limitReached ? .red : .orange)
+
+            // Message
+            VStack(alignment: .leading, spacing: 8) {
+                Text(itemLimitWarningLevel == .limitReached ? "Item Limit Reached" : "Approaching Item Limit")
+                    .font(.headline)
+                    .foregroundStyle(itemLimitWarningLevel == .limitReached ? .red : .orange)
+
+                Text(itemLimitWarningLevel == .limitReached
+                     ? "You've reached the 100-item limit for free users. Upgrade to Pro for unlimited items."
+                     : "You've used \(items.count) of 100 free items. Upgrade to Pro for unlimited storage.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                // Upgrade button
+                Button(action: { showingProPaywall = true }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                        Text("Upgrade to Pro")
+                    }
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(itemLimitWarningLevel == .limitReached ? Color.red : Color.orange)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .padding(.top, 4)
+            }
+
+            Spacer()
+
+            // Dismiss button
+            Button(action: {
+                withAnimation {
+                    itemLimitBannerDismissed = true
+                }
+            }) {
+                Image(systemName: "xmark")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+            }
+            .accessibilityLabel("Dismiss warning")
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(itemLimitWarningLevel == .limitReached
+                      ? Color.red.opacity(0.1)
+                      : Color.orange.opacity(0.1))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(itemLimitWarningLevel == .limitReached ? Color.red : Color.orange, lineWidth: 1)
+        )
+    }
+
     // MARK: - Summary Section
     private var summarySection: some View {
         ScrollView(.horizontal, showsIndicators: false) {
