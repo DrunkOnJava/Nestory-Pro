@@ -64,7 +64,7 @@ When you check out a task, add an entry here:
 
 | Task ID | Agent ID | Checkout Time | Notes |
 |---------|----------|---------------|-------|
-| _none_  | -        | -             | All tasks available |
+| 5.2.1   | warp-28nov | 2025-11-28 23:13 | Creating AppEnvironment DI container |
 
 ---
 
@@ -376,7 +376,7 @@ When you check out a task, add an entry here:
 
 ### 5.2 Dependency Injection
 
-- [ ] **5.2.1** Create AppEnvironment container
+- [~] **5.2.1** [AGENT-warp-28nov] Create AppEnvironment container
   - File: `Nestory-Pro/AppEnvironment.swift` (create)
   - Hold all services: SettingsManager, IAPValidator, PhotoStorage, OCR, etc.
   - Inject via @Environment in app root

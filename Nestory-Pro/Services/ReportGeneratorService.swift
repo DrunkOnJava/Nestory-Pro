@@ -57,8 +57,12 @@ actor ReportGeneratorService {
 
     // MARK: - Initialization
 
-    private init(photoStorage: PhotoStorageService = .shared) {
-        self.photoStorage = photoStorage
+    private init() {
+        self.photoStorage = PhotoStorageService.shared
+    }
+    
+    nonisolated static func createInstance() -> ReportGeneratorService {
+        return ReportGeneratorService()
     }
 
     // MARK: - Public API

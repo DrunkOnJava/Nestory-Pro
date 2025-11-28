@@ -50,15 +50,17 @@ actor BackupService {
     ) async throws -> URL {
         logger.info("Starting JSON export: \(items.count) items, \(categories.count) categories, \(rooms.count) rooms, \(receipts.count) receipts")
 
-        // Build export data structure
-        let exportData = BackupData(
-            exportDate: ISO8601DateFormatter().string(from: Date()),
-            appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
-            items: items.map { ItemExport(from: $0) },
-            categories: categories.map { CategoryExport(from: $0) },
-            rooms: rooms.map { RoomExport(from: $0) },
-            receipts: receipts.map { ReceiptExport(from: $0) }
-        )
+        // Build export data structure on MainActor since models are @MainActor
+        let exportData = await MainActor.run {
+            BackupData(
+                exportDate: ISO8601DateFormatter().string(from: Date()),
+                appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
+                items: items.map { ItemExport(from: $0) },
+                categories: categories.map { CategoryExport(from: $0) },
+                rooms: rooms.map { RoomExport(from: $0) },
+                receipts: receipts.map { ReceiptExport(from: $0) }
+            )
+        }
 
         // Encode to JSON
         let encoder = JSONEncoder()

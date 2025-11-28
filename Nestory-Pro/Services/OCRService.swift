@@ -32,8 +32,12 @@ actor OCRService: OCRServiceProtocol {
 
     // MARK: - Initialization
 
-    private init(photoStorage: PhotoStorageService = .shared) {
-        self.photoStorage = photoStorage
+    private init() {
+        self.photoStorage = PhotoStorageService.shared
+    }
+    
+    nonisolated static func createInstance() -> OCRService {
+        return OCRService()
     }
 
     // MARK: - OCRServiceProtocol Implementation
@@ -64,14 +68,17 @@ actor OCRService: OCRServiceProtocol {
 
         logger.info("Receipt parsed: vendor=\(vendor ?? "nil"), total=\(String(describing: total)), tax=\(String(describing: tax))")
 
-        return ReceiptData(
-            vendor: vendor,
-            total: total,
-            taxAmount: tax,
-            purchaseDate: date,
-            rawText: rawText,
-            confidence: confidence
-        )
+        // Create ReceiptData on MainActor since Receipt model is @MainActor
+        return await MainActor.run {
+            ReceiptData(
+                vendor: vendor,
+                total: total,
+                taxAmount: tax,
+                purchaseDate: date,
+                rawText: rawText,
+                confidence: confidence
+            )
+        }
     }
 
     // MARK: - Core OCR Engine

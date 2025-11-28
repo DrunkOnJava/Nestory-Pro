@@ -66,7 +66,7 @@ actor PhotoStorageService: PhotoStorageProtocol {
         }
 
         // Ensure directory exists
-        try await createPhotosDirectoryIfNeeded()
+        try createPhotosDirectoryIfNeeded()
 
         // Get file URL
         let fileURL = try getPhotoURL(for: identifier)
@@ -161,7 +161,9 @@ actor PhotoStorageService: PhotoStorageProtocol {
             return 0
         }
 
-        for case let fileURL as URL in enumerator {
+        // Process files synchronously (FileManager.DirectoryEnumerator is not async)
+        let allURLs = enumerator.allObjects.compactMap { $0 as? URL }
+        for fileURL in allURLs {
             do {
                 let resourceValues = try fileURL.resourceValues(forKeys: [.fileSizeKey])
                 totalSize += Int64(resourceValues.fileSize ?? 0)
