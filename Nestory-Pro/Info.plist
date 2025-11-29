@@ -10,5 +10,7 @@
 	<string>Nestory Pro needs camera access to take photos of your items for documentation and insurance records.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Nestory Pro needs photo library access to select photos of your items for documentation and insurance records.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Nestory Pro uses Face ID to protect your inventory data when app lock is enabled.</string>
 </dict>
 </plist>

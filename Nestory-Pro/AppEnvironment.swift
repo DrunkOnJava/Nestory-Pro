@@ -51,6 +51,9 @@ final class AppEnvironment {
     /// Data backup/restore (actor-isolated)
     nonisolated let backupService: BackupService
     
+    /// Biometric authentication and app lock
+    let appLockService: AppLockService
+    
     // MARK: - ViewModels
     
     /// Inventory tab view model
@@ -79,7 +82,8 @@ final class AppEnvironment {
         photoStorage: PhotoStorageService? = nil,
         ocrService: OCRService? = nil,
         reportGenerator: ReportGeneratorService? = nil,
-        backupService: BackupService? = nil
+        backupService: BackupService? = nil,
+        appLockService: AppLockService? = nil
     ) {
         // Use provided services or create defaults
         self.settings = settings ?? SettingsManager()
@@ -88,6 +92,7 @@ final class AppEnvironment {
         self.ocrService = ocrService ?? OCRService.shared
         self.reportGenerator = reportGenerator ?? ReportGeneratorService.shared
         self.backupService = backupService ?? BackupService.shared
+        self.appLockService = appLockService ?? AppLockService()
         
         // Initialize ViewModels with service dependencies
         self.inventoryViewModel = InventoryTabViewModel(settings: self.settings)
@@ -118,7 +123,8 @@ final class AppEnvironment {
             photoStorage: PhotoStorageService.shared,
             ocrService: OCRService.shared,
             reportGenerator: ReportGeneratorService.shared,
-            backupService: BackupService.shared
+            backupService: BackupService.shared,
+            appLockService: AppLockService()
         )
     }
     #endif
