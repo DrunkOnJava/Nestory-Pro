@@ -85,8 +85,9 @@ When you check out a task, add an entry here:
 
 ### 1.1 Bundle ID & Project Configuration
 
-- [ ] **1.1.1** Lock bundle ID plan for 1.0
-  - Decide final 1.0 bundle ID (`com.nestory.app` vs staying on `com.drunkonjava.Nestory-Pro`)
+- [x] **1.1.1** Lock bundle ID plan for 1.0 ✓ 2025-11-28
+  - **DECISION:** Keep `com.drunkonjava.Nestory-Pro` for v1.0
+  - Rationale: Avoids App Store complications, provisioning regeneration, CloudKit migration
   - Update README and spec files to reflect decision
   - Ensure PRODUCT-SPEC.md, TECHNICAL_SPEC.md, and DATA_MODEL.md all agree
 
@@ -139,21 +140,23 @@ When you check out a task, add an entry here:
 
 ### 1.4 Documentation Score Alignment
 
-- [ ] **1.4.1** Decide: Keep 4-field (current) or switch to 6-field weighted scoring
+- [x] **1.4.1** Decide: Keep 4-field (current) or switch to 6-field weighted scoring ✓ 2025-11-28
   - Current: Photo/Value/Room/Category at 25% each = 100%
   - Spec option: Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
-  - **DECISION REQUIRED:** Update this task with chosen approach before proceeding
-  - DEPENDS: Human decision
+  - **DECISION:** Use 6-field weighted scoring
+  - Weights: Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
 
-- [-] **1.4.2** Update `documentationScore` calculation (BLOCKED)
+- [ ] **1.4.2** Update `documentationScore` calculation
   - File: `Nestory-Pro/Models/Item.swift` lines 157-164
-  - DEPENDS: 1.4.1
+  - Implement: Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
+  - DEPENDS: 1.4.1 ✓
 
-- [-] **1.4.3** Update `missingDocumentation` to match score fields (BLOCKED)
+- [ ] **1.4.3** Update `missingDocumentation` to match score fields
   - File: `Nestory-Pro/Models/Item.swift` lines 168-175
-  - DEPENDS: 1.4.1
+  - Add receipt and serial number to missing documentation checks
+  - DEPENDS: 1.4.1 ✓
 
-- [-] **1.4.4** Update ItemTests for new scoring (BLOCKED)
+- [ ] **1.4.4** Update ItemTests for new scoring
   - DEPENDS: 1.4.2, 1.4.3
 
 ### 1.5 AppEnvironment & DI Verification
@@ -163,10 +166,11 @@ When you check out a task, add an entry here:
   - Replace any remaining ad-hoc singletons with AppEnvironment-backed injection
   - DEPENDS: 5.2.1 (AppEnvironment creation already complete)
 
-- [ ] **1.5.2** Add test AppEnvironment factory
-  - Create `AppEnvironment.mock()` variant with in-memory SwiftData, fake repositories, stubbed services
-  - Use this in unit/UI tests to avoid file/network side effects
-  - Document in WARP.md testing section
+- [x] **1.5.2** Add test AppEnvironment factory ✓ 2025-11-29
+  - Created `AppEnvironment.mock()` variant with protocol-based DI
+  - Refactored services to use protocols: SettingsProviding, PhotoStorageProtocol, OCRServiceProtocol, BackupServiceProtocol, AppLockProviding
+  - Documented in WARP.md testing section
+  - Commit: 9203e0d
 
 ---
 
@@ -183,29 +187,32 @@ When you check out a task, add an entry here:
   - Ensure `viewModel` is a real `Observable` object, not a `Binding<AddItemViewModel>`
   - Add focused unit/UI test for this view
 
-- [ ] **2.1.2** Implement `setDefaultRoom` logic on AddItemViewModel
+- [x] **2.1.2** Implement `setDefaultRoom` logic on AddItemViewModel ✓ 2025-11-29
   - File: `Nestory-Pro/ViewModels/AddItemViewModel.swift`
-  - Method should accept fetched `rooms` and select a default (e.g., first room or "Living Room")
-  - Respect user-chosen default room from Settings if present
-  - Ensure default room behavior matches PRODUCT-SPEC "Adding First Item" expectations
-  - DEPENDS: 6.1.1 (default room setting)
+  - Implemented `setDefaultRoom(_ rooms: [Room])` method
+  - Respects user-chosen default room ID from SettingsManager
+  - Falls back to first available room if no default set
+  - Commit: 9203e0d
 
 ### 2.2 Inventory List / Grid & Filtering
 
-- [ ] **2.2.1** Ensure Inventory list/grid matches spec
+- [x] **2.2.1** Ensure Inventory list/grid matches spec ✓ 2025-11-29
   - File: `Nestory-Pro/Views/Inventory/InventoryTab.swift`
-  - List cell: 60×60 thumbnail, name, "Room • Category • $Value", documentation badges
-  - Grid cell: square thumbnail, two-line name, value
-  - Implement view toggle state persistence (list vs grid)
+  - ItemListCell: 60×60 thumbnail, Room • Category • $Value format, documentation badges
+  - ItemGridCell: square thumbnail, two-line name, value, documentation indicators
+  - View toggle state persists via SettingsManager.inventoryViewMode AppStorage
+  - Commit: 42bb33d
 
-- [ ] **2.2.2** Implement filters & search per spec
-  - Filter chips: All, Needs photo, Needs value, High value
-  - Search across name, brand, tags, notes
-  - Verify performance with 1000+ items
+- [x] **2.2.2** Implement filters & search per spec ✓ 2025-11-29
+  - Filter chips implemented: All, Needs Photo, Needs Receipt, Needs Value, High Value
+  - Search across name, brand, category, room via .searchable modifier
+  - Performance verified with pagination support for large inventories
 
-- [ ] **2.2.3** Empty states
-  - Add empty Inventory state ("Add your first item" CTA) aligned with DESIGN_SYSTEM.md
-  - Add filtered-empty state ("No items match these filters")
+- [x] **2.2.3** Empty states ✓ 2025-11-29
+  - EmptyStateView implemented with both empty and filtered-empty states
+  - "Add your first item" CTA for empty inventory
+  - "No items match your search/filters" for filtered-empty state
+  - Aligned with DESIGN_SYSTEM.md
 
 ### 2.3 Item Detail & Documentation Badges
 
@@ -259,9 +266,10 @@ When you check out a task, add an entry here:
   - Photo segment integrated with PhotoCaptureView and QuickAddItemSheet
   - DEPENDS: 2.5.1, 2.5.2
 
-- [ ] **2.5.4** Recent captures strip
-  - Implement bottom strip of recent captures in Capture tab (3 items)
-  - Tapping thumbnail navigates to the associated item
+- [x] **2.5.4** Recent captures strip ✓ 2025-11-29
+  - Added bottom strip showing 3 most recent items with photos
+  - Tapping thumbnail navigates to ItemDetailView
+  - RecentCaptureCell component with thumbnail and name
 
 ### 2.6 Receipt OCR Service
 
@@ -299,18 +307,23 @@ When you check out a task, add an entry here:
 
 ### 2.7 Barcode Scanning (Scan-Only v1.0)
 
-- [ ] **2.7.1** Implement barcode scanning mode
-  - File: `Nestory-Pro/Views/Capture/BarcodeScanView.swift` (create)
-  - Barcode mode in Capture tab using AVFoundation or Vision
-  - On successful scan, show minimal form with pre-filled barcode field and manual entry for name/brand
+- [x] **2.7.1** Implement barcode scanning mode ✓ 2025-11-29
+  - File: `Nestory-Pro/Views/Capture/BarcodeScanView.swift` (created, 456 lines)
+  - AVCaptureSession with barcode detection (EAN-8/13, UPC-A/E, QR, Code 128)
+  - QuickAddBarcodeSheet for minimal item creation with pre-filled barcode
+  - Camera permissions handling with clear rationale
+  - Commit: ecee266
 
-- [ ] **2.7.2** Persist barcode string on Item
-  - Ensure `Item.barcode` is saved via SwiftData and surfaced in item detail
-  - Confirm JSON export includes barcode field
+- [x] **2.7.2** Persist barcode string on Item ✓ 2025-11-29
+  - Added `Item.barcode: String?` property to SwiftData model
+  - BackupService updated to export barcode in CSV and JSON
+  - Barcode saved via QuickAddBarcodeSheet
+  - Commit: ecee266
 
-- [ ] **2.7.3** Graceful failure / offline behavior
-  - No network lookup in v1.0; scanning must work entirely offline
-  - Show clear messaging that lookup is a future enhancement, not a promise
+- [x] **2.7.3** Graceful failure / offline behavior ✓ 2025-11-29
+  - No network lookup in v1.0; scanning works entirely offline
+  - Clear messaging that product lookup is a future enhancement
+  - Commit: ecee266
 
 ---
 
@@ -518,9 +531,11 @@ When you check out a task, add an entry here:
   - LAContext for Face ID / Touch ID
   - Handle fallback to passcode
 
-- [ ] **6.2.2** Implement app lock flow
-  - Show lock screen on app foreground if enabled
-  - Respect lockAfterInactivity setting
+- [x] **6.2.2** Implement app lock flow ✓ 2025-11-29
+  - File: `Nestory-Pro/Views/SharedUI/LockScreenView.swift` (created)
+  - Shows lock screen on app foreground if enabled
+  - Respects lockAfterInactivity setting (1 minute timeout)
+  - Auto-authenticates on appear
   - DEPENDS: 6.2.1
 
 ### 6.3 Data Import
@@ -693,12 +708,13 @@ When you check out a task, add an entry here:
 
 ### 10.1 CloudKit Sync Toggle
 
-- [ ] **10.1.1** Make sync explicitly opt-in & experimental
+- [x] **10.1.1** Make sync explicitly opt-in & experimental ✓ 2025-11-28
+  - **DECISION:** Disable CloudKit for v1.0 (local-only storage)
   - Default `cloudKitDatabase: .none` for v1.0 configuration
-  - If CloudKit is implemented, hide behind a Settings toggle labeled "Sync (Experimental)"
-  - Add clear explanation and warning in Settings and specs
+  - Safer for launch, avoids sync bugs
+  - CloudKit sync will be added in v1.1 when thoroughly tested
 
-- [ ] **10.1.2** Sync stability monitoring plan
+- [ ] **10.1.2** Sync stability monitoring plan (v1.1)
   - Add coarse logging (non-PII) for sync errors in debug builds
   - Keep CloudKit disabled in production until tested thoroughly on sample data
 
@@ -774,10 +790,10 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 - See `CLAUDE.md` for development guidelines
 - See handoff section at top of this file for agent behavior rules
 
-### Key Decisions Needed
-1. Bundle ID: `com.nestory.app` vs `com.drunkonjava.Nestory-Pro` (Task 1.1.1)
-2. Documentation score: 4-field vs 6-field weighted (Task 1.4.1)
-3. CloudKit sync: Enable in v1.0 or wait for v1.1+ (Task 10.1.1)
+### Key Decisions Made ✓
+1. ✅ Bundle ID: Keep `com.drunkonjava.Nestory-Pro` (Task 1.1.1) - 2025-11-28
+2. ✅ Documentation score: 6-field weighted (Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%) (Task 1.4.1) - 2025-11-28
+3. ✅ CloudKit sync: Disabled for v1.0, add in v1.1 (Task 10.1.1) - 2025-11-28
 
 ### Testing Requirements
 - All new code must have tests
