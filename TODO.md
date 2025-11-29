@@ -136,9 +136,13 @@ When you check out a task, add an entry here:
   - Added `NestoryModelContainer` factory for production/testing containers
   - Updated Nestory_ProApp to use versioned schema + disabled CloudKit (Task 10.1.1)
 
-- [ ] **1.3.3** DataModel test harness
-  - Add unit tests to confirm model invariants (non-optional fields, default values)
-  - Test creating hundreds of `Item` records with relationships (Item ↔ ItemPhoto / Receipts / Room / Category)
+- [x] **1.3.3** DataModel test harness ✓ 2025-11-29
+  - Created `DataModelHarnessTests.swift` with 22 comprehensive tests
+  - Tests model invariants: default values, non-optional fields, validation errors
+  - Tests bulk operations: 500 items with relationships (0.35s)
+  - Tests relationship integrity at scale for Category and Room
+  - Tests documentation score calculation at scale
+  - Tests UUID uniqueness across all model types
 
 ### 1.4 Documentation Score Alignment
 
