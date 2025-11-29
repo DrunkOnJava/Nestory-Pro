@@ -9,6 +9,7 @@ import SwiftUI
 import StoreKit
 import SwiftData
 import UniformTypeIdentifiers
+import TipKit
 
 struct SettingsTab: View {
     @Environment(AppEnvironment.self) private var env
@@ -81,6 +82,21 @@ struct SettingsTab: View {
                         .accessibilityLabel("iCloud Sync")
                         .accessibilityValue(settings.useICloudSync ? "Enabled" : "Disabled")
                         .accessibilityHint("Double tap to toggle iCloud synchronization")
+                        .onChange(of: settings.useICloudSync) { _, newValue in
+                            // Show iCloud tip when enabled (Task 8.3.2)
+                            if newValue {
+                                iCloudSyncTip.iCloudSyncJustEnabled = true
+                                // Auto-hide after 5 seconds
+                                Task {
+                                    try? await Task.sleep(for: .seconds(5))
+                                    iCloudSyncTip.iCloudSyncJustEnabled = false
+                                }
+                            }
+                        }
+                    
+                    // iCloud Sync Tip (Task 8.3.2)
+                    TipView(iCloudSyncTip())
+                        .tipBackground(Color(.secondarySystemGroupedBackground))
 
                     // JSON Export (Free tier)
                     Button {

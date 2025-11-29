@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import TipKit
 
 enum ItemFilter: String, CaseIterable {
     case all = "All Items"
@@ -113,10 +114,19 @@ struct InventoryTab: View {
 
     var body: some View {
         @Bindable var vm = viewModel
+        let documentationScoreTip = DocumentationScoreTip()
         
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
+                    // Documentation score tip (Task 8.3.1)
+                    TipView(documentationScoreTip) { action in
+                        if action.id == "learn-more" {
+                            viewModel.showDocumentationInfo()
+                        }
+                    }
+                    .tipBackground(Color(.secondarySystemGroupedBackground))
+                    
                     // Summary Cards
                     summarySection
 
@@ -159,6 +169,11 @@ struct InventoryTab: View {
             }
             .sheet(isPresented: $vm.showingProPaywall) {
                 ProPaywallView()
+            }
+            .onAppear {
+                // Update tip parameter based on documentation score
+                let score = viewModel.calculateDocumentationScore(items)
+                DocumentationScoreTip.documentationScoreIsLow = score < 70
             }
         }
     }

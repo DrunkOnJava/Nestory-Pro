@@ -666,17 +666,20 @@ When you check out a task, add an entry here:
 
 ### 8.3 TipKit Integration
 
-- [ ] **8.3.1** Create documentation score tip
-  - Show on first visit to inventory with score < 70%
-  - Explain what documentation means
+- [x] **8.3.1** Create documentation score tip ✓ 2025-11-29
+  - File: `Nestory-Pro/Views/SharedUI/Tips.swift`
+  - Shows on inventory tab when documentation score < 70%
+  - Explains what documentation means and links to info sheet
 
-- [ ] **8.3.2** Create iCloud sync tip
-  - Show when user enables iCloud
-  - Explain what syncs and when
+- [x] **8.3.2** Create iCloud sync tip ✓ 2025-11-29
+  - File: `Nestory-Pro/Views/SharedUI/Tips.swift`
+  - Shows when user enables iCloud in Settings
+  - Explains what syncs and auto-dismisses
 
-- [ ] **8.3.3** Create Pro features tip
-  - Show when user hits a limit
-  - Highlight key Pro benefits
+- [x] **8.3.3** Create Pro features tip ✓ 2025-11-29
+  - File: `Nestory-Pro/Views/SharedUI/Tips.swift`
+  - QuickCaptureTip added to CaptureTab for first-time guidance
+  - ProFeaturesTip available for limit scenarios
 
 ---
 
@@ -843,9 +846,10 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 124 tasks (0 in progress, 94 completed, 30 remaining)*
+*Task Count: 124 tasks (0 in progress, 97 completed, 27 remaining)*
 
 ### Changelog
+- **2025-11-29**: Added TipKit integration (8.3.1-8.3.3) with documentation, iCloud sync, and quick capture tips
 - **2025-11-29**: Completed accessibility labels (8.1.1-8.1.4), color alternatives (8.2.1-8.2.2), and service tests (9.1.3-9.1.5)
   - Added accessibility labels to InventoryTab, SharedComponents, SettingsTab, ItemDetailView
   - Added status text to DocumentationBadge and documentation score display

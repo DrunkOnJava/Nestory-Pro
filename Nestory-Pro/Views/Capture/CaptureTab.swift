@@ -40,6 +40,7 @@
 
 import SwiftUI
 import SwiftData
+import TipKit
 
 struct CaptureTab: View {
     @Environment(AppEnvironment.self) private var env
@@ -63,9 +64,15 @@ struct CaptureTab: View {
 
     var body: some View {
         @Bindable var vm = viewModel
+        let quickCaptureTip = QuickCaptureTip()
         
         return NavigationStack {
             VStack(spacing: 0) {
+                // Quick Capture Tip (Task 8.3.3 - general guidance)
+                TipView(quickCaptureTip)
+                    .tipBackground(Color(.secondarySystemGroupedBackground))
+                    .padding(.horizontal)
+                
                 // Segmented Control
                 Picker("Capture Mode", selection: $vm.selectedSegment) {
                     ForEach(CaptureMode.allCases) { mode in

@@ -28,6 +28,7 @@
 
 import SwiftUI
 import SwiftData
+import TipKit
 
 @main
 struct Nestory_ProApp: App {
@@ -44,6 +45,11 @@ struct Nestory_ProApp: App {
         Task { @MainActor in
             validator.startTransactionListener()
             await validator.updateProStatus()
+        }
+        
+        // Configure TipKit
+        Task { @MainActor in
+            TipsConfiguration.configure()
         }
     }
 
