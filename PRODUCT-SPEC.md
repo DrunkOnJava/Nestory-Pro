@@ -137,9 +137,10 @@ For v1 and App Store review sanity: keep monetization **simple** (one Pro unlock
 
 ### Languages & Tools
 
-* **Language:** Swift 6 (strict concurrency)
+* **Language:** Swift 5 (v1.0) / Swift 6 planned for v1.1
+* **Toolchain:** Xcode 26+ / Swift 6.2.1
 * **UI:** SwiftUI
-* **Persistence:** SwiftData (backed by SQLite) + CloudKit for sync
+* **Persistence:** SwiftData (local-only for v1.0, CloudKit sync in v1.1)
 * **IDE:** Xcode latest + Swift Package Manager (SPM)
 
 ### Apple Frameworks to Use
@@ -150,9 +151,10 @@ For v1 and App Store review sanity: keep monetization **simple** (one Pro unlock
 * **SwiftData**
 
   * Primary persistence layer for Items, Rooms, Categories, Receipts.
-* **CloudKit**
+* **CloudKit** (v1.1)
 
   * Lightweight sync layer via SwiftData + CloudKit integration.
+  * Disabled in v1.0 for stability; local-only storage.
 * **Vision / VisionKit**
 
   * OCR (text recognition) for receipts.

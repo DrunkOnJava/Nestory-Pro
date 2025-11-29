@@ -329,11 +329,17 @@ struct SettingsTab: View {
         defer { isExportingJSON = false }
 
         do {
+            // Convert SwiftData models to Sendable export types on MainActor
+            let itemExports = allItems.map { ItemExport(from: $0) }
+            let categoryExports = allCategories.map { CategoryExport(from: $0) }
+            let roomExports = allRooms.map { RoomExport(from: $0) }
+            let receiptExports = allReceipts.map { ReceiptExport(from: $0) }
+
             let fileURL = try await env.backupService.exportToJSON(
-                items: allItems,
-                categories: allCategories,
-                rooms: allRooms,
-                receipts: allReceipts
+                itemExports: itemExports,
+                categoryExports: categoryExports,
+                roomExports: roomExports,
+                receiptExports: receiptExports
             )
             exportedFileURL = fileURL
         } catch {

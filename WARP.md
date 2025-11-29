@@ -219,14 +219,15 @@ An item is "documented" when it has the 4 core fields:
 - iCloud container: `iCloud.com.drunkonjava.nestory`
 
 ### Concurrency
-- **Swift 6 strict concurrency** enabled project-wide
+- **Swift 5 language mode** for v1.0 stability (Swift 6 migration in v1.1)
+- **Swift 6.2.1 toolchain** for latest compiler optimizations
 - Use `@MainActor` for UI-related code
 - Use `async/await` for service layer operations
 - SwiftData operations on main context by default
 
 ### Apple Frameworks Used
 - **SwiftUI**: All UI (no UIKit mixing unless absolutely necessary)
-- **SwiftData**: Persistence + CloudKit sync
+- **SwiftData**: Persistence (local-only for v1.0, CloudKit in v1.1)
 - **Vision/VisionKit**: OCR for receipt scanning
 - **Swift Charts**: Analytics visualizations (pie/bar charts)
 - **StoreKit 2**: In-app purchase (Nestory Pro unlock: `com.drunkonjava.nestory.pro`)

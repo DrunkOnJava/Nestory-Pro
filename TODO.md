@@ -794,6 +794,11 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 
 ## Backlog (Post v1)
 
+- [ ] **Swift 6 Migration** - Upgrade to Swift 6 strict concurrency mode
+  - Fix all Sendable warnings for actor boundaries
+  - Use @ModelActor for background SwiftData operations
+  - Update @Observable classes for strict isolation
+  - Target: v1.1 release
 - [ ] Server-side receipt validation endpoint
 - [ ] CloudKit sharing for family inventories
 - [ ] Widget extension for quick capture
@@ -816,6 +821,10 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 1. ✅ Bundle ID: Keep `com.drunkonjava.Nestory-Pro` (Task 1.1.1) - 2025-11-28
 2. ✅ Documentation score: 6-field weighted (Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%) (Task 1.4.1) - 2025-11-28
 3. ✅ CloudKit sync: Disabled for v1.0, add in v1.1 (Task 10.1.1) - 2025-11-28
+4. ✅ Swift version: Ship v1.0 with Swift 5 language mode, migrate to Swift 6 in v1.1 - 2025-11-29
+   - Toolchain: Swift 6.2.1 (latest Xcode) provides optimizations
+   - Language mode: Swift 5.0 avoids strict concurrency errors blocking launch
+   - Reason: Swift 6 strict concurrency surfaces ~20 warnings needing careful actor/Sendable fixes
 
 ### Testing Requirements
 - All new code must have tests

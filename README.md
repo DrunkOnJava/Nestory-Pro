@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Platform](https://img.shields.io/badge/platform-iOS%2017%2B-blue)
-![Swift](https://img.shields.io/badge/Swift-6.0-orange?logo=swift)
+![Swift](https://img.shields.io/badge/Swift-5.0-orange?logo=swift)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-blue?logo=swift)
 ![License](https://img.shields.io/badge/license-Proprietary-red)
 ![Status](https://img.shields.io/badge/status-Active%20Development-green)
@@ -50,9 +50,10 @@ Nestory Pro is a native iOS app (iOS 17+) designed to help people create compreh
 
 ## Technical Stack
 
-- **Language:** Swift 6 (strict concurrency)
+- **Language:** Swift 5 (Swift 6 migration planned for v1.1)
+- **Toolchain:** Xcode 26+ / Swift 6.2.1
 - **UI:** SwiftUI
-- **Persistence:** SwiftData + CloudKit
+- **Persistence:** SwiftData (local-only for v1.0, CloudKit sync in v1.1)
 - **Frameworks:** Vision/VisionKit, Swift Charts, StoreKit 2, TipKit
 - **Architecture:** MVVM with clean layer separation
 - **IDE:** Xcode latest + Swift Package Manager
@@ -175,8 +176,8 @@ Required GitHub Secrets:
 
 ### Key Architectural Decisions
 
-1. **SwiftData + CloudKit:** Primary persistence with automatic cloud sync
-2. **Swift 6 Strict Concurrency:** Type-safe concurrent programming
+1. **SwiftData (Local-First):** Primary persistence, CloudKit sync planned for v1.1
+2. **Swift 5 Language Mode:** Using Swift 6 toolchain with Swift 5 mode for stability
 3. **Offline-First:** All features work without network connectivity
 4. **File-Based Photo Storage:** Images stored as files, not Data blobs
 5. **Feature-Oriented Organization:** Code organized by feature, not layer
@@ -237,11 +238,13 @@ Required GitHub Secrets:
 - **Privacy First** - No third-party analytics or tracking
 - **Native Feel** - 100% SwiftUI, leveraging Apple frameworks
 - **Clean Architecture** - MVVM with repository pattern
-- **Type Safety** - Swift 6 strict concurrency
+- **Type Safety** - Swift 5 with concurrency patterns (Swift 6 migration in v1.1)
 
 ## Roadmap
 
 ### v1.1 - Quality & Depth
+- Swift 6 strict concurrency migration
+- CloudKit sync (currently disabled)
 - Warranty dashboard
 - Enhanced analytics
 - Advanced search syntax
@@ -286,7 +289,7 @@ This is currently a personal project. While external contributions are not activ
 
 If contributing:
 
-1. Follow Swift 6 strict concurrency guidelines
+1. Follow Swift concurrency best practices (actors, async/await)
 2. Maintain SwiftUI-first approach (no UIKit unless necessary)
 3. Write unit tests for business logic
 4. Keep views small and composable

@@ -40,36 +40,35 @@ actor BackupService {
 
     /// Exports all inventory data to JSON format
     /// - Parameters:
-    ///   - items: Items to export
-    ///   - categories: Categories to export
-    ///   - rooms: Rooms to export
-    ///   - receipts: Receipts to export
+    ///   - itemExports: Pre-converted item exports (call from MainActor)
+    ///   - categoryExports: Pre-converted category exports
+    ///   - roomExports: Pre-converted room exports
+    ///   - receiptExports: Pre-converted receipt exports
     /// - Returns: URL to the exported JSON file in temp directory
-    @MainActor
     func exportToJSON(
-        items: [Item],
-        categories: [Category],
-        rooms: [Room],
-        receipts: [Receipt]
+        itemExports: [ItemExport],
+        categoryExports: [CategoryExport],
+        roomExports: [RoomExport],
+        receiptExports: [ReceiptExport]
     ) async throws -> URL {
         let signpostID = OSSignpostID(log: signpostLog)
         os_signpost(.begin, log: signpostLog, name: "JSON Export", signpostID: signpostID,
                     "items: %d, categories: %d, rooms: %d, receipts: %d",
-                    items.count, categories.count, rooms.count, receipts.count)
+                    itemExports.count, categoryExports.count, roomExports.count, receiptExports.count)
         defer {
             os_signpost(.end, log: signpostLog, name: "JSON Export", signpostID: signpostID)
         }
 
-        logger.info("Starting JSON export: \(items.count) items, \(categories.count) categories, \(rooms.count) rooms, \(receipts.count) receipts")
+        logger.info("Starting JSON export: \(itemExports.count) items, \(categoryExports.count) categories, \(roomExports.count) rooms, \(receiptExports.count) receipts")
 
-        // Build export data structure (already on MainActor)
+        // Build export data structure (exports are already Sendable)
         let exportData = BackupData(
             exportDate: ISO8601DateFormatter().string(from: Date()),
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
-            items: items.map { ItemExport(from: $0) },
-            categories: categories.map { CategoryExport(from: $0) },
-            rooms: rooms.map { RoomExport(from: $0) },
-            receipts: receipts.map { ReceiptExport(from: $0) }
+            items: itemExports,
+            categories: categoryExports,
+            rooms: roomExports,
+            receipts: receiptExports
         )
 
         // Encode to JSON
