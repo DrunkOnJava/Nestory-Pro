@@ -412,7 +412,7 @@ When you check out a task, add an entry here:
 
 ### 6.2 App Lock (Biometric Auth)
 
-- [ ] **6.2.1** Create AppLockService
+- [x] **6.2.1** Create AppLockService ✓ 2025-11-28
   - File: `Nestory-Pro/Services/AppLockService.swift` (create)
   - Use LocalAuthentication framework
   - LAContext for Face ID / Touch ID
@@ -606,4 +606,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 73 tasks (0 in progress, 44 completed, 29 remaining)*
+*Task Count: 73 tasks (0 in progress, 45 completed, 28 remaining)*
