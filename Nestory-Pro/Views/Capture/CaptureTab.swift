@@ -43,6 +43,16 @@ import SwiftData
 
 struct CaptureTab: View {
     @Environment(AppEnvironment.self) private var env
+    @Environment(\.modelContext) private var modelContext
+    
+    // Query for recent items with photos (for recent captures strip)
+    @Query(
+        filter: #Predicate<Item> { item in
+            !item.photos.isEmpty
+        },
+        sort: \Item.updatedAt,
+        order: .reverse
+    ) private var recentItems: [Item]
     
     // ViewModel handles capture flow coordination
     private var viewModel: CaptureTabViewModel {
@@ -168,8 +178,38 @@ struct CaptureTab: View {
             }
             .buttonStyle(.plain)
             .padding(.horizontal, 32)
-            .padding(.bottom, 48)
             .accessibilityIdentifier("captureTab.startPhotoCaptureButton")
+            
+            // Recent Captures Strip (Task 2.5.4)
+            if !recentItems.isEmpty {
+                recentCapturesStrip
+            }
+        }
+        .padding(.bottom, 24)
+    }
+    
+    // MARK: - Recent Captures Strip (Task 2.5.4)
+    
+    /// Bottom strip showing 3 most recent items with photos
+    private var recentCapturesStrip: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Recent Captures")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 32)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(Array(recentItems.prefix(3))) { item in
+                        NavigationLink(destination: ItemDetailView(item: item)) {
+                            RecentCaptureCell(item: item)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 32)
+            }
         }
     }
 
@@ -257,8 +297,50 @@ struct CaptureTab: View {
     }
 }
 
+// MARK: - Recent Capture Cell (Task 2.5.4)
+
+/// Cell for recent captures strip showing item thumbnail and name
+struct RecentCaptureCell: View {
+    let item: Item
+    
+    var body: some View {
+        VStack(alignment: .center, spacing: 8) {
+            // Thumbnail
+            ZStack {
+                Rectangle()
+                    .fill(Color(.tertiarySystemFill))
+                
+                if let photo = item.photos.first {
+                    // TODO: Load actual photo from PhotoStorageService
+                    Image(systemName: item.category?.iconName ?? "cube.fill")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                } else if let category = item.category {
+                    Image(systemName: category.iconName)
+                        .font(.title2)
+                        .foregroundStyle(Color(hex: category.colorHex) ?? .secondary)
+                } else {
+                    Image(systemName: "cube.fill")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: 80, height: 80)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            // Item name
+            Text(item.name)
+                .font(.caption)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+                .frame(width: 80)
+        }
+    }
+}
+
 // MARK: - Preview
 
 #Preview {
     CaptureTab()
+        .environment(AppEnvironment())
 }

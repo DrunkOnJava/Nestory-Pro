@@ -213,10 +213,18 @@ struct ItemDetailView: View {
                     infoRow(label: "Serial Number", value: serial, canCopy: true)
                 }
                 
+                if let barcode = item.barcode, !barcode.isEmpty {
+                    infoRow(label: "Barcode", value: barcode, canCopy: true)
+                }
+                
                 infoRow(label: "Condition", value: item.condition.displayName)
                 
                 if let notes = item.conditionNotes, !notes.isEmpty {
                     infoRow(label: "Condition Notes", value: notes)
+                }
+                
+                if let notes = item.notes, !notes.isEmpty {
+                    infoRow(label: "Notes", value: notes)
                 }
             }
         }
