@@ -12,13 +12,14 @@ struct ItemDetailView: View {
     @Bindable var item: Item
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    
-    @State private var showingEditSheet = false
-    @State private var showingDeleteConfirmation = false
-    @State private var showingAddPhoto = false
-    @State private var showingAddReceipt = false
-    
     @Environment(AppEnvironment.self) private var env
+    
+    @State private var viewModel: ItemDetailViewModel
+    
+    init(item: Item) {
+        self.item = item
+        _viewModel = State(initialValue: ItemDetailViewModel(item: item))
+    }
     
     var body: some View {
         ScrollView {
@@ -50,17 +51,17 @@ struct ItemDetailView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
-                    Button(action: { showingEditSheet = true }) {
+                    Button(action: viewModel.showEditSheet) {
                         Label("Edit", systemImage: "pencil")
                     }
-                    Button(action: { showingAddPhoto = true }) {
+                    Button(action: viewModel.showAddPhoto) {
                         Label("Add Photo", systemImage: "camera")
                     }
-                    Button(action: { showingAddReceipt = true }) {
+                    Button(action: viewModel.showAddReceipt) {
                         Label("Add Receipt", systemImage: "doc.text")
                     }
                     Divider()
-                    Button(role: .destructive, action: { showingDeleteConfirmation = true }) {
+                    Button(role: .destructive, action: viewModel.showDeleteConfirmation) {
                         Label("Delete Item", systemImage: "trash")
                     }
                 } label: {
@@ -68,13 +69,12 @@ struct ItemDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingEditSheet) {
+        .sheet(isPresented: $viewModel.showingEditSheet) {
             EditItemView(item: item)
         }
-        .confirmationDialog("Delete Item?", isPresented: $showingDeleteConfirmation, titleVisibility: .visible) {
+        .confirmationDialog("Delete Item?", isPresented: $viewModel.showingDeleteConfirmation, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
-                modelContext.delete(item)
-                dismiss()
+                viewModel.deleteItem(modelContext: modelContext, dismiss: dismiss)
             }
             Button("Cancel", role: .cancel) {}
         } message: {
@@ -107,7 +107,7 @@ struct ItemDetailView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     
-                    Button(action: { showingAddPhoto = true }) {
+                    Button(action: viewModel.showAddPhoto) {
                         Label("Add Photo", systemImage: "camera")
                             .font(.subheadline)
                     }
@@ -129,16 +129,10 @@ struct ItemDetailView: View {
                 .font(.title)
                 .fontWeight(.bold)
             
-            if let brand = item.brand, !brand.isEmpty {
-                HStack(spacing: 4) {
-                    if let model = item.modelNumber, !model.isEmpty {
-                        Text("\(brand) • \(model)")
-                    } else {
-                        Text(brand)
-                    }
-                }
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if let brandModel = viewModel.brandModelText(brand: item.brand, modelNumber: item.modelNumber) {
+                Text(brandModel)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
             
             // Category & Room pills
@@ -239,7 +233,7 @@ struct ItemDetailView: View {
             Spacer()
             if canCopy {
                 Button(action: {
-                    UIPasteboard.general.string = value
+                    viewModel.copyToClipboard(value)
                 }) {
                     HStack(spacing: 4) {
                         Text(value)
@@ -262,7 +256,7 @@ struct ItemDetailView: View {
                 Text("Receipts")
                     .font(.headline)
                 Spacer()
-                Button(action: { showingAddReceipt = true }) {
+                Button(action: viewModel.showAddReceipt) {
                     Image(systemName: "plus.circle.fill")
                         .foregroundColor(Color.accentColor)
                 }
@@ -277,7 +271,7 @@ struct ItemDetailView: View {
                         .foregroundStyle(.secondary)
                     Spacer()
                     Button("Add Receipt") {
-                        showingAddReceipt = true
+                        viewModel.showAddReceipt()
                     }
                     .font(.subheadline)
                 }
@@ -320,7 +314,7 @@ struct ItemDetailView: View {
                 .font(.headline)
             
             if let expiryDate = item.warrantyExpiryDate {
-                let isExpired = expiryDate < Date()
+                let isExpired = viewModel.isWarrantyExpired(expiryDate: expiryDate)
                 HStack {
                     Image(systemName: isExpired ? "exclamationmark.shield.fill" : "checkmark.shield.fill")
                         .foregroundStyle(isExpired ? .red : .green)
@@ -341,7 +335,7 @@ struct ItemDetailView: View {
                         .foregroundStyle(.secondary)
                     Spacer()
                     Button("Add") {
-                        showingEditSheet = true
+                        viewModel.showEditSheet()
                     }
                     .font(.subheadline)
                 }
@@ -356,7 +350,7 @@ struct ItemDetailView: View {
     // MARK: - Quick Actions Bar
     private var quickActionsBar: some View {
         HStack(spacing: 16) {
-            Button(action: { showingEditSheet = true }) {
+            Button(action: viewModel.showEditSheet) {
                 VStack(spacing: 4) {
                     Image(systemName: "pencil")
                     Text("Edit")
@@ -366,7 +360,7 @@ struct ItemDetailView: View {
             
             Spacer()
             
-            Button(action: { showingAddPhoto = true }) {
+            Button(action: viewModel.showAddPhoto) {
                 VStack(spacing: 4) {
                     Image(systemName: "camera")
                     Text("Photo")
@@ -376,7 +370,7 @@ struct ItemDetailView: View {
             
             Spacer()
             
-            Button(action: { showingAddReceipt = true }) {
+            Button(action: viewModel.showAddReceipt) {
                 VStack(spacing: 4) {
                     Image(systemName: "doc.text")
                     Text("Receipt")

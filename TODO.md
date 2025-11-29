@@ -360,8 +360,8 @@ When you check out a task, add an entry here:
   - Handle save with limit checking
   - DEPENDS: 4.1.1
 
-- [ ] **5.1.3** Create ItemDetailViewModel
-  - File: `Nestory-Pro/ViewModels/ItemDetailViewModel.swift` (create)
+- [x] **5.1.3** Create ItemDetailViewModel ✓ 2025-11-29
+  - File: `Nestory-Pro/ViewModels/ItemDetailViewModel.swift` (created)
   - Handle edit, delete, photo management
 
 - [ ] **5.1.4** Create CaptureTabViewModel
@@ -606,4 +606,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 73 tasks (0 in progress, 39 completed, 34 remaining)*
+*Task Count: 73 tasks (0 in progress, 40 completed, 33 remaining)*
