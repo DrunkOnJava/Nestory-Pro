@@ -28,9 +28,7 @@ final class IAPValidator {
     // MARK: - Transaction Listener
 
     /// Task handle for transaction updates listener
-    /// Using nonisolated(unsafe) allows access from deinit.
-    /// This is safe because Task.cancel() is thread-safe.
-    private nonisolated(unsafe) var transactionListener: Task<Void, Error>?
+    private var transactionListener: Task<Void, Error>?
 
     // MARK: - Initialization
 
@@ -38,16 +36,6 @@ final class IAPValidator {
     init() {
         // Initialize Pro status from Keychain
         self.isProUnlocked = KeychainManager.isProUnlocked()
-    }
-
-    // MARK: - Deinitialization
-
-    /// Clean up transaction listener to prevent memory corruption
-    /// The Task.detached with async iterator over Transaction.updates must be
-    /// cancelled before deallocation to avoid TaskLocal cleanup issues
-    deinit {
-        transactionListener?.cancel()
-        transactionListener = nil
     }
 
     // MARK: - Transaction Listener

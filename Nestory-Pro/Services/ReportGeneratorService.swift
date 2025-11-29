@@ -23,7 +23,8 @@ import UIKit
 import OSLog
 
 /// PDF generation service for inventory reports
-actor ReportGeneratorService {
+@MainActor
+final class ReportGeneratorService {
     static let shared = ReportGeneratorService()
 
     // MARK: - Configuration
@@ -40,7 +41,7 @@ actor ReportGeneratorService {
     // MARK: - Private Properties
 
     private let logger = Logger(subsystem: "com.drunkonjava.nestory", category: "ReportGenerator")
-    private let photoStorage: PhotoStorageService
+    private let photoStorage = PhotoStorageService.shared
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -57,9 +58,7 @@ actor ReportGeneratorService {
 
     // MARK: - Initialization
 
-    private init() {
-        self.photoStorage = PhotoStorageService.shared
-    }
+    private init() {}
 
     // MARK: - Public API
 
@@ -605,6 +604,9 @@ actor ReportGeneratorService {
     private func loadPhotosForItems(_ items: [Item], includePhotos: Bool) async throws -> [String: UIImage] {
         guard includePhotos else { return [:] }
 
+        // Get photo storage reference
+        let storage = photoStorage
+        
         // Prefetch all photos concurrently using TaskGroup
         let photoCache = await withTaskGroup(of: (String, UIImage?).self) { group in
             for item in items {
@@ -612,9 +614,9 @@ actor ReportGeneratorService {
                     let photoId = firstPhoto.imageIdentifier
                     let itemName = item.name
 
-                    group.addTask { [photoStorage, logger] in
+                    group.addTask { [logger] in
                         do {
-                            let image = try await photoStorage.loadPhoto(identifier: photoId)
+                            let image = try await storage.loadPhoto(identifier: photoId)
                             return (photoId, image)
                         } catch {
                             logger.warning("Failed to load photo for item \(itemName): \(error.localizedDescription)")

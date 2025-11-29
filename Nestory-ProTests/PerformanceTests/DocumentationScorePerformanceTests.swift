@@ -9,26 +9,26 @@ import XCTest
 import SwiftData
 @testable import Nestory_Pro
 
+@MainActor
 final class DocumentationScorePerformanceTests: XCTestCase {
 
     // MARK: - Shared Test Data (Class-Level Setup)
+    // Using nonisolated(unsafe) for class-level setup/teardown compatibility with XCTest
+    nonisolated(unsafe) private static var sharedContainer1000: ModelContainer!
+    nonisolated(unsafe) private static var sharedContainer2000: ModelContainer!
+    nonisolated(unsafe) private static var sharedContainer5000: ModelContainer!
+    nonisolated(unsafe) private static var sharedContainerWithRelationships: ModelContainer!
 
-    private static var sharedContainer1000: ModelContainer!
-    private static var sharedContainer2000: ModelContainer!
-    private static var sharedContainer5000: ModelContainer!
-    private static var sharedContainerWithRelationships: ModelContainer!
-
-    @MainActor
     override class func setUp() {
         super.setUp()
         // Create shared containers once for all tests in this class
+        // Note: These are intentionally created synchronously for test setup
         sharedContainer1000 = TestContainer.withManyItems(count: 1000)
         sharedContainer2000 = TestContainer.withManyItems(count: 2000)
         sharedContainer5000 = TestContainer.withManyItems(count: 5000)
         sharedContainerWithRelationships = TestContainer.withTestItems(count: 500)
     }
 
-    @MainActor
     override class func tearDown() {
         sharedContainer1000 = nil
         sharedContainer2000 = nil

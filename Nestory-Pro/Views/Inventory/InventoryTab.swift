@@ -286,6 +286,8 @@ struct InventoryTab: View {
                             }
                         }
                         .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.filterChip)
+                        .accessibilityLabel("Filter: \(filter.rawValue)")
+                        .accessibilityAddTraits(vm.selectedFilter == filter ? .isSelected : [])
                     }
                 }
             }
@@ -302,6 +304,8 @@ struct InventoryTab: View {
                 .pickerStyle(.segmented)
                 .frame(width: 100)
                 .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.layoutToggle)
+                .accessibilityLabel("View mode: \(vm.viewMode.rawValue)")
+                .accessibilityHint("Double tap to switch between list and grid view")
                 
                 Spacer()
                 
@@ -326,6 +330,8 @@ struct InventoryTab: View {
                     .foregroundStyle(.secondary)
                 }
                 .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.sortButton)
+                .accessibilityLabel("Sort items: \(vm.selectedSort.rawValue)")
+                .accessibilityHint("Double tap to change sort order")
             }
         }
     }

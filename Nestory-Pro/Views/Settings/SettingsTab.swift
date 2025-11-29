@@ -78,6 +78,9 @@ struct SettingsTab: View {
                 Section {
                     Toggle("Use iCloud Sync", isOn: $settings.useICloudSync)
                         .accessibilityIdentifier(AccessibilityIdentifiers.Settings.iCloudSyncToggle)
+                        .accessibilityLabel("iCloud Sync")
+                        .accessibilityValue(settings.useICloudSync ? "Enabled" : "Disabled")
+                        .accessibilityHint("Double tap to toggle iCloud synchronization")
 
                     // JSON Export (Free tier)
                     Button {
@@ -95,6 +98,8 @@ struct SettingsTab: View {
                     }
                     .disabled(isExportingJSON || isExportingCSV)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.exportDataButton)
+                    .accessibilityLabel("Export to JSON")
+                    .accessibilityHint("Double tap to export all inventory data to JSON format")
 
                     // CSV Export (Pro only) - Task 4.3.2: Gate CSV export to Pro
                     Button {
@@ -145,6 +150,8 @@ struct SettingsTab: View {
                     }
                     .disabled(isImporting)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.importDataButton)
+                    .accessibilityLabel("Import Data")
+                    .accessibilityHint("Double tap to restore inventory from a JSON backup")
                 } header: {
                     Text("Data & Sync")
                 } footer: {
@@ -172,9 +179,15 @@ struct SettingsTab: View {
                 Section {
                     Toggle("Require Face ID / Touch ID", isOn: $settings.requiresBiometrics)
                         .accessibilityIdentifier(AccessibilityIdentifiers.Settings.appLockToggle)
+                        .accessibilityLabel("Biometric Authentication")
+                        .accessibilityValue(settings.requiresBiometrics ? "Required" : "Not required")
+                        .accessibilityHint("Double tap to toggle biometric lock")
 
                     if env.settings.requiresBiometrics {
                         Toggle("Lock After Inactivity", isOn: $settings.lockAfterInactivity)
+                            .accessibilityLabel("Lock After Inactivity")
+                            .accessibilityValue(settings.lockAfterInactivity ? "Enabled" : "Disabled")
+                            .accessibilityHint("Double tap to toggle auto-lock after 1 minute of inactivity")
                     }
                 } header: {
                     Text("Security & Privacy")
@@ -186,10 +199,16 @@ struct SettingsTab: View {
                 Section {
                     Toggle("Documentation Reminders", isOn: $settings.enableDocumentationReminders)
                         .accessibilityIdentifier(AccessibilityIdentifiers.Settings.notificationsToggle)
+                        .accessibilityLabel("Documentation Reminders")
+                        .accessibilityValue(settings.enableDocumentationReminders ? "Enabled" : "Disabled")
+                        .accessibilityHint("Double tap to toggle reminders to document items")
 
                     if env.settings.enableDocumentationReminders {
                         Toggle("Weekly Summary", isOn: $settings.weeklyReminderEnabled)
                             .accessibilityIdentifier(AccessibilityIdentifiers.Settings.weeklyReminderToggle)
+                            .accessibilityLabel("Weekly Summary")
+                            .accessibilityValue(settings.weeklyReminderEnabled ? "Enabled" : "Disabled")
+                            .accessibilityHint("Double tap to toggle weekly inventory summary notifications")
                     }
                 } header: {
                     Text("Notifications")
@@ -330,10 +349,10 @@ struct SettingsTab: View {
 
         do {
             // Convert SwiftData models to Sendable export types on MainActor
-            let itemExports = allItems.map { ItemExport(from: $0) }
-            let categoryExports = allCategories.map { CategoryExport(from: $0) }
-            let roomExports = allRooms.map { RoomExport(from: $0) }
-            let receiptExports = allReceipts.map { ReceiptExport(from: $0) }
+            let itemExports = allItems.map { ItemExport.from($0) }
+            let categoryExports = allCategories.map { CategoryExport.from($0) }
+            let roomExports = allRooms.map { RoomExport.from($0) }
+            let receiptExports = allReceipts.map { ReceiptExport.from($0) }
 
             let fileURL = try await env.backupService.exportToJSON(
                 itemExports: itemExports,
@@ -365,7 +384,9 @@ struct SettingsTab: View {
         defer { isExportingCSV = false }
 
         do {
-            let fileURL = try await env.backupService.exportToCSV(items: allItems)
+            // Convert SwiftData models to Sendable export types on MainActor
+            let itemExports = allItems.map { ItemExport.from($0) }
+            let fileURL = try await env.backupService.exportToCSV(itemExports: itemExports)
             exportedFileURL = fileURL
         } catch {
             exportError = error

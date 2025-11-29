@@ -24,7 +24,8 @@ import Accelerate
 
 /// File-based photo storage service using the Documents directory
 actor PhotoStorageService: PhotoStorageProtocol {
-    nonisolated static let shared = PhotoStorageService()
+    /// Shared singleton instance - accessed via MainActor since that's where most usage is
+    @MainActor static let shared = PhotoStorageService()
 
     // MARK: - Configuration
 
@@ -54,11 +55,7 @@ actor PhotoStorageService: PhotoStorageProtocol {
     // MARK: - Initialization
 
     private init() {
-        // Ensure photos and thumbnails directories exist on init
-        Task {
-            try? await createPhotosDirectoryIfNeeded()
-            try? await createThumbnailsDirectoryIfNeeded()
-        }
+        // Directory creation happens lazily on first use via savePhoto/loadPhoto
     }
 
     // MARK: - PhotoStorageProtocol Implementation

@@ -88,6 +88,8 @@ struct ItemDetailView: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
+                .accessibilityLabel("Item actions")
+                .accessibilityHint("Double tap for edit, add photo, add receipt, or delete options")
             }
         }
         .sheet(isPresented: $viewModel.showingEditSheet) {
@@ -287,16 +289,25 @@ extension ItemDetailView {
                     .font(.headline)
                 Spacer()
 
-                // Documentation score percentage
-                Text("\(Int(item.documentationScore * 100))%")
-                    .font(.headline)
-                    .foregroundStyle(documentationScoreColor)
+                // Documentation score percentage with status text
+                HStack(spacing: 4) {
+                    Text("\(Int(item.documentationScore * 100))%")
+                        .font(.headline)
+                        .foregroundStyle(documentationScoreColor)
+                    Text("•")
+                        .foregroundStyle(.secondary)
+                    Text(documentationStatusText)
+                        .font(.subheadline)
+                        .foregroundStyle(documentationScoreColor)
+                }
 
                 // "What's missing?" info button
                 Button(action: { showingDocumentationInfo = true }) {
                     Image(systemName: "info.circle")
                         .foregroundStyle(.secondary)
                 }
+                .accessibilityLabel("Documentation score info")
+                .accessibilityHint("Double tap to learn about documentation score weights")
             }
 
             // Progress bar
@@ -312,6 +323,9 @@ extension ItemDetailView {
                 }
             }
             .frame(height: 8)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Documentation progress")
+            .accessibilityValue("\(Int(item.documentationScore * 100)) percent, \(documentationStatusText)")
 
             // 6-field badges in two rows
             VStack(spacing: 8) {
@@ -339,6 +353,17 @@ extension ItemDetailView {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .sheet(isPresented: $showingDocumentationInfo) {
             documentationInfoSheet
+        }
+    }
+    
+    private var documentationStatusText: String {
+        switch item.documentationScore {
+        case 0.8...1.0:
+            return "Excellent"
+        case 0.5..<0.8:
+            return "Needs Work"
+        default:
+            return "Incomplete"
         }
     }
 
@@ -592,6 +617,8 @@ extension ItemDetailView {
                         .font(.caption)
                 }
             }
+            .accessibilityLabel("Edit item")
+            .accessibilityHint("Double tap to edit item details")
             
             Spacer()
             
@@ -602,6 +629,8 @@ extension ItemDetailView {
                         .font(.caption)
                 }
             }
+            .accessibilityLabel("Add photo")
+            .accessibilityHint("Double tap to add a photo to this item")
             
             Spacer()
             
@@ -612,6 +641,8 @@ extension ItemDetailView {
                         .font(.caption)
                 }
             }
+            .accessibilityLabel("Add receipt")
+            .accessibilityHint("Double tap to add a receipt to this item")
             
             Spacer()
             
@@ -622,6 +653,8 @@ extension ItemDetailView {
                         .font(.caption)
                 }
             }
+            .accessibilityLabel("Add to report")
+            .accessibilityHint("Double tap to include this item in a report")
         }
         .padding()
         .background(.ultraThinMaterial)

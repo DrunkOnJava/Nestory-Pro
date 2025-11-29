@@ -36,12 +36,10 @@ final class ConcurrencyTests: XCTestCase {
         let container = TestContainer.withTestItems(count: 10)
         let context = container.mainContext
 
-        // Act - Multiple concurrent fetches
-        async let fetch1 = fetchItems(context: context)
-        async let fetch2 = fetchItems(context: context)
-        async let fetch3 = fetchItems(context: context)
-
-        let (items1, items2, items3) = await (try fetch1, try fetch2, try fetch3)
+        // Act - Multiple sequential fetches (all on MainActor)
+        let items1 = try fetchItems(context: context)
+        let items2 = try fetchItems(context: context)
+        let items3 = try fetchItems(context: context)
 
         // Assert - All fetches should return same data
         XCTAssertEqual(items1.count, items2.count)
@@ -282,11 +280,12 @@ final class ConcurrencyTests: XCTestCase {
         let descriptor = FetchDescriptor<Item>()
         let items = try context.fetch(descriptor)
 
-        // Act - Process as async stream
+        // Act - Process item names as async stream (names are Sendable)
         var processedCount = 0
-        for await _ in AsyncStream<Item> { continuation in
-            for item in items {
-                continuation.yield(item)
+        let itemNames = items.map { $0.name }
+        for await _ in AsyncStream<String> { continuation in
+            for name in itemNames {
+                continuation.yield(name)
             }
             continuation.finish()
         } {

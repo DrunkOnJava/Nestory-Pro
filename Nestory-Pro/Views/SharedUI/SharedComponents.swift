@@ -62,6 +62,10 @@ struct DocumentationBadge: View {
         self.compact = compact
         self.weight = weight
     }
+    
+    private var statusText: String {
+        isComplete ? "Complete" : "Missing"
+    }
 
     var body: some View {
         HStack(spacing: 4) {
@@ -84,6 +88,9 @@ struct DocumentationBadge: View {
             Capsule()
                 .fill(isComplete ? Color.green.opacity(0.15) : Color.secondary.opacity(0.1))
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(label): \(statusText)")
+        .accessibilityValue(weight.map { "Weight: \($0)" } ?? "")
     }
 }
 
@@ -115,6 +122,20 @@ struct ItemListCell: View {
     let item: Item
     let settings: SettingsManager
     
+    private var accessibilityDescription: String {
+        var parts: [String] = [item.name]
+        if let room = item.room {
+            parts.append("in \(room.name)")
+        }
+        if let price = item.purchasePrice {
+            parts.append("valued at \(settings.formatCurrency(price))")
+        }
+        let status = item.documentationScore >= 0.8 ? "fully documented" : 
+                     item.documentationScore >= 0.5 ? "partially documented" : "needs documentation"
+        parts.append(status)
+        return parts.joined(separator: ", ")
+    }
+    
     var body: some View {
         HStack(spacing: 12) {
             // Thumbnail
@@ -133,6 +154,7 @@ struct ItemListCell: View {
                 }
             }
             .frame(width: 60, height: 60)
+            .accessibilityHidden(true)
             
             // Content
             VStack(alignment: .leading, spacing: 4) {
@@ -176,8 +198,12 @@ struct ItemListCell: View {
                     DocumentationBadge("Value", isComplete: item.hasValue, compact: true)
                 }
             }
+            .accessibilityHidden(true)
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityDescription)
+        .accessibilityHint("Double tap to view details")
     }
 }
 
@@ -185,6 +211,20 @@ struct ItemListCell: View {
 struct ItemGridCell: View {
     let item: Item
     let settings: SettingsManager
+    
+    private var accessibilityDescription: String {
+        var parts: [String] = [item.name]
+        if let room = item.room {
+            parts.append("in \(room.name)")
+        }
+        if let price = item.purchasePrice {
+            parts.append("valued at \(settings.formatCurrency(price))")
+        }
+        let status = item.documentationScore >= 0.8 ? "fully documented" : 
+                     item.documentationScore >= 0.5 ? "partially documented" : "needs documentation"
+        parts.append(status)
+        return parts.joined(separator: ", ")
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -204,6 +244,7 @@ struct ItemGridCell: View {
                 }
             }
             .aspectRatio(1, contentMode: .fit)
+            .accessibilityHidden(true)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(item.name)
@@ -230,10 +271,14 @@ struct ItemGridCell: View {
                     .fill(item.hasReceipt ? .green : .secondary.opacity(0.3))
                     .frame(width: 6, height: 6)
             }
+            .accessibilityHidden(true)
         }
         .padding(12)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityDescription)
+        .accessibilityHint("Double tap to view details")
     }
 }
 

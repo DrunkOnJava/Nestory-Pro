@@ -26,7 +26,7 @@
 
 import SwiftUI
 import SwiftData
-import AVFoundation
+@preconcurrency import AVFoundation
 
 // MARK: - Barcode Scan View
 
@@ -293,17 +293,18 @@ struct BarcodeCameraView: UIViewRepresentable {
             self.previewLayer = previewLayer
             
             // Start session on background queue
+            let sessionToStart = session
             DispatchQueue.global(qos: .userInitiated).async {
-                session.startRunning()
+                sessionToStart.startRunning()
             }
             
             // Handle view resize
-            DispatchQueue.main.async {
-                NotificationCenter.default.addObserver(
-                    forName: UIDevice.orientationDidChangeNotification,
-                    object: nil,
-                    queue: .main
-                ) { [weak self, weak view] _ in
+            NotificationCenter.default.addObserver(
+                forName: UIDevice.orientationDidChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self, weak view] _ in
+                MainActor.assumeIsolated {
                     guard let view = view else { return }
                     self?.previewLayer?.frame = view.bounds
                 }
@@ -331,8 +332,9 @@ struct BarcodeCameraView: UIViewRepresentable {
             onBarcodeDetected(barcodeValue)
         }
         
-        deinit {
+        func stopSession() {
             captureSession?.stopRunning()
+            captureSession = nil
         }
     }
 }

@@ -634,34 +634,35 @@ When you check out a task, add an entry here:
 
 ### 8.1 Accessibility Labels
 
-- [ ] **8.1.1** Add labels to Inventory interactive elements
+- [x] **8.1.1** Add labels to Inventory interactive elements ✓ 2025-11-29
   - File: `Nestory-Pro/Views/Inventory/InventoryTab.swift`
-  - Filter chips, sort menu, view toggle
+  - Filter chips, sort menu, view toggle with proper labels and hints
   - Pattern: `.accessibilityLabel("descriptive text")`
 
-- [ ] **8.1.2** Add labels to Item cells
+- [x] **8.1.2** Add labels to Item cells ✓ 2025-11-29
   - File: `Nestory-Pro/Views/SharedUI/SharedComponents.swift`
-  - ItemListCell and ItemGridCell
+  - ItemListCell and ItemGridCell with combined accessibility element
   - Format: "[Name], in [Room], valued at [Price], documentation [status]"
 
-- [ ] **8.1.3** Add labels to Settings toggles
+- [x] **8.1.3** Add labels to Settings toggles ✓ 2025-11-29
   - File: `Nestory-Pro/Views/Settings/SettingsTab.swift`
-  - All toggles and buttons
+  - All toggles and buttons with proper labels, values, and hints
 
-- [ ] **8.1.4** Add labels to Item Detail actions
+- [x] **8.1.4** Add labels to Item Detail actions ✓ 2025-11-29
   - File: `Nestory-Pro/Views/Inventory/ItemDetailView.swift`
-  - All buttons and interactive elements
+  - Quick action bar and toolbar menu with accessibility hints
 
 ### 8.2 Color Alternatives
 
-- [ ] **8.2.1** Add text to DocumentationBadge
+- [x] **8.2.1** Add text to DocumentationBadge ✓ 2025-11-29
   - File: `Nestory-Pro/Views/SharedUI/SharedComponents.swift`
-  - Show "Complete" or "Missing" text alongside color
-  - Or use `.accessibilityValue()` for VoiceOver
+  - Uses `.accessibilityElement` with "Complete" or "Missing" label
+  - Added `.accessibilityValue()` for weight info
 
-- [ ] **8.2.2** Add status text to documentation score
-  - "Good" (80%+), "Fair" (50-79%), "Needs Work" (<50%)
-  - Display alongside color indicator
+- [x] **8.2.2** Add status text to documentation score ✓ 2025-11-29
+  - "Excellent" (80%+), "Needs Work" (50-79%), "Incomplete" (<50%)
+  - Display alongside color indicator in ItemDetailView
+  - Progress bar has `.accessibilityValue` with percentage and status
 
 ### 8.3 TipKit Integration
 
@@ -685,20 +686,28 @@ When you check out a task, add an entry here:
 
 ### 9.1 Service Tests
 
-- [ ] **9.1.1** Add PhotoStorageService tests
-  - DEPENDS: 2.4.1
+- [x] **9.1.1** Add PhotoStorageService tests ✓ 2025-11-28
+  - File: `Nestory-ProTests/UnitTests/Services/PhotoStorageServiceTests.swift`
+  - DEPENDS: 2.4.1 ✓
 
-- [ ] **9.1.2** Add OCRService tests
-  - DEPENDS: 2.6.1
+- [x] **9.1.2** Add OCRService tests ✓ 2025-11-28
+  - File: `Nestory-ProTests/UnitTests/Services/OCRServiceTests.swift`
+  - DEPENDS: 2.6.1 ✓
 
-- [ ] **9.1.3** Add BackupService tests
-  - DEPENDS: 3.4.1
+- [x] **9.1.3** Add BackupService tests ✓ 2025-11-29
+  - File: `Nestory-ProTests/UnitTests/Services/BackupServiceTests.swift`
+  - Tests JSON/CSV export, import validation, RestoreResult
+  - DEPENDS: 3.4.1 ✓
 
-- [ ] **9.1.4** Add ReportGeneratorService tests
-  - DEPENDS: 3.1.1
+- [x] **9.1.4** Add ReportGeneratorService tests ✓ 2025-11-29
+  - File: `Nestory-ProTests/UnitTests/Services/ReportGeneratorServiceTests.swift`
+  - Tests PDF generation, ReportOptions, grouping
+  - DEPENDS: 3.1.1 ✓
 
-- [ ] **9.1.5** Add AppLockService tests
-  - DEPENDS: 6.2.1
+- [x] **9.1.5** Add AppLockService tests ✓ 2025-11-29
+  - File: `Nestory-ProTests/UnitTests/Services/AppLockServiceTests.swift`
+  - Tests BiometricType enum, mock service for DI testing
+  - DEPENDS: 6.2.1 ✓
 
 ### 9.2 UI Tests
 
@@ -834,9 +843,13 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 124 tasks (0 in progress, 83 completed, 41 remaining)*
+*Task Count: 124 tasks (0 in progress, 94 completed, 30 remaining)*
 
 ### Changelog
+- **2025-11-29**: Completed accessibility labels (8.1.1-8.1.4), color alternatives (8.2.1-8.2.2), and service tests (9.1.3-9.1.5)
+  - Added accessibility labels to InventoryTab, SharedComponents, SettingsTab, ItemDetailView
+  - Added status text to DocumentationBadge and documentation score display
+  - Created BackupServiceTests, ReportGeneratorServiceTests, AppLockServiceTests
 - **2025-11-29**: Merged comprehensive v1.0 production-readiness tasks
   - Added Phase 1.1 (Bundle ID & Project Configuration)
   - Added Phase 1.3 (SwiftData Schema & Migrations)

@@ -9,6 +9,7 @@ import Foundation
 @testable import Nestory_Pro
 
 /// Mock implementation of OCRServiceProtocol for testing
+@MainActor
 final class MockOCRService: OCRServiceProtocol {
     // MARK: - Mock Configuration
     var recognizedText: String = "Mock OCR Text"
@@ -17,14 +18,18 @@ final class MockOCRService: OCRServiceProtocol {
     var errorToThrow: Error = OCRError.processingFailed
 
     // Mock receipt data
-    var mockReceiptData = ReceiptData(
-        vendor: "Mock Store",
-        total: 99.99,
-        taxAmount: 8.99,
-        purchaseDate: Date(),
-        rawText: "Mock receipt text",
-        confidence: 0.95
-    )
+    var mockReceiptData: ReceiptData
+    
+    init() {
+        mockReceiptData = ReceiptData(
+            vendor: "Mock Store",
+            total: 99.99,
+            taxAmount: 8.99,
+            purchaseDate: Date(),
+            rawText: "Mock receipt text",
+            confidence: 0.95
+        )
+    }
 
     // MARK: - Call Tracking
     var recognizeTextCallCount = 0

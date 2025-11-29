@@ -20,7 +20,7 @@
 import Foundation
 import OSLog
 import os.signpost
-import SwiftData
+@preconcurrency import SwiftData
 
 /// Actor-based backup service for exporting and importing inventory data
 actor BackupService {
@@ -71,14 +71,10 @@ actor BackupService {
             receipts: receiptExports
         )
 
-        // Encode to JSON
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        encoder.dateEncodingStrategy = .iso8601
-
+        // Encode to JSON using nonisolated helper
         let jsonData: Data
         do {
-            jsonData = try encoder.encode(exportData)
+            jsonData = try encodeBackupData(exportData)
         } catch {
             logger.error("Failed to encode JSON: \(error.localizedDescription)")
             throw BackupError.encodingFailed(error)
@@ -101,17 +97,17 @@ actor BackupService {
     // MARK: - CSV Export
 
     /// Exports items to CSV format (Pro tier only)
-    /// - Parameter items: Items to export
+    /// - Parameter itemExports: Pre-converted item exports (call from MainActor)
     /// - Returns: URL to the exported CSV file in temp directory
-    func exportToCSV(items: [Item]) async throws -> URL {
+    func exportToCSV(itemExports: [ItemExport]) async throws -> URL {
         let signpostID = OSSignpostID(log: signpostLog)
         os_signpost(.begin, log: signpostLog, name: "CSV Export", signpostID: signpostID,
-                    "items: %d", items.count)
+                    "items: %d", itemExports.count)
         defer {
             os_signpost(.end, log: signpostLog, name: "CSV Export", signpostID: signpostID)
         }
 
-        logger.info("Starting CSV export: \(items.count) items")
+        logger.info("Starting CSV export: \(itemExports.count) items")
 
         // Build CSV content
         var csvLines: [String] = []
@@ -120,19 +116,19 @@ actor BackupService {
         csvLines.append("Name,Description,Value,Condition,Room,Category,Purchase Date,Serial Number,Barcode,Has Photo,Has Receipt")
 
         // Data rows
-        for item in items {
+        for item in itemExports {
             let fields: [String] = [
                 escapeCSVField(item.name),
                 escapeCSVField(item.notes ?? ""),
                 item.purchasePrice?.description ?? "",
-                item.condition.rawValue,
-                escapeCSVField(item.room?.name ?? ""),
-                escapeCSVField(item.category?.name ?? ""),
+                item.condition,
+                escapeCSVField(item.roomName ?? ""),
+                escapeCSVField(item.categoryName ?? ""),
                 item.purchaseDate.map { formatDate($0) } ?? "",
                 escapeCSVField(item.serialNumber ?? ""),
                 escapeCSVField(item.barcode ?? ""),
-                item.hasPhoto ? "Yes" : "No",
-                item.hasReceipt ? "Yes" : "No"
+                !item.photoIdentifiers.isEmpty ? "Yes" : "No",
+                !item.receiptIds.isEmpty ? "Yes" : "No"
             ]
             csvLines.append(fields.joined(separator: ","))
         }
@@ -176,13 +172,10 @@ actor BackupService {
             throw BackupError.readFailed(error)
         }
 
-        // Decode backup data
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
+        // Decode backup data using nonisolated helper
         let backupData: BackupData
         do {
-            backupData = try decoder.decode(BackupData.self, from: jsonData)
+            backupData = try decodeBackupData(from: jsonData)
         } catch {
             logger.error("Failed to decode JSON: \(error.localizedDescription)")
             throw BackupError.decodingFailed(error)
@@ -225,11 +218,8 @@ actor BackupService {
             throw BackupError.readFailed(error)
         }
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
         do {
-            return try decoder.decode(BackupData.self, from: jsonData)
+            return try decodeBackupData(from: jsonData)
         } catch {
             logger.error("Failed to decode JSON: \(error.localizedDescription)")
             throw BackupError.decodingFailed(error)
@@ -402,8 +392,9 @@ actor BackupService {
         strategy: RestoreStrategy
     ) throws -> Category {
         // Check if category already exists by name
+        let nameToFind = export.name
         let existingDescriptor = FetchDescriptor<Category>(
-            predicate: #Predicate { $0.name == export.name }
+            predicate: #Predicate { $0.name == nameToFind }
         )
         let existing = try context.fetch(existingDescriptor)
 
@@ -439,8 +430,9 @@ actor BackupService {
         strategy: RestoreStrategy
     ) throws -> Room {
         // Check if room already exists by name
+        let nameToFind = export.name
         let existingDescriptor = FetchDescriptor<Room>(
-            predicate: #Predicate { $0.name == export.name }
+            predicate: #Predicate { $0.name == nameToFind }
         )
         let existing = try context.fetch(existingDescriptor)
 
@@ -476,8 +468,9 @@ actor BackupService {
     ) throws -> Item {
         // For merge strategy, check if item with same ID exists
         if strategy == .merge {
+            let idToFind = export.id
             let existingDescriptor = FetchDescriptor<Item>(
-                predicate: #Predicate { $0.id == export.id }
+                predicate: #Predicate { $0.id == idToFind }
             )
             if let existing = try context.fetch(existingDescriptor).first {
                 // Skip duplicate item in merge mode
@@ -539,8 +532,9 @@ actor BackupService {
     ) throws {
         // For merge strategy, check if receipt with same ID exists
         if strategy == .merge {
+            let idToFind = export.id
             let existingDescriptor = FetchDescriptor<Receipt>(
-                predicate: #Predicate { $0.id == export.id }
+                predicate: #Predicate { $0.id == idToFind }
             )
             if (try context.fetch(existingDescriptor).first) != nil {
                 logger.debug("Skipping duplicate receipt: \(export.vendor ?? "Unknown") (ID: \(export.id))")
@@ -590,18 +584,57 @@ actor BackupService {
         formatter.timeStyle = .none
         return formatter.string(from: date)
     }
+
+    // MARK: - Codable Helpers
+
+    /// Encodes BackupData to JSON using a file-private helper to avoid actor isolation issues
+    private func encodeBackupData(_ data: BackupData) throws -> Data {
+        try BackupCodableHelper.encode(data)
+    }
+
+    /// Decodes BackupData from JSON using a file-private helper to avoid actor isolation issues
+    private func decodeBackupData(from jsonData: Data) throws -> BackupData {
+        try BackupCodableHelper.decode(from: jsonData)
+    }
 }
 
 // MARK: - Export Data Structures
 
 /// Root backup data structure
-struct BackupData: Codable, Sendable {
+struct BackupData: Sendable {
     let exportDate: String
     let appVersion: String
     let items: [ItemExport]
     let categories: [CategoryExport]
     let rooms: [RoomExport]
     let receipts: [ReceiptExport]
+}
+
+/// Explicit Codable implementation to avoid MainActor isolation issues in Swift 6
+extension BackupData: Codable {
+    enum CodingKeys: String, CodingKey {
+        case exportDate, appVersion, items, categories, rooms, receipts
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        exportDate = try container.decode(String.self, forKey: .exportDate)
+        appVersion = try container.decode(String.self, forKey: .appVersion)
+        items = try container.decode([ItemExport].self, forKey: .items)
+        categories = try container.decode([CategoryExport].self, forKey: .categories)
+        rooms = try container.decode([RoomExport].self, forKey: .rooms)
+        receipts = try container.decode([ReceiptExport].self, forKey: .receipts)
+    }
+    
+    nonisolated func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(exportDate, forKey: .exportDate)
+        try container.encode(appVersion, forKey: .appVersion)
+        try container.encode(items, forKey: .items)
+        try container.encode(categories, forKey: .categories)
+        try container.encode(rooms, forKey: .rooms)
+        try container.encode(receipts, forKey: .receipts)
+    }
 }
 
 /// Flattened item export with relationship names
@@ -626,28 +659,34 @@ struct ItemExport: Codable, Sendable {
     let receiptIds: [UUID]
     let createdAt: Date
     let updatedAt: Date
+}
 
-    init(from item: Item) {
-        self.id = item.id
-        self.name = item.name
-        self.brand = item.brand
-        self.modelNumber = item.modelNumber
-        self.serialNumber = item.serialNumber
-        self.barcode = item.barcode
-        self.purchasePrice = item.purchasePrice
-        self.purchaseDate = item.purchaseDate
-        self.currencyCode = item.currencyCode
-        self.categoryName = item.category?.name
-        self.roomName = item.room?.name
-        self.condition = item.condition.rawValue
-        self.conditionNotes = item.conditionNotes
-        self.notes = item.notes
-        self.warrantyExpiryDate = item.warrantyExpiryDate
-        self.tags = item.tags
-        self.photoIdentifiers = item.photos.sorted(by: { $0.sortOrder < $1.sortOrder }).map(\.imageIdentifier)
-        self.receiptIds = item.receipts.map(\.id)
-        self.createdAt = item.createdAt
-        self.updatedAt = item.updatedAt
+/// MainActor extension for creating ItemExport from SwiftData model
+extension ItemExport {
+    @MainActor
+    static func from(_ item: Item) -> ItemExport {
+        ItemExport(
+            id: item.id,
+            name: item.name,
+            brand: item.brand,
+            modelNumber: item.modelNumber,
+            serialNumber: item.serialNumber,
+            barcode: item.barcode,
+            purchasePrice: item.purchasePrice,
+            purchaseDate: item.purchaseDate,
+            currencyCode: item.currencyCode,
+            categoryName: item.category?.name,
+            roomName: item.room?.name,
+            condition: item.condition.rawValue,
+            conditionNotes: item.conditionNotes,
+            notes: item.notes,
+            warrantyExpiryDate: item.warrantyExpiryDate,
+            tags: item.tags,
+            photoIdentifiers: item.photos.sorted(by: { $0.sortOrder < $1.sortOrder }).map(\.imageIdentifier),
+            receiptIds: item.receipts.map(\.id),
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt
+        )
     }
 }
 
@@ -659,14 +698,20 @@ struct CategoryExport: Codable, Sendable {
     let colorHex: String
     let isCustom: Bool
     let sortOrder: Int
+}
 
-    init(from category: Category) {
-        self.id = category.id
-        self.name = category.name
-        self.iconName = category.iconName
-        self.colorHex = category.colorHex
-        self.isCustom = category.isCustom
-        self.sortOrder = category.sortOrder
+/// MainActor extension for creating CategoryExport from SwiftData model
+extension CategoryExport {
+    @MainActor
+    static func from(_ category: Category) -> CategoryExport {
+        CategoryExport(
+            id: category.id,
+            name: category.name,
+            iconName: category.iconName,
+            colorHex: category.colorHex,
+            isCustom: category.isCustom,
+            sortOrder: category.sortOrder
+        )
     }
 }
 
@@ -677,13 +722,19 @@ struct RoomExport: Codable, Sendable {
     let iconName: String
     let sortOrder: Int
     let isDefault: Bool
+}
 
-    init(from room: Room) {
-        self.id = room.id
-        self.name = room.name
-        self.iconName = room.iconName
-        self.sortOrder = room.sortOrder
-        self.isDefault = room.isDefault
+/// MainActor extension for creating RoomExport from SwiftData model
+extension RoomExport {
+    @MainActor
+    static func from(_ room: Room) -> RoomExport {
+        RoomExport(
+            id: room.id,
+            name: room.name,
+            iconName: room.iconName,
+            sortOrder: room.sortOrder,
+            isDefault: room.isDefault
+        )
     }
 }
 
@@ -699,18 +750,24 @@ struct ReceiptExport: Codable, Sendable {
     let confidence: Double
     let linkedItemId: UUID?
     let createdAt: Date
+}
 
-    init(from receipt: Receipt) {
-        self.id = receipt.id
-        self.vendor = receipt.vendor
-        self.total = receipt.total
-        self.taxAmount = receipt.taxAmount
-        self.purchaseDate = receipt.purchaseDate
-        self.imageIdentifier = receipt.imageIdentifier
-        self.rawText = receipt.rawText
-        self.confidence = receipt.confidence
-        self.linkedItemId = receipt.linkedItem?.id
-        self.createdAt = receipt.createdAt
+/// MainActor extension for creating ReceiptExport from SwiftData model
+extension ReceiptExport {
+    @MainActor
+    static func from(_ receipt: Receipt) -> ReceiptExport {
+        ReceiptExport(
+            id: receipt.id,
+            vendor: receipt.vendor,
+            total: receipt.total,
+            taxAmount: receipt.taxAmount,
+            purchaseDate: receipt.purchaseDate,
+            imageIdentifier: receipt.imageIdentifier,
+            rawText: receipt.rawText,
+            confidence: receipt.confidence,
+            linkedItemId: receipt.linkedItem?.id,
+            createdAt: receipt.createdAt
+        )
     }
 }
 
@@ -820,5 +877,23 @@ enum BackupError: LocalizedError {
         case .unsupportedVersion(let version):
             return String(localized: "Unsupported backup version: \(version)", comment: "Backup error")
         }
+    }
+}
+
+// MARK: - Codable Helper
+
+/// Nonisolated helper to perform JSON encoding/decoding outside of actor isolation
+private enum BackupCodableHelper: Sendable {
+    nonisolated static func encode(_ data: BackupData) throws -> Data {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
+        return try encoder.encode(data)
+    }
+    
+    nonisolated static func decode(from jsonData: Data) throws -> BackupData {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(BackupData.self, from: jsonData)
     }
 }

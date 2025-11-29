@@ -5,12 +5,12 @@
 //  Created by Griffin on 11/28/25.
 //
 
-import UIKit
+@preconcurrency import UIKit
 import OSLog
 
 /// Thread-safe image caching system using NSCache with automatic memory management
 actor ImageCache {
-    static let shared = ImageCache()
+    @MainActor static let shared = ImageCache()
 
     private let cache = NSCache<NSString, UIImage>()
     private let logger = Logger(subsystem: "com.drunkonjava.nestory", category: "ImageCache")
@@ -19,16 +19,17 @@ actor ImageCache {
         // Configure cache limits
         cache.countLimit = 50 // Max 50 images
         cache.totalCostLimit = 100 * 1024 * 1024 // 100MB max
-
-        // Set up memory warning observer
+        
+        // Set up memory warning observer using Task to bridge actor isolation
         Task { @MainActor in
+            let weakSelf = self
             NotificationCenter.default.addObserver(
                 forName: UIApplication.didReceiveMemoryWarningNotification,
                 object: nil,
                 queue: .main
-            ) { [weak self] _ in
+            ) { _ in
                 Task {
-                    await self?.handleMemoryWarning()
+                    await weakSelf.handleMemoryWarning()
                 }
             }
         }
