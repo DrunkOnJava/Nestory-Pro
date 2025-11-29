@@ -138,7 +138,10 @@ struct AddItemView: View {
             }
             .task {
                 // Initialize with proper AppEnvironment settings
-                viewModel = env.makeAddItemViewModel()
+                let vm = env.makeAddItemViewModel()
+                // Task 6.1.2: Set default room from settings
+                vm.setDefaultRoom(rooms)
+                viewModel = vm
             }
         }
     }

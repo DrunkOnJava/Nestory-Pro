@@ -42,6 +42,17 @@ final class AddItemViewModel {
         self.settings = settings
     }
     
+    // MARK: - Default Room
+    
+    /// Set the default room if configured and no room is already selected
+    func setDefaultRoom(_ rooms: [Room]) {
+        guard selectedRoom == nil,
+              let defaultRoomId = settings.defaultRoomId,
+              let defaultRoom = rooms.first(where: { $0.id.uuidString == defaultRoomId })
+        else { return }
+        selectedRoom = defaultRoom
+    }
+    
     // MARK: - Validation
     
     /// Check if form can be saved (name is not empty)

@@ -31,6 +31,10 @@ final class SettingsManager: SettingsProviding {
     @ObservationIgnored
     @AppStorage("preferredCurrencyCode") var preferredCurrencyCode: String = "USD"
     
+    // MARK: - Inventory
+    @ObservationIgnored
+    @AppStorage("defaultRoomId") var defaultRoomId: String?
+    
     // MARK: - Security
     @ObservationIgnored
     @AppStorage("requiresBiometrics") var requiresBiometrics: Bool = false
