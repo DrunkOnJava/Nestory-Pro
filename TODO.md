@@ -91,11 +91,12 @@ When you check out a task, add an entry here:
   - Update README and spec files to reflect decision
   - Ensure PRODUCT-SPEC.md, TECHNICAL_SPEC.md, and DATA_MODEL.md all agree
 
-- [ ] **1.1.2** Align Xcode target + fastlane with chosen bundle ID
-  - Update Xcode target bundle identifier to match final ID
-  - Update `fastlane/Appfile` and `fastlane/Matchfile`
-  - Regenerate provisioning profiles via `bundle exec fastlane match`
-  - Fix `APP_STORE_CONNECT_API_KEY_PATH` / `api_key_path` error in fastlane
+- [x] **1.1.2** Align Xcode target + fastlane with chosen bundle ID ✓ 2025-11-29
+  - Xcode target: `com.drunkonjava.Nestory-Pro` (verified)
+  - Fastlane Appfile: `com.drunkonjava.Nestory-Pro` (verified)
+  - App Store Connect API key configured via .env (gitignored)
+  - Created .env.example for documentation
+  - Using Xcode automatic signing (Match not required)
 
 - [ ] **1.1.3** Sync spec suite with current codebase
   - Validate PRODUCT-SPEC.md, TECHNICAL_SPEC.md, DATA_MODEL.md, DESIGN_SYSTEM.md match actual code
@@ -552,16 +553,20 @@ When you check out a task, add an entry here:
 
 ### 6.3 Data Import
 
-- [ ] **6.3.1** Implement restore from backup
-  - Add to BackupService
-  - Parse JSON, validate, insert into SwiftData
-  - Handle conflicts (merge or replace)
-  - DEPENDS: 3.4.1
+- [x] **6.3.1** Implement restore from backup ✓ 2025-11-29
+  - Added `performRestore(from:context:strategy:)` to BackupService
+  - `RestoreStrategy` enum: merge (add to existing) or replace (clear first)
+  - `RestoreResult` struct with counts and errors
+  - Handles categories, rooms, items, receipts with relationship linking
+  - Skips duplicates in merge mode by ID
+  - DEPENDS: 3.4.1 ✓
 
-- [ ] **6.3.2** Wire import button in Settings
-  - Show document picker for .json files
-  - Confirm before importing
-  - DEPENDS: 3.4.1
+- [x] **6.3.2** Wire import button in Settings ✓ 2025-11-29
+  - Import Data button in Settings opens document picker for .json files
+  - Confirmation dialog with Merge/Replace strategy options
+  - Uses BackupService.performRestore for actual restore
+  - Shows result summary with counts after completion
+  - DEPENDS: 6.3.1 ✓
 
 ### 3.5 Backup Import (v1.1 Preparation)
 

@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 
 struct SettingsTab: View {
     @Environment(AppEnvironment.self) private var env
+    @Environment(\.modelContext) private var modelContext
     @State private var showingProPaywall = false
 
     // Export state - Task 3.4.2: Wire up BackupService export
@@ -20,6 +21,17 @@ struct SettingsTab: View {
     @State private var exportError: Error?
     @State private var showingExportError = false
     @State private var exportedFileURL: URL?
+    
+    // Import state - Task 6.3.1/6.3.2: Restore from backup
+    @State private var showingImportPicker = false
+    @State private var showingImportConfirmation = false
+    @State private var showingImportResult = false
+    @State private var isImporting = false
+    @State private var importError: Error?
+    @State private var showingImportError = false
+    @State private var restoreResult: RestoreResult?
+    @State private var pendingImportURL: URL?
+    @State private var restoreStrategy: RestoreStrategy = .merge
 
     // SwiftData queries for export
     @Query private var allItems: [Item]
@@ -120,9 +132,18 @@ struct SettingsTab: View {
                     }
                     .disabled(isExportingCSV || isExportingJSON && env.settings.isProUnlocked)
 
-                    Button("Import Data") {
-                        // TODO: Import data (Task 3.4.3)
+                    Button {
+                        showingImportPicker = true
+                    } label: {
+                        HStack {
+                            Text("Import Data")
+                            Spacer()
+                            if isImporting {
+                                ProgressView()
+                            }
+                        }
                     }
+                    .disabled(isImporting)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.importDataButton)
                 } header: {
                     Text("Data & Sync")
@@ -250,6 +271,52 @@ struct SettingsTab: View {
                     Text("An unknown error occurred during export.")
                 }
             }
+            // Import file picker
+            .fileImporter(
+                isPresented: $showingImportPicker,
+                allowedContentTypes: [.json],
+                allowsMultipleSelection: false
+            ) { result in
+                handleImportFileSelection(result)
+            }
+            // Import confirmation dialog
+            .confirmationDialog(
+                "Restore Backup",
+                isPresented: $showingImportConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Merge with Existing") {
+                    restoreStrategy = .merge
+                    performImport()
+                }
+                Button("Replace All Data", role: .destructive) {
+                    restoreStrategy = .replace
+                    performImport()
+                }
+                Button("Cancel", role: .cancel) {
+                    pendingImportURL = nil
+                }
+            } message: {
+                Text("Merge adds backup data to existing inventory. Replace clears existing data first.")
+            }
+            // Import result alert
+            .alert("Restore Complete", isPresented: $showingImportResult) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                if let result = restoreResult {
+                    Text(result.summaryText)
+                }
+            }
+            // Import error alert
+            .alert("Import Failed", isPresented: $showingImportError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                if let error = importError {
+                    Text(error.localizedDescription)
+                } else {
+                    Text("An unknown error occurred during import.")
+                }
+            }
         }
     }
 
@@ -313,6 +380,58 @@ struct SettingsTab: View {
             showingExportError = true
         }
         exportedFileURL = nil
+    }
+    
+    // MARK: - Import Actions (Task 6.3.1/6.3.2)
+    
+    /// Handle file selection from document picker
+    private func handleImportFileSelection(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else { return }
+            pendingImportURL = url
+            showingImportConfirmation = true
+        case .failure(let error):
+            importError = error
+            showingImportError = true
+        }
+    }
+    
+    /// Perform the actual import with selected strategy
+    private func performImport() {
+        guard let url = pendingImportURL else { return }
+
+        isImporting = true
+
+        Task {
+            do {
+                // Need to start security-scoped access for the picked file
+                guard url.startAccessingSecurityScopedResource() else {
+                    throw BackupError.readFailed(NSError(
+                        domain: "com.drunkonjava.nestory",
+                        code: -1,
+                        userInfo: [NSLocalizedDescriptionKey: "Cannot access the selected file"]
+                    ))
+                }
+                defer { url.stopAccessingSecurityScopedResource() }
+
+                // Perform restore using BackupService
+                let result = try await env.backupService.performRestore(
+                    from: url,
+                    context: modelContext,
+                    strategy: restoreStrategy
+                )
+
+                restoreResult = result
+                showingImportResult = true
+            } catch {
+                importError = error
+                showingImportError = true
+            }
+
+            isImporting = false
+            pendingImportURL = nil
+        }
     }
 }
 
