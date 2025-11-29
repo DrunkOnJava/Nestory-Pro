@@ -127,3 +127,6 @@ fastlane/.env
 fastlane/*.p8
 .codebase/
 .DS_Store
+
+# Personal experiments folder (local SwiftUI preview playground)
+Experiments/
