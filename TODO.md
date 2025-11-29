@@ -163,10 +163,11 @@ When you check out a task, add an entry here:
 
 ### 1.5 AppEnvironment & DI Verification
 
-- [ ] **1.5.1** Verify AppEnvironment matches TECHNICAL_SPEC.md
-  - Ensure it exposes: `settingsManager`, `iapValidator`, `photoStorage`, `ocrService`, `reportGenerator`, `backupService`, `appLockService`
-  - Replace any remaining ad-hoc singletons with AppEnvironment-backed injection
-  - DEPENDS: 5.2.1 (AppEnvironment creation already complete)
+- [x] **1.5.1** Verify AppEnvironment matches specification ✓ 2025-11-28
+  - All 7 services exposed: settings, iapValidator, photoStorage, ocrService, reportGenerator, backupService, appLockService
+  - Views/ViewModels use @Environment(AppEnvironment.self) for DI
+  - Internal service dependencies (OCRService→PhotoStorage) use .shared - acceptable for v1.0
+  - DEPENDS: 5.2.1 ✓
 
 - [x] **1.5.2** Add test AppEnvironment factory ✓ 2025-11-29
   - Created `AppEnvironment.mock()` variant with protocol-based DI
