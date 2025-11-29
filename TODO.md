@@ -572,9 +572,11 @@ When you check out a task, add an entry here:
 
 ### 3.5 Backup Import (v1.1 Preparation)
 
-- [ ] **3.5.1** Design import format and reconciliation rules
-  - Define how IDs, conflicts, and missing photos are handled
-  - Document in DATA_MODEL.md under "Migrations / Backup Import"
+- [x] **3.5.1** Design import format and reconciliation rules ✓ 2025-11-29
+  - Documented in WARP.md under "Backup & Import Format"
+  - JSON format with items, categories, rooms, receipts
+  - Merge vs Replace strategies defined
+  - Reconciliation table for conflicts and missing data
 
 - [ ] **3.5.2** Implement ImportBackupService (P2)
   - Parse manifest + photos ZIP and import into current store
@@ -846,7 +848,7 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 124 tasks (0 in progress, 97 completed, 27 remaining)*
+*Task Count: 124 tasks (0 in progress, 98 completed, 26 remaining)*
 
 ### Changelog
 - **2025-11-29**: Added TipKit integration (8.3.1-8.3.3) with documentation, iCloud sync, and quick capture tips

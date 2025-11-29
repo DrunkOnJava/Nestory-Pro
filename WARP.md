@@ -218,6 +218,41 @@ An item is "documented" when it has the 4 core fields:
 - Photo storage: File-based with identifiers in database (not `Data` blobs)
 - iCloud container: `iCloud.com.drunkonjava.nestory`
 
+### Backup & Import Format
+
+**JSON Export Format (`nestory-backup-YYYYMMDD-HHMMSS.json`):**
+```json
+{
+  "exportDate": "2025-11-29T12:00:00Z",
+  "appVersion": "1.0.0",
+  "items": [{ "id": "uuid", "name": "...", "categoryName": "...", "roomName": "...", ... }],
+  "categories": [{ "id": "uuid", "name": "...", "iconName": "...", ... }],
+  "rooms": [{ "id": "uuid", "name": "...", "iconName": "...", ... }],
+  "receipts": [{ "id": "uuid", "vendor": "...", "total": 99.99, ... }]
+}
+```
+
+**Reconciliation Rules (Import):**
+
+| Scenario | Merge Strategy | Replace Strategy |
+|----------|----------------|------------------|
+| Category exists (by name) | Update properties, keep ID | Overwrite with backup |
+| Room exists (by name) | Update properties, keep ID | Overwrite with backup |
+| Item with same UUID | Skip (no duplicate) | Overwrite with backup |
+| Receipt with same UUID | Skip (no duplicate) | Overwrite with backup |
+| Missing relationships | Link by name match | Link by name match |
+| Orphaned photo IDs | Warn but continue | Warn but continue |
+
+**Import Strategies:**
+- **Merge**: Adds backup data to existing inventory. Skips duplicates by UUID. Updates existing categories/rooms by name.
+- **Replace**: Clears existing items, receipts, and custom categories/rooms first. Default system categories/rooms are preserved.
+
+**Photo Handling (v1.0):**
+- Photos are NOT included in JSON export (file size concerns)
+- `photoIdentifiers` array references files in `Documents/Photos/`
+- Import creates `ItemPhoto` records but photos may be missing
+- Future v1.1: ZIP archive format with photos + manifest
+
 ### Concurrency
 - **Swift 5 language mode** for v1.0 stability (Swift 6 migration in v1.1)
 - **Swift 6.2.1 toolchain** for latest compiler optimizations
