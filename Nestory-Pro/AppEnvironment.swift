@@ -59,6 +59,9 @@ final class AppEnvironment {
     /// Capture tab view model
     let captureViewModel: CaptureTabViewModel
     
+    /// Reports tab view model
+    let reportsViewModel: ReportsTabViewModel
+    
     /// Create a new AddItemViewModel instance
     /// Each AddItemView sheet gets its own fresh instance
     func makeAddItemViewModel() -> AddItemViewModel {
@@ -89,6 +92,7 @@ final class AppEnvironment {
         // Initialize ViewModels with service dependencies
         self.inventoryViewModel = InventoryTabViewModel(settings: self.settings)
         self.captureViewModel = CaptureTabViewModel()
+        self.reportsViewModel = ReportsTabViewModel()
     }
     
     // MARK: - Testing Support

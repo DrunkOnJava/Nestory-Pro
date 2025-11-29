@@ -295,15 +295,27 @@ final class IAPValidatorTests: XCTestCase {
         // Note: Testing actual error states requires StoreKit environment
     }
 
-    // MARK: - Singleton Pattern Tests
+    // MARK: - Dependency Injection Pattern Tests
 
-    func testShared_ReturnsSameInstance() {
-        // Arrange & Act
+    func testMultipleInstances_AreIndependent() {
+        // IAPValidator uses DI pattern (via AppEnvironment), not singleton
+        // Each instance should be independent
         let instance1 = IAPValidator()
         let instance2 = IAPValidator()
 
-        // Assert
-        XCTAssertTrue(instance1 === instance2, "shared should return the same instance")
+        // Assert - Instances are separate (DI pattern, not singleton)
+        XCTAssertFalse(instance1 === instance2, "Each init() should create a new independent instance")
+
+        #if DEBUG
+        // Verify independence: changing one doesn't affect the other
+        instance1.simulateProUnlock()
+        // Note: Both read from same Keychain, so they'll both see the change
+        // But they are still separate object instances
+        XCTAssertTrue(instance1.isProUnlocked)
+
+        // Cleanup
+        instance1.resetProStatus()
+        #endif
     }
 
     // MARK: - Keychain Integration Tests

@@ -369,8 +369,8 @@ When you check out a task, add an entry here:
   - Coordinate capture flows
   - DEPENDS: 2.2.3
 
-- [ ] **5.1.5** Create ReportsTabViewModel
-  - File: `Nestory-Pro/ViewModels/ReportsTabViewModel.swift` (create)
+- [x] **5.1.5** Create ReportsTabViewModel ✓ 2025-11-29
+  - File: `Nestory-Pro/ViewModels/ReportsTabViewModel.swift` (created)
   - Handle report generation and export
   - DEPENDS: 3.5.1
 
@@ -606,4 +606,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 73 tasks (0 in progress, 41 completed, 32 remaining)*
+*Task Count: 73 tasks (0 in progress, 42 completed, 31 remaining)*

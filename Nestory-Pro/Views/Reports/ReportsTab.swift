@@ -40,25 +40,18 @@ struct ReportsTab: View {
     // MARK: - Dependencies
 
     @Environment(AppEnvironment.self) private var env
-
-    // MARK: - State
-
-    @State private var showingLossListSelection = false
-    @State private var showingFullInventoryReport = false
-
-    // MARK: - Computed Properties
-
-    /// Total inventory value from all items with purchase prices
-    private var totalInventoryValue: Decimal {
-        allItems.reduce(0) { sum, item in
-            sum + (item.purchasePrice ?? 0)
-        }
+    
+    // ViewModel handles report generation and statistics
+    private var viewModel: ReportsTabViewModel {
+        env.reportsViewModel
     }
 
     // MARK: - Body
 
     var body: some View {
-        NavigationStack {
+        @Bindable var vm = viewModel
+        
+        return NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     // Quick Stats Section
@@ -75,7 +68,7 @@ struct ReportsTab: View {
                             title: "Full Inventory Report",
                             description: "Generate a comprehensive PDF of all your items"
                         ) {
-                            showingFullInventoryReport = true
+                            viewModel.showFullInventoryReport()
                         }
 
                         // Loss List Report Card
@@ -85,7 +78,7 @@ struct ReportsTab: View {
                             title: "Insurance Loss List",
                             description: "Create a claim-ready report for lost or damaged items"
                         ) {
-                            showingLossListSelection = true
+                            viewModel.showLossListSelection()
                         }
                     }
                     .padding(.horizontal)
@@ -95,10 +88,10 @@ struct ReportsTab: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Reports")
-            .sheet(isPresented: $showingLossListSelection) {
+            .sheet(isPresented: $vm.showingLossListSelection) {
                 LossListSelectionView()
             }
-            .sheet(isPresented: $showingFullInventoryReport) {
+            .sheet(isPresented: $vm.showingFullInventoryReport) {
                 FullInventoryReportPlaceholder()
             }
         }
@@ -120,7 +113,7 @@ struct ReportsTab: View {
                 // Total Value Stat
                 StatCard(
                     title: "Total Value",
-                    value: env.settings.formatCurrency(totalInventoryValue),
+                    value: env.settings.formatCurrency(viewModel.calculateTotalInventoryValue(allItems)),
                     icon: "dollarsign.circle.fill",
                     color: .green
                 )
