@@ -223,11 +223,12 @@ When you check out a task, add an entry here:
 
 ### 2.3 Item Detail & Documentation Badges
 
-- [ ] **2.3.1** Implement ItemDetail layout per spec
-  - File: `Nestory-Pro/Views/Inventory/ItemDetailView.swift`
-  - Photo carousel (top ~40%), key fields sections, receipts section, doc badges
-  - Action bar (Edit, Add Photo, Add Receipt)
-  - Use spacing and corner tokens from DESIGN_SYSTEM.md (no magic numbers)
+- [x] **2.3.1** Implement ItemDetail layout per spec ✓ 2025-11-29
+  - Photo carousel: TabView with paging, counter overlay, async photo loading
+  - 6-field documentation badges with progress bar and score percentage
+  - "What's missing?" info sheet explaining field weights
+  - Design tokens: 12pt corner radius, 16pt section spacing, 40% photo height
+  - PhotoThumbnailView component for async photo loading
 
 - [ ] **2.3.2** Hook up documentation score & badges
   - Implement `DocumentationScoreCalculator` (if not already) using weights from DATA_MODEL.md

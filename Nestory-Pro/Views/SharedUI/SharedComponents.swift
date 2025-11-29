@@ -54,13 +54,15 @@ struct DocumentationBadge: View {
     let label: String
     let isComplete: Bool
     let compact: Bool
-    
-    init(_ label: String, isComplete: Bool, compact: Bool = false) {
+    let weight: String?
+
+    init(_ label: String, isComplete: Bool, compact: Bool = false, weight: String? = nil) {
         self.label = label
         self.isComplete = isComplete
         self.compact = compact
+        self.weight = weight
     }
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: isComplete ? "checkmark.circle.fill" : "circle")
@@ -68,6 +70,11 @@ struct DocumentationBadge: View {
             if !compact {
                 Text(label)
                     .font(.caption)
+                if let weight = weight {
+                    Text("(\(weight))")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .foregroundStyle(isComplete ? .green : .secondary)
