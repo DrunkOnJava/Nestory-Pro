@@ -82,6 +82,14 @@ actor ImageCache {
         logger.info("Cleared all cached images")
     }
 
+    /// Reduces cache by lowering limits (called on memory pressure warning)
+    func reduceCache() {
+        // Reduce cache limits to half
+        cache.countLimit = 25 // Reduce from 50 to 25
+        cache.totalCostLimit = 50 * 1024 * 1024 // Reduce from 100MB to 50MB
+        logger.info("Reduced cache limits due to memory pressure")
+    }
+
     // MARK: - Private Helpers
 
     /// Loads an image from the app's Documents directory

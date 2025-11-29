@@ -34,8 +34,17 @@ actor PhotoStorageService: PhotoStorageProtocol {
     /// JPEG compression quality (0.0 = max compression, 1.0 = no compression)
     private let jpegQuality: CGFloat = 0.8
 
+    /// Thumbnail maximum dimension (square aspect ratio)
+    private let thumbnailSize: CGFloat = 150
+
+    /// JPEG compression quality for thumbnails (lower for faster loading)
+    private let thumbnailJpegQuality: CGFloat = 0.6
+
     /// Subdirectory name within Documents
     private let photoDirectoryName = "Photos"
+
+    /// Subdirectory name for thumbnails within Photos directory
+    private let thumbnailDirectoryName = "Thumbnails"
 
     // MARK: - Private Properties
 
@@ -45,9 +54,10 @@ actor PhotoStorageService: PhotoStorageProtocol {
     // MARK: - Initialization
 
     private init() {
-        // Ensure photos directory exists on init
+        // Ensure photos and thumbnails directories exist on init
         Task {
             try? await createPhotosDirectoryIfNeeded()
+            try? await createThumbnailsDirectoryIfNeeded()
         }
     }
 
@@ -76,6 +86,12 @@ actor PhotoStorageService: PhotoStorageProtocol {
         do {
             try imageData.write(to: fileURL, options: .atomic)
             logger.info("Saved photo: \(identifier), size: \(imageData.count) bytes")
+
+            // Generate and save thumbnail asynchronously (don't block on errors)
+            Task.detached(priority: .utility) {
+                try? await self.generateAndSaveThumbnail(for: identifier, from: resizedImage)
+            }
+
             return identifier
         } catch {
             logger.error("Failed to save photo: \(error.localizedDescription)")
@@ -122,6 +138,9 @@ actor PhotoStorageService: PhotoStorageProtocol {
         do {
             try fileManager.removeItem(at: fileURL)
             logger.info("Deleted photo: \(identifier)")
+
+            // Also delete thumbnail if it exists
+            try? deleteThumbnail(for: identifier)
         } catch {
             logger.error("Failed to delete photo: \(error.localizedDescription)")
             throw PhotoStorageError.deleteFailed(error)
@@ -187,6 +206,82 @@ actor PhotoStorageService: PhotoStorageProtocol {
         return 0
     }
 
+    // MARK: - Thumbnail Support
+
+    /// Loads a thumbnail for the given photo identifier
+    /// - Returns: A 150x150 thumbnail image, or nil if not available
+    /// - Note: If thumbnail doesn't exist, generates it from full image and caches it
+    func loadThumbnail(for identifier: String) async -> UIImage? {
+        // First check if thumbnail exists in cache
+        let thumbnailURL = getThumbnailURL(for: identifier)
+
+        if fileManager.fileExists(atPath: thumbnailURL.path) {
+            do {
+                let data = try Data(contentsOf: thumbnailURL)
+                if let thumbnail = UIImage(data: data) {
+                    logger.debug("Loaded cached thumbnail: \(identifier)")
+                    return thumbnail
+                }
+            } catch {
+                logger.warning("Failed to load cached thumbnail: \(error.localizedDescription)")
+            }
+        }
+
+        // No cached thumbnail - try to generate from full image
+        do {
+            let fullImage = try await loadPhoto(identifier: identifier)
+            try await generateAndSaveThumbnail(for: identifier, from: fullImage)
+
+            // Try loading the newly generated thumbnail
+            if let data = try? Data(contentsOf: thumbnailURL),
+               let thumbnail = UIImage(data: data) {
+                logger.info("Generated and cached new thumbnail: \(identifier)")
+                return thumbnail
+            }
+        } catch {
+            logger.error("Failed to generate thumbnail: \(error.localizedDescription)")
+        }
+
+        return nil
+    }
+
+    /// Generates and saves a thumbnail for the given photo
+    private func generateAndSaveThumbnail(for identifier: String, from image: UIImage) async throws {
+        // Ensure thumbnails directory exists
+        try createThumbnailsDirectoryIfNeeded()
+
+        // Resize to thumbnail size
+        let thumbnail = resizeToThumbnail(image)
+
+        // Convert to JPEG with lower quality
+        guard let thumbnailData = thumbnail.jpegData(compressionQuality: thumbnailJpegQuality) else {
+            logger.error("Failed to convert thumbnail to JPEG data")
+            throw PhotoStorageError.compressionFailed
+        }
+
+        // Get thumbnail URL
+        let thumbnailURL = getThumbnailURL(for: identifier)
+
+        // Write to disk
+        do {
+            try thumbnailData.write(to: thumbnailURL, options: .atomic)
+            logger.debug("Saved thumbnail: \(identifier), size: \(thumbnailData.count) bytes")
+        } catch {
+            logger.error("Failed to save thumbnail: \(error.localizedDescription)")
+            throw PhotoStorageError.saveFailed(error)
+        }
+    }
+
+    /// Deletes the thumbnail for the given photo identifier
+    private func deleteThumbnail(for identifier: String) throws {
+        let thumbnailURL = getThumbnailURL(for: identifier)
+
+        if fileManager.fileExists(atPath: thumbnailURL.path) {
+            try fileManager.removeItem(at: thumbnailURL)
+            logger.debug("Deleted thumbnail: \(identifier)")
+        }
+    }
+
     // MARK: - Helper Methods
 
     /// Gets the Photos directory URL within Documents
@@ -203,6 +298,23 @@ actor PhotoStorageService: PhotoStorageProtocol {
         return directoryURL.appendingPathComponent(identifier)
     }
 
+    /// Gets the Thumbnails directory URL within Photos directory
+    private func getThumbnailsDirectoryURL() -> URL {
+        do {
+            let photosURL = try getPhotosDirectoryURL()
+            return photosURL.appendingPathComponent(thumbnailDirectoryName, isDirectory: true)
+        } catch {
+            // Fallback to temp directory if photos directory can't be determined
+            return FileManager.default.temporaryDirectory.appendingPathComponent(thumbnailDirectoryName, isDirectory: true)
+        }
+    }
+
+    /// Gets the full URL for a thumbnail identifier
+    private func getThumbnailURL(for identifier: String) -> URL {
+        let directoryURL = getThumbnailsDirectoryURL()
+        return directoryURL.appendingPathComponent(identifier)
+    }
+
     /// Creates the Photos directory if it doesn't exist
     private func createPhotosDirectoryIfNeeded() throws {
         let directoryURL = try getPhotosDirectoryURL()
@@ -210,6 +322,16 @@ actor PhotoStorageService: PhotoStorageProtocol {
         if !fileManager.fileExists(atPath: directoryURL.path) {
             try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
             logger.info("Created photos directory at: \(directoryURL.path)")
+        }
+    }
+
+    /// Creates the Thumbnails directory if it doesn't exist
+    private func createThumbnailsDirectoryIfNeeded() throws {
+        let directoryURL = getThumbnailsDirectoryURL()
+
+        if !fileManager.fileExists(atPath: directoryURL.path) {
+            try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+            logger.info("Created thumbnails directory at: \(directoryURL.path)")
         }
     }
 
@@ -319,6 +441,45 @@ actor PhotoStorageService: PhotoStorageProtocol {
 
         return UIImage(cgImage: destCGImage, scale: image.scale, orientation: image.imageOrientation)
     }
+
+    /// Resizes an image to thumbnail size (150x150 max, maintaining aspect ratio)
+    /// Uses hardware-accelerated vImage for optimal performance
+    private func resizeToThumbnail(_ image: UIImage) -> UIImage {
+        let size = image.size
+
+        // Calculate new size maintaining aspect ratio (fit within square)
+        let aspectRatio = size.width / size.height
+        var newSize: CGSize
+
+        if size.width > size.height {
+            newSize = CGSize(width: thumbnailSize, height: thumbnailSize / aspectRatio)
+        } else {
+            newSize = CGSize(width: thumbnailSize * aspectRatio, height: thumbnailSize)
+        }
+
+        // Ensure neither dimension exceeds thumbnail size
+        if newSize.width > thumbnailSize {
+            newSize = CGSize(width: thumbnailSize, height: thumbnailSize / aspectRatio)
+        }
+        if newSize.height > thumbnailSize {
+            newSize = CGSize(width: thumbnailSize * aspectRatio, height: thumbnailSize)
+        }
+
+        // Try hardware-accelerated vImage first
+        if let resizedImage = resizeImageWithVImage(image, targetSize: newSize) {
+            logger.debug("Resized thumbnail using vImage to \(Int(newSize.width))x\(Int(newSize.height))")
+            return resizedImage
+        }
+
+        // Fallback to CPU-based UIGraphicsImageRenderer
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        let resizedImage = renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+        }
+
+        logger.debug("Resized thumbnail using fallback to \(Int(newSize.width))x\(Int(newSize.height))")
+        return resizedImage
+    }
 }
 
 // MARK: - Error Types
@@ -358,7 +519,7 @@ enum PhotoStorageError: LocalizedError {
 // MARK: - Cleanup Extension
 
 extension PhotoStorageService {
-    /// Cleans up photos not in the provided set of valid identifiers
+    /// Cleans up photos and thumbnails not in the provided set of valid identifiers
     /// Call this with identifiers from all ItemPhoto records in the database
     func cleanupPhotos(keepingIdentifiers validIdentifiers: Set<String>) async throws -> Int {
         let directoryURL = try getPhotosDirectoryURL()
@@ -369,6 +530,7 @@ extension PhotoStorageService {
 
         var deletedCount = 0
 
+        // Clean up full-size photos
         guard let contents = try? fileManager.contentsOfDirectory(
             at: directoryURL,
             includingPropertiesForKeys: nil,
@@ -379,6 +541,11 @@ extension PhotoStorageService {
 
         for fileURL in contents {
             let identifier = fileURL.lastPathComponent
+
+            // Skip the thumbnails directory itself
+            if identifier == thumbnailDirectoryName {
+                continue
+            }
 
             if !validIdentifiers.contains(identifier) {
                 do {
@@ -391,7 +558,30 @@ extension PhotoStorageService {
             }
         }
 
-        logger.info("Cleanup complete: removed \(deletedCount) orphaned photos")
+        // Clean up orphaned thumbnails
+        let thumbnailsURL = getThumbnailsDirectoryURL()
+        if fileManager.fileExists(atPath: thumbnailsURL.path),
+           let thumbnailContents = try? fileManager.contentsOfDirectory(
+               at: thumbnailsURL,
+               includingPropertiesForKeys: nil,
+               options: [.skipsHiddenFiles]
+           ) {
+            for thumbnailURL in thumbnailContents {
+                let identifier = thumbnailURL.lastPathComponent
+
+                if !validIdentifiers.contains(identifier) {
+                    do {
+                        try fileManager.removeItem(at: thumbnailURL)
+                        deletedCount += 1
+                        logger.info("Cleaned up orphaned thumbnail: \(identifier)")
+                    } catch {
+                        logger.warning("Failed to clean up orphaned thumbnail: \(identifier)")
+                    }
+                }
+            }
+        }
+
+        logger.info("Cleanup complete: removed \(deletedCount) orphaned photos and thumbnails")
         return deletedCount
     }
 }

@@ -347,12 +347,14 @@ struct InventoryTab: View {
                     }
                 }
             }
+            // Performance: Force SwiftUI to refresh list on filter/sort changes for efficient diffing
+            .id("\(viewModel.selectedFilter.rawValue)-\(viewModel.selectedSort.rawValue)")
         } else {
             let columns = [
                 GridItem(.flexible(), spacing: 12),
                 GridItem(.flexible(), spacing: 12)
             ]
-            
+
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(filteredItems) { item in
                     NavigationLink(destination: ItemDetailView(item: item)) {
@@ -364,6 +366,8 @@ struct InventoryTab: View {
                     }
                 }
             }
+            // Performance: Force SwiftUI to refresh grid on filter/sort changes for efficient diffing
+            .id("\(viewModel.selectedFilter.rawValue)-\(viewModel.selectedSort.rawValue)")
         }
     }
     

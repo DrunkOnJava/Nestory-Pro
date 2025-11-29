@@ -19,6 +19,7 @@
 
 import Foundation
 import OSLog
+import os.signpost
 
 /// Actor-based backup service for exporting and importing inventory data
 actor BackupService {
@@ -27,6 +28,7 @@ actor BackupService {
     // MARK: - Private Properties
 
     private let logger = Logger(subsystem: "com.drunkonjava.nestory", category: "BackupService")
+    private let signpostLog = OSLog(subsystem: "com.drunkonjava.nestory", category: .pointsOfInterest)
     private let fileManager = FileManager.default
 
     // MARK: - Initialization
@@ -48,6 +50,14 @@ actor BackupService {
         rooms: [Room],
         receipts: [Receipt]
     ) async throws -> URL {
+        let signpostID = OSSignpostID(log: signpostLog)
+        os_signpost(.begin, log: signpostLog, name: "JSON Export", signpostID: signpostID,
+                    "items: %d, categories: %d, rooms: %d, receipts: %d",
+                    items.count, categories.count, rooms.count, receipts.count)
+        defer {
+            os_signpost(.end, log: signpostLog, name: "JSON Export", signpostID: signpostID)
+        }
+
         logger.info("Starting JSON export: \(items.count) items, \(categories.count) categories, \(rooms.count) rooms, \(receipts.count) receipts")
 
         // Build export data structure on MainActor since models are @MainActor
@@ -95,6 +105,13 @@ actor BackupService {
     /// - Parameter items: Items to export
     /// - Returns: URL to the exported CSV file in temp directory
     func exportToCSV(items: [Item]) async throws -> URL {
+        let signpostID = OSSignpostID(log: signpostLog)
+        os_signpost(.begin, log: signpostLog, name: "CSV Export", signpostID: signpostID,
+                    "items: %d", items.count)
+        defer {
+            os_signpost(.end, log: signpostLog, name: "CSV Export", signpostID: signpostID)
+        }
+
         logger.info("Starting CSV export: \(items.count) items")
 
         // Build CSV content
@@ -142,6 +159,12 @@ actor BackupService {
     /// - Parameter url: URL to the JSON backup file
     /// - Returns: ImportResult with counts and errors
     func importFromJSON(url: URL) async throws -> ImportResult {
+        let signpostID = OSSignpostID(log: signpostLog)
+        os_signpost(.begin, log: signpostLog, name: "JSON Import", signpostID: signpostID)
+        defer {
+            os_signpost(.end, log: signpostLog, name: "JSON Import", signpostID: signpostID)
+        }
+
         logger.info("Starting JSON import from: \(url.path)")
 
         // Read JSON data

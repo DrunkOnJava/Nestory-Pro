@@ -81,6 +81,55 @@ actor OCRService: OCRServiceProtocol {
         }
     }
 
+    /// Process multiple images concurrently with limited parallelism
+    /// - Parameters:
+    ///   - images: Array of UIImages to process
+    ///   - maxConcurrent: Maximum concurrent OCR operations (default: 3)
+    /// - Returns: Array of OCRResult in the same order as input images
+    /// - Note: Limits concurrency to avoid memory spikes from Vision framework
+    func recognizeTextBatch(from images: [UIImage], maxConcurrent: Int = 3) async throws -> [OCRResult] {
+        try await withThrowingTaskGroup(of: (Int, OCRResult).self) { group in
+            var results = [(Int, OCRResult)]()
+            results.reserveCapacity(images.count)
+
+            for (index, image) in images.enumerated() {
+                // Limit concurrent tasks
+                if index >= maxConcurrent {
+                    if let result = try await group.next() {
+                        results.append(result)
+                    }
+                }
+
+                group.addTask { [weak self] in
+                    guard let self else { throw OCRError.serviceUnavailable }
+                    let result = try await self.recognizeText(from: image)
+                    return (index, result)
+                }
+            }
+
+            // Collect remaining results
+            for try await result in group {
+                results.append(result)
+            }
+
+            // Sort by original index and return just results
+            return results.sorted { $0.0 < $1.0 }.map { $0.1 }
+        }
+    }
+
+    /// Perform OCR on a UIImage directly (without loading from storage)
+    /// - Parameter image: The UIImage to process
+    /// - Returns: OCRResult containing text and confidence
+    private func recognizeText(from image: UIImage) async throws -> OCRResult {
+        guard let cgImage = image.cgImage else {
+            throw OCRError.invalidImage
+        }
+
+        let (text, confidence) = try await performOCR(on: cgImage)
+
+        return OCRResult(text: text, confidence: confidence)
+    }
+
     // MARK: - Core OCR Engine
 
     private func performOCR(on cgImage: CGImage) async throws -> (String, Double) {
@@ -302,6 +351,7 @@ enum OCRError: LocalizedError {
     case invalidImage
     case recognitionFailed(Error)
     case noTextFound
+    case serviceUnavailable
 
     var errorDescription: String? {
         switch self {
@@ -311,6 +361,16 @@ enum OCRError: LocalizedError {
             return String(localized: "Text recognition failed: \(error.localizedDescription)", comment: "OCR error")
         case .noTextFound:
             return String(localized: "No text found in image", comment: "OCR error")
+        case .serviceUnavailable:
+            return String(localized: "OCR service is temporarily unavailable", comment: "OCR error")
         }
     }
+}
+
+// MARK: - Supporting Types
+
+/// Result of OCR operation containing recognized text and confidence score
+struct OCRResult {
+    let text: String
+    let confidence: Double
 }
