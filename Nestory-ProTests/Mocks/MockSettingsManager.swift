@@ -27,6 +27,7 @@ final class MockSettingsManager: SettingsProviding {
 
     // MARK: - Default Room
     var defaultRoomId: String? = nil
+    var inventoryViewMode: String = "list"
 
     // MARK: - Notifications
     var enableDocumentationReminders: Bool = false

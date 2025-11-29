@@ -26,6 +26,7 @@ protocol SettingsProviding {
 
     // MARK: - Default Room
     var defaultRoomId: String? { get set }
+    var inventoryViewMode: String { get set }
 
     // MARK: - Notifications
     var enableDocumentationReminders: Bool { get set }

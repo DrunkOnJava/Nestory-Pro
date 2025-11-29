@@ -20,7 +20,10 @@ final class InventoryTabViewModel {
     var searchText: String = ""
     var selectedFilter: ItemFilter = .all
     var selectedSort: ItemSort = .newest
-    var viewMode: ViewMode = .list
+    var viewMode: ViewMode {
+        get { ViewMode(rawValue: settings.inventoryViewMode) ?? .list }
+        set { settings.inventoryViewMode = newValue.rawValue }
+    }
     var showingAddItem: Bool = false
     var showingDocumentationInfo: Bool = false
     var showingProPaywall: Bool = false
@@ -28,11 +31,11 @@ final class InventoryTabViewModel {
     
     // MARK: - Dependencies
     
-    private let settings: any SettingsProviding
+    private let settings: SettingsManager
     
     // MARK: - Initialization
     
-    init(settings: any SettingsProviding) {
+    init(settings: SettingsManager) {
         self.settings = settings
     }
     

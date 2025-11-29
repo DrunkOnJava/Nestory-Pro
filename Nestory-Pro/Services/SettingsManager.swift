@@ -35,6 +35,9 @@ final class SettingsManager: SettingsProviding {
     @ObservationIgnored
     @AppStorage("defaultRoomId") var defaultRoomId: String?
     
+    @ObservationIgnored
+    @AppStorage("inventoryViewMode") var inventoryViewMode: String = "list"
+    
     // MARK: - Security
     @ObservationIgnored
     @AppStorage("requiresBiometrics") var requiresBiometrics: Bool = false
