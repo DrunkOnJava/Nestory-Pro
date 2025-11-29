@@ -130,10 +130,11 @@ When you check out a task, add an entry here:
   - Money representation: Uses `Decimal` type (better than Int cents, avoids Double precision issues)
   - Updated WARP.md with 6-field documentation score
 
-- [ ] **1.3.2** Add VersionedSchema scaffolding for future migrations (v1.1+)
-  - Create `NestorySchemaV1` and `NestorySchemaV1_1` enums implementing `VersionedSchema`
-  - Add `NestoryMigrationPlan: SchemaMigrationPlan` with placeholder `migrateV1toV1_1` stage
-  - Wire `ModelContainer` to use `NestorySchemaV1` for 1.0
+- [x] **1.3.2** Add VersionedSchema scaffolding for future migrations ✓ 2025-11-28
+  - Created `NestorySchemaV1` implementing `VersionedSchema`
+  - Created `NestoryMigrationPlan: SchemaMigrationPlan` with placeholder stages
+  - Added `NestoryModelContainer` factory for production/testing containers
+  - Updated Nestory_ProApp to use versioned schema + disabled CloudKit (Task 10.1.1)
 
 - [ ] **1.3.3** DataModel test harness
   - Add unit tests to confirm model invariants (non-optional fields, default values)

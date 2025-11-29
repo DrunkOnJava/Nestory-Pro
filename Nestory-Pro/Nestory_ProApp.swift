@@ -47,23 +47,11 @@ struct Nestory_ProApp: App {
         }
     }
 
+    // Task 1.3.2: Use versioned schema for proper migrations
+    // Task 10.1.1: CloudKit disabled for v1.0 (local-only storage)
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-            ItemPhoto.self,
-            Receipt.self,
-            Category.self,
-            Room.self
-        ])
-
-        let modelConfiguration = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: false,
-            cloudKitDatabase: .automatic
-        )
-
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try NestoryModelContainer.createForProduction()
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
