@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  beta:
+  test:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
@@ -22,10 +22,49 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('**/*.swift', '**/project.pbxproj') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
+
       - name: Install dependencies
         run: bundle install
 
-      - name: Fastlane Beta
+      - name: Run Unit Tests
+        run: bundle exec fastlane test_unit
+
+  beta:
+    needs: test
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('**/*.swift', '**/project.pbxproj') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Build and Upload to TestFlight
         env:
           FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
@@ -34,4 +73,5 @@ jobs:
         run: |
           # Write API key from secret
           echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode > fastlane/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+          export APP_STORE_CONNECT_API_KEY_PATH="fastlane/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
           bundle exec fastlane beta

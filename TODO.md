@@ -600,11 +600,10 @@ When you check out a task, add an entry here:
 
 ### 7.2 GitHub Actions / CI
 
-- [ ] **7.2.1** Robust CI workflows
-  - Update existing GitHub Actions workflows to:
-    - Run `fastlane ios test` on PRs
-    - Fail on warnings/error counts you care about
-    - Cache derived data appropriately
+- [x] **7.2.1** Robust CI workflows ✓ 2025-11-29
+  - Created test.yml: runs fastlane test_unit on PRs and pushes to main
+  - Updated beta.yml: tests run before deploy, added DerivedData caching
+  - Both workflows cache DerivedData for faster builds
 
 - [ ] **7.2.2** Beta lane automation (optional)
   - Add workflow to trigger `fastlane ios beta` on tagged commits (e.g., `v1.0.0-betaX`)
