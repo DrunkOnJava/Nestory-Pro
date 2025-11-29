@@ -1,6 +1,38 @@
 fastlane documentation
 ----
 
+# Signing & Authentication
+
+This project uses **Xcode Automatic Signing** with **App Store Connect API Keys** for CI/CD.
+
+> **Note**: Match (certificate sync) is NOT used. Xcode manages signing certificates automatically.
+
+## Setup Requirements
+
+1. **App Store Connect API Key** (for TestFlight/App Store uploads):
+   - Generate at: https://appstoreconnect.apple.com/access/api
+   - Save the .p8 file to `fastlane/AuthKey_<KEY_ID>.p8`
+   - Create `fastlane/.env` from `.env.example` with your credentials
+
+2. **Xcode Signing**:
+   - Open Xcode > Signing & Capabilities
+   - Enable "Automatically manage signing"
+   - Select your team
+
+## Environment Variables
+
+Copy `fastlane/.env.example` to `fastlane/.env` and fill in:
+- `APP_STORE_CONNECT_KEY_ID` - Your API key ID
+- `APP_STORE_CONNECT_ISSUER_ID` - Your issuer ID
+- `APP_STORE_CONNECT_API_KEY_PATH` - Path to .p8 file
+
+## GitHub Actions Secrets
+
+For CI/CD, set these repository secrets:
+- `APP_STORE_CONNECT_KEY_ID`
+- `APP_STORE_CONNECT_ISSUER_ID`
+- `APP_STORE_CONNECT_API_KEY_CONTENT` - Base64-encoded .p8 file content
+
 # Installation
 
 Make sure you have the latest version of the Xcode command line tools installed:

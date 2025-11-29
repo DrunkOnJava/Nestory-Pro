@@ -9,14 +9,187 @@ import SwiftUI
 import SwiftData
 import Observation
 
+// MARK: - Enhanced Search Syntax Parser (Task 10.2.2)
+
+/// Parses enhanced search syntax like `room:Kitchen`, `category:Electronics`, `value>1000`
+struct SearchQuery {
+    let plainText: String
+    let roomFilter: String?
+    let categoryFilter: String?
+    let valueFilter: ValueFilter?
+    let tagFilter: String?
+    let hasPhoto: Bool?
+    let hasReceipt: Bool?
+
+    enum ValueFilter {
+        case greaterThan(Decimal)
+        case lessThan(Decimal)
+        case equalTo(Decimal)
+        case between(Decimal, Decimal)
+    }
+
+    /// Parses search text into structured query
+    /// Syntax examples:
+    /// - `room:Kitchen` - Filter by room name
+    /// - `category:Electronics` - Filter by category name
+    /// - `value>1000` - Items with value > $1000
+    /// - `value<500` - Items with value < $500
+    /// - `value:500-1000` - Items with value between $500-$1000
+    /// - `tag:insured` - Filter by tag
+    /// - `has:photo` - Items with photos
+    /// - `has:receipt` - Items with receipts
+    /// - Regular text searches across name, brand, notes
+    static func parse(_ searchText: String) -> SearchQuery {
+        var plainTextParts: [String] = []
+        var roomFilter: String?
+        var categoryFilter: String?
+        var valueFilter: ValueFilter?
+        var tagFilter: String?
+        var hasPhoto: Bool?
+        var hasReceipt: Bool?
+
+        // Split by spaces, handling quoted strings
+        let tokens = tokenize(searchText)
+
+        for token in tokens {
+            let lowercased = token.lowercased()
+
+            // Room filter: room:Kitchen or room:"Living Room"
+            if lowercased.hasPrefix("room:") {
+                let value = String(token.dropFirst(5)).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                if !value.isEmpty {
+                    roomFilter = value
+                }
+            }
+            // Category filter: category:Electronics or cat:Electronics
+            else if lowercased.hasPrefix("category:") || lowercased.hasPrefix("cat:") {
+                let prefixLength = lowercased.hasPrefix("category:") ? 9 : 4
+                let value = String(token.dropFirst(prefixLength)).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                if !value.isEmpty {
+                    categoryFilter = value
+                }
+            }
+            // Value filters: value>1000, value<500, value:500-1000
+            else if lowercased.hasPrefix("value>") {
+                if let amount = Decimal(string: String(token.dropFirst(6))) {
+                    valueFilter = .greaterThan(amount)
+                }
+            }
+            else if lowercased.hasPrefix("value<") {
+                if let amount = Decimal(string: String(token.dropFirst(6))) {
+                    valueFilter = .lessThan(amount)
+                }
+            }
+            else if lowercased.hasPrefix("value=") {
+                if let amount = Decimal(string: String(token.dropFirst(6))) {
+                    valueFilter = .equalTo(amount)
+                }
+            }
+            else if lowercased.hasPrefix("value:") {
+                let rangeStr = String(token.dropFirst(6))
+                if rangeStr.contains("-") {
+                    let parts = rangeStr.split(separator: "-")
+                    if parts.count == 2,
+                       let min = Decimal(string: String(parts[0])),
+                       let max = Decimal(string: String(parts[1])) {
+                        valueFilter = .between(min, max)
+                    }
+                }
+            }
+            // Tag filter: tag:insured
+            else if lowercased.hasPrefix("tag:") {
+                let value = String(token.dropFirst(4)).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                if !value.isEmpty {
+                    tagFilter = value
+                }
+            }
+            // Has filters: has:photo, has:receipt
+            else if lowercased.hasPrefix("has:") {
+                let value = String(token.dropFirst(4)).lowercased()
+                switch value {
+                case "photo", "photos":
+                    hasPhoto = true
+                case "receipt", "receipts":
+                    hasReceipt = true
+                case "nophoto":
+                    hasPhoto = false
+                case "noreceipt":
+                    hasReceipt = false
+                default:
+                    break
+                }
+            }
+            // No filter: no:photo, no:receipt
+            else if lowercased.hasPrefix("no:") {
+                let value = String(token.dropFirst(3)).lowercased()
+                switch value {
+                case "photo", "photos":
+                    hasPhoto = false
+                case "receipt", "receipts":
+                    hasReceipt = false
+                default:
+                    break
+                }
+            }
+            // Plain text (not a filter)
+            else {
+                plainTextParts.append(token)
+            }
+        }
+
+        return SearchQuery(
+            plainText: plainTextParts.joined(separator: " "),
+            roomFilter: roomFilter,
+            categoryFilter: categoryFilter,
+            valueFilter: valueFilter,
+            tagFilter: tagFilter,
+            hasPhoto: hasPhoto,
+            hasReceipt: hasReceipt
+        )
+    }
+
+    /// Tokenizes search string, respecting quoted strings
+    private static func tokenize(_ text: String) -> [String] {
+        var tokens: [String] = []
+        var current = ""
+        var inQuotes = false
+
+        for char in text {
+            if char == "\"" {
+                inQuotes.toggle()
+                current.append(char)
+            } else if char == " " && !inQuotes {
+                if !current.isEmpty {
+                    tokens.append(current)
+                    current = ""
+                }
+            } else {
+                current.append(char)
+            }
+        }
+
+        if !current.isEmpty {
+            tokens.append(current)
+        }
+
+        return tokens
+    }
+
+    /// Returns true if this query uses any enhanced syntax
+    var usesEnhancedSyntax: Bool {
+        roomFilter != nil || categoryFilter != nil || valueFilter != nil ||
+        tagFilter != nil || hasPhoto != nil || hasReceipt != nil
+    }
+}
+
 /// ViewModel for InventoryTab that handles filtering, sorting, and statistics
 /// calculation. Follows MVVM pattern with proper dependency injection.
 @MainActor
 @Observable
 final class InventoryTabViewModel {
-    
+
     // MARK: - Published State
-    
+
     var searchText: String = ""
     var selectedFilter: ItemFilter = .all
     var selectedSort: ItemSort = .newest
@@ -27,34 +200,43 @@ final class InventoryTabViewModel {
     var showingAddItem: Bool = false
     var showingDocumentationInfo: Bool = false
     var showingProPaywall: Bool = false
+    var showingSearchHelp: Bool = false
     var itemLimitBannerDismissed: Bool = false
-    
+
     // MARK: - Dependencies
-    
+
     private let settings: SettingsManager
-    
+
     // MARK: - Initialization
-    
+
     init(settings: SettingsManager) {
         self.settings = settings
     }
-    
+
     // MARK: - Filtering & Sorting
 
     /// Apply search, filter, and sort to items array.
     /// Note: Some filters use SwiftData predicates (applied at query level),
     /// while others (relationship counts) must use Swift filtering here.
+    ///
+    /// Enhanced Search Syntax (Task 10.2.2):
+    /// - `room:Kitchen` - Filter by room name
+    /// - `category:Electronics` - Filter by category name
+    /// - `value>1000` - Items with value > $1000
+    /// - `value<500` - Items with value < $500
+    /// - `value:500-1000` - Items with value between $500-$1000
+    /// - `tag:insured` - Filter by tag
+    /// - `has:photo` - Items with photos
+    /// - `has:receipt` - Items with receipts
+    /// - `no:photo` - Items without photos
+    /// - `no:receipt` - Items without receipts
     func processItems(_ items: [Item]) -> [Item] {
         var result = items
 
-        // Apply search (must be done in Swift due to multiple field OR logic)
+        // Apply enhanced search syntax
         if !searchText.isEmpty {
-            result = result.filter { item in
-                item.name.localizedCaseInsensitiveContains(searchText) ||
-                (item.brand?.localizedCaseInsensitiveContains(searchText) ?? false) ||
-                (item.category?.name.localizedCaseInsensitiveContains(searchText) ?? false) ||
-                (item.room?.name.localizedCaseInsensitiveContains(searchText) ?? false)
-            }
+            let query = SearchQuery.parse(searchText)
+            result = applySearchQuery(query, to: result)
         }
 
         // Apply filter (only needed if SwiftData predicate wasn't available)
@@ -67,6 +249,81 @@ final class InventoryTabViewModel {
         result = sortItems(result)
 
         return result
+    }
+
+    /// Applies parsed search query to items
+    private func applySearchQuery(_ query: SearchQuery, to items: [Item]) -> [Item] {
+        var result = items
+
+        // Apply room filter
+        if let roomFilter = query.roomFilter {
+            result = result.filter { item in
+                item.room?.name.localizedCaseInsensitiveContains(roomFilter) ?? false
+            }
+        }
+
+        // Apply category filter
+        if let categoryFilter = query.categoryFilter {
+            result = result.filter { item in
+                item.category?.name.localizedCaseInsensitiveContains(categoryFilter) ?? false
+            }
+        }
+
+        // Apply value filter
+        if let valueFilter = query.valueFilter {
+            result = result.filter { item in
+                guard let price = item.purchasePrice else { return false }
+                switch valueFilter {
+                case .greaterThan(let amount):
+                    return price > amount
+                case .lessThan(let amount):
+                    return price < amount
+                case .equalTo(let amount):
+                    return price == amount
+                case .between(let min, let max):
+                    return price >= min && price <= max
+                }
+            }
+        }
+
+        // Apply tag filter
+        if let tagFilter = query.tagFilter {
+            result = result.filter { item in
+                item.tags.contains { $0.localizedCaseInsensitiveContains(tagFilter) }
+            }
+        }
+
+        // Apply has:photo / no:photo filter
+        if let hasPhoto = query.hasPhoto {
+            result = result.filter { item in
+                hasPhoto ? !item.photos.isEmpty : item.photos.isEmpty
+            }
+        }
+
+        // Apply has:receipt / no:receipt filter
+        if let hasReceipt = query.hasReceipt {
+            result = result.filter { item in
+                hasReceipt ? !item.receipts.isEmpty : item.receipts.isEmpty
+            }
+        }
+
+        // Apply plain text search (across name, brand, notes, category, room)
+        if !query.plainText.isEmpty {
+            result = result.filter { item in
+                item.name.localizedCaseInsensitiveContains(query.plainText) ||
+                (item.brand?.localizedCaseInsensitiveContains(query.plainText) ?? false) ||
+                (item.notes?.localizedCaseInsensitiveContains(query.plainText) ?? false) ||
+                (item.category?.name.localizedCaseInsensitiveContains(query.plainText) ?? false) ||
+                (item.room?.name.localizedCaseInsensitiveContains(query.plainText) ?? false)
+            }
+        }
+
+        return result
+    }
+
+    /// Shows the search help sheet
+    func showSearchHelp() {
+        showingSearchHelp = true
     }
     
     private func sortItems(_ items: [Item]) -> [Item] {

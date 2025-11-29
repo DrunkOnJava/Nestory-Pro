@@ -153,6 +153,12 @@ struct InventoryTab: View {
                     .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.addButton)
                     .accessibilityLabel("Add Item")
                 }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: viewModel.showSearchHelp) {
+                        Image(systemName: "questionmark.circle")
+                    }
+                    .accessibilityLabel("Search Help")
+                }
             }
             .searchable(text: $vm.searchText, prompt: "Search items...")
             .onSubmit(of: .search) {
@@ -169,6 +175,9 @@ struct InventoryTab: View {
             }
             .sheet(isPresented: $vm.showingProPaywall) {
                 ProPaywallView()
+            }
+            .sheet(isPresented: $vm.showingSearchHelp) {
+                SearchHelpSheet()
             }
             .onAppear {
                 // Update tip parameter based on documentation score
@@ -488,6 +497,110 @@ struct DocumentationInfoSheet: View {
             }
         }
         .presentationDetents([.medium])
+    }
+}
+
+// MARK: - Search Help Sheet (Task 10.2.2)
+struct SearchHelpSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Enhanced Search")
+                            .font(.headline)
+
+                        Text("Use special filters to narrow down your search results. Combine filters with regular text to find exactly what you need.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 8)
+                }
+
+                Section("Location Filters") {
+                    SearchHelpRow(syntax: "room:Kitchen", description: "Items in a specific room")
+                    SearchHelpRow(syntax: "room:\"Living Room\"", description: "Use quotes for multi-word rooms")
+                    SearchHelpRow(syntax: "category:Electronics", description: "Items in a category")
+                    SearchHelpRow(syntax: "cat:Tools", description: "Shorthand for category")
+                }
+
+                Section("Value Filters") {
+                    SearchHelpRow(syntax: "value>1000", description: "Items worth more than $1,000")
+                    SearchHelpRow(syntax: "value<500", description: "Items worth less than $500")
+                    SearchHelpRow(syntax: "value:500-1000", description: "Items between $500-$1,000")
+                }
+
+                Section("Documentation Filters") {
+                    SearchHelpRow(syntax: "has:photo", description: "Items with photos")
+                    SearchHelpRow(syntax: "no:photo", description: "Items without photos")
+                    SearchHelpRow(syntax: "has:receipt", description: "Items with receipts")
+                    SearchHelpRow(syntax: "no:receipt", description: "Items without receipts")
+                }
+
+                Section("Other Filters") {
+                    SearchHelpRow(syntax: "tag:insured", description: "Items with a specific tag")
+                }
+
+                Section("Examples") {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("room:Kitchen value>100")
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundStyle(.blue)
+                        Text("Kitchen items worth over $100")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("cat:Electronics no:photo")
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundStyle(.blue)
+                        Text("Electronics without photos")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Samsung room:Office")
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundStyle(.blue)
+                        Text("Samsung items in Office")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+            .navigationTitle("Search Help")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+}
+
+struct SearchHelpRow: View {
+    let syntax: String
+    let description: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(syntax)
+                .font(.system(.body, design: .monospaced))
+                .foregroundStyle(.blue)
+            Text(description)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 2)
     }
 }
 
