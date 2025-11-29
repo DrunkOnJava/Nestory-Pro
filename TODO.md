@@ -364,8 +364,8 @@ When you check out a task, add an entry here:
   - File: `Nestory-Pro/ViewModels/ItemDetailViewModel.swift` (created)
   - Handle edit, delete, photo management
 
-- [ ] **5.1.4** Create CaptureTabViewModel
-  - File: `Nestory-Pro/ViewModels/CaptureTabViewModel.swift` (create)
+- [x] **5.1.4** Create CaptureTabViewModel ✓ 2025-11-29
+  - File: `Nestory-Pro/ViewModels/CaptureTabViewModel.swift` (created)
   - Coordinate capture flows
   - DEPENDS: 2.2.3
 
@@ -606,4 +606,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 73 tasks (0 in progress, 40 completed, 33 remaining)*
+*Task Count: 73 tasks (0 in progress, 41 completed, 32 remaining)*

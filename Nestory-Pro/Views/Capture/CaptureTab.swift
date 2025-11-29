@@ -38,27 +38,22 @@ import SwiftUI
 import SwiftData
 
 struct CaptureTab: View {
-    // MARK: - State
-
-    /// Selected capture mode
-    @State private var selectedSegment: CaptureMode = .photo
-
-    /// Controls PhotoCaptureView presentation
-    @State private var showingPhotoCapture = false
-
-    /// Captured image from PhotoCaptureView
-    @State private var capturedImage: UIImage?
-
-    /// Controls QuickAddItemSheet presentation
-    @State private var showingQuickAdd = false
+    @Environment(AppEnvironment.self) private var env
+    
+    // ViewModel handles capture flow coordination
+    private var viewModel: CaptureTabViewModel {
+        env.captureViewModel
+    }
 
     // MARK: - Body
 
     var body: some View {
-        NavigationStack {
+        @Bindable var vm = viewModel
+        
+        return NavigationStack {
             VStack(spacing: 0) {
                 // Segmented Control
-                Picker("Capture Mode", selection: $selectedSegment) {
+                Picker("Capture Mode", selection: $vm.selectedSegment) {
                     ForEach(CaptureMode.allCases) { mode in
                         Text(mode.rawValue).tag(mode)
                     }
@@ -68,7 +63,7 @@ struct CaptureTab: View {
                 .accessibilityIdentifier("captureTab.segmentedControl")
 
                 // Content Area
-                switch selectedSegment {
+                switch vm.selectedSegment {
                 case .photo:
                     photoSegmentContent
                 case .receipt:
@@ -79,26 +74,23 @@ struct CaptureTab: View {
             }
             .navigationTitle("Capture")
         }
-        .sheet(isPresented: $showingPhotoCapture) {
+        .sheet(isPresented: $vm.showingPhotoCapture) {
             PhotoCaptureView(
-                selectedImage: $capturedImage,
-                isPresented: $showingPhotoCapture
+                selectedImage: $vm.capturedImage,
+                isPresented: $vm.showingPhotoCapture
             )
         }
-        .sheet(isPresented: $showingQuickAdd) {
-            if let capturedImage {
+        .sheet(isPresented: $vm.showingQuickAdd) {
+            if let capturedImage = vm.capturedImage {
                 QuickAddItemSheet(capturedImage: capturedImage)
             }
         }
-        .onChange(of: capturedImage) { _, newImage in
-            if newImage != nil {
-                showingQuickAdd = true
-            }
+        .onChange(of: vm.capturedImage) { _, newImage in
+            viewModel.handleCapturedImage(newImage)
         }
-        .onChange(of: showingQuickAdd) { _, isShowing in
-            // Clear captured image after sheet is dismissed
+        .onChange(of: vm.showingQuickAdd) { _, isShowing in
             if !isShowing {
-                capturedImage = nil
+                viewModel.clearCapturedImage()
             }
         }
     }
@@ -129,9 +121,7 @@ struct CaptureTab: View {
             Spacer()
 
             // Action Button
-            Button {
-                showingPhotoCapture = true
-            } label: {
+            Button(action: viewModel.startPhotoCapture) {
                 Label("Start Photo Capture", systemImage: "camera")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
@@ -196,16 +186,6 @@ struct CaptureTab: View {
             Spacer()
         }
     }
-}
-
-// MARK: - Capture Mode
-
-enum CaptureMode: String, CaseIterable, Identifiable {
-    case photo = "Photo"
-    case receipt = "Receipt"
-    case barcode = "Barcode"
-
-    var id: String { rawValue }
 }
 
 // MARK: - Preview
