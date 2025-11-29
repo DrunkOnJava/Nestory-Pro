@@ -613,8 +613,10 @@ When you check out a task, add an entry here:
   - Updated beta.yml: tests run before deploy, added DerivedData caching
   - Both workflows cache DerivedData for faster builds
 
-- [ ] **7.2.2** Beta lane automation (optional)
-  - Add workflow to trigger `fastlane ios beta` on tagged commits (e.g., `v1.0.0-betaX`)
+- [x] **7.2.2** Beta lane automation ✓ 2025-11-29
+  - Updated beta.yml to trigger on tags matching `v*-beta*` (e.g., v1.0.0-beta1)
+  - Added workflow_dispatch option to skip tests for urgent deployments
+  - Maintains existing main branch trigger for continuous deployment
 
 ### 7.3 App Store Prep
 
@@ -870,7 +872,8 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 124 tasks (0 in progress, 104 completed, 20 remaining)*
+*Task Count: 124 tasks (0 in progress, 105 completed, 19 remaining)*
+- Completed: 7.2.2 Beta lane automation (tag triggers + skip tests option)
 - Completed: 9.2.1-9.2.3 UI tests (CaptureUITests, LossListUITests)
 - Blocked: 9.3.x Snapshot tests (require third-party package)
 - Fixed: iOS compatibility in BackupService ZIP extraction

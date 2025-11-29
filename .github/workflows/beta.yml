@@ -3,7 +3,15 @@ name: TestFlight Beta
 on:
   push:
     branches: [ main ]
+    tags:
+      - 'v*-beta*'  # Trigger on beta tags like v1.0.0-beta1
   workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip tests before deploy'
+        required: false
+        default: 'false'
+        type: boolean
 
 jobs:
   test:
@@ -34,6 +42,7 @@ jobs:
         run: bundle install
 
       - name: Run Unit Tests
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
         run: bundle exec fastlane test_unit
 
   beta:

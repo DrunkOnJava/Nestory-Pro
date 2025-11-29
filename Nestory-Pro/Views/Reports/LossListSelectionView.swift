@@ -165,11 +165,9 @@ struct LossListSelectionView: View {
                 continueButton
             }
             .sheet(isPresented: $showingIncidentDetails) {
-                // TODO: Task 3.3.2 - Replace with IncidentDetailsSheet
-                // Pass selectedItems to next step
-                IncidentDetailsPlaceholderSheet(
-                    selectedItemIDs: Array(selectedItems)
-                )
+                // Task 3.3.2: IncidentDetailsSheet integration ✓
+                let selectedItemsList = allItems.filter { selectedItems.contains($0.id) }
+                IncidentDetailsSheet(selectedItems: selectedItemsList)
             }
             .alert("Upgrade to Pro", isPresented: $showingProUpgrade) {
                 Button("Upgrade", role: .none) {
@@ -476,47 +474,6 @@ private struct ItemRow: View {
         }
         .buttonStyle(.plain)
         .opacity((!canSelect && !isSelected) ? 0.5 : 1.0)
-    }
-}
-
-// MARK: - Placeholder for Task 3.3.2
-
-/// Placeholder sheet for incident details (Task 3.3.2)
-private struct IncidentDetailsPlaceholderSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    let selectedItemIDs: [Item.ID]
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                Image(systemName: "doc.text")
-                    .font(.system(size: 60))
-                    .foregroundStyle(.secondary)
-
-                Text("Incident Details")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-
-                Text("Task 3.3.2: IncidentDetailsSheet will be implemented here")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-
-                Text("Selected \(selectedItemIDs.count) items")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .navigationTitle("Next Step")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Back") {
-                        dismiss()
-                    }
-                }
-            }
-        }
     }
 }
 

@@ -12,21 +12,16 @@
 //
 // COMPLETED:
 // - Task 3.5.1: Report cards UI with navigation to report views ✓
+// - Task 3.2.1: FullInventoryReportView integration ✓
+// - Task 3.3.1: LossListSelectionView integration ✓
 // - Quick stats section showing total items and inventory value
 // - Consistent card-based design with other tabs
 //
 // AVAILABLE REPORTS:
-// 1. Full Inventory Report - Comprehensive PDF of all items
-//    - TODO: Task 3.2.1 - Implement FullInventoryReportView
-// 2. Insurance Loss List - Claim-ready report for selected items
-//    - IMPLEMENTED: Task 3.3.1 - LossListSelectionView ✓
+// 1. Full Inventory Report - Comprehensive PDF of all items (FullInventoryReportView)
+// 2. Insurance Loss List - Claim-ready report for selected items (LossListSelectionView)
 //
-// FUTURE ENHANCEMENTS:
-// - Task 3.2.1: FullInventoryReportView implementation
-// - Task 5.1.5: Add @Environment(ReportsTabViewModel.self) when available
-// - Task 4.x: Pro feature monetization enforcement
-//
-// SEE: TODO.md Phase 3 | LossListSelectionView.swift
+// SEE: TODO.md Phase 3 | FullInventoryReportView.swift | LossListSelectionView.swift
 // ============================================================================
 
 import SwiftUI
@@ -92,7 +87,7 @@ struct ReportsTab: View {
                 LossListSelectionView()
             }
             .sheet(isPresented: $vm.showingFullInventoryReport) {
-                FullInventoryReportPlaceholder()
+                FullInventoryReportView()
             }
         }
     }
@@ -202,42 +197,6 @@ private struct StatCard: View {
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
-    }
-}
-
-// MARK: - Placeholder for Task 3.2.1
-
-/// Placeholder for Full Inventory Report (Task 3.2.1)
-private struct FullInventoryReportPlaceholder: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                Image(systemName: "doc.text")
-                    .font(.system(size: 60))
-                    .foregroundStyle(.secondary)
-
-                Text("Full Inventory Report")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-
-                Text("Task 3.2.1: FullInventoryReportView will be implemented here")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-            }
-            .navigationTitle("Generate Report")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") {
-                        dismiss()
-                    }
-                }
-            }
-        }
     }
 }
 
