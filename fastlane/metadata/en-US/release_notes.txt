@@ -1,0 +1,11 @@
+Initial release of Nestory Pro!
+
+- Complete home inventory management
+- Photo capture with camera integration
+- Receipt scanning with OCR
+- Documentation score tracking
+- Room and category organization
+- PDF report generation for insurance
+- iCloud sync across devices
+- Backup and restore functionality
+- Pro upgrade for unlimited items

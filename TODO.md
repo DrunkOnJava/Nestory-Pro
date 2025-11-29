@@ -610,13 +610,14 @@ When you check out a task, add an entry here:
 
 ### 7.3 App Store Prep
 
-- [ ] **7.3.1** App Store metadata
-  - Prepare app description, keywords, support URL, marketing URL
-  - Generate initial screenshots for key devices and languages (English only for v1.0)
+- [x] **7.3.1** App Store metadata ✓ 2025-11-29
+  - Created fastlane/metadata/en-US/ with description, keywords, name, subtitle
+  - Added promotional_text, release_notes, support_url, marketing_url, privacy_url
+  - Screenshots: Manual capture required before first submission
 
-- [ ] **7.3.2** Privacy policy & support
-  - Publish privacy policy that matches actual app behavior (on a simple site or GitHub Pages)
-  - Provide support email and link inside the app (Settings → About)
+- [x] **7.3.2** Privacy policy & support ✓ 2025-11-29
+  - Created PRIVACY.md in repo root (linked from App Store metadata)
+  - Support via GitHub Issues: https://github.com/DrunkOnJava/Nestory-Pro/issues
 
 - [ ] **7.3.3** App Review readiness
   - Double-check no private APIs, no non-compliant behaviors

@@ -1,0 +1,34 @@
+Nestory Pro is the complete home inventory solution designed for insurance documentation and peace of mind.
+
+CAPTURE YOUR BELONGINGS QUICKLY
+- Snap photos of your items with the built-in camera
+- Scan receipts using advanced OCR technology to automatically extract purchase details
+- Add barcode scanning for quick product identification
+- Record serial numbers, model numbers, and purchase information
+
+ORGANIZE EFFORTLESSLY
+- Categorize items by room and type
+- Add custom categories to match your home
+- Track warranty expiration dates
+- Add notes and condition details
+
+KNOW YOUR DOCUMENTATION STATUS
+- Visual documentation score shows how well each item is documented
+- See at-a-glance which items need more information
+- Filter by documentation status to prioritize incomplete items
+
+INSURANCE-READY REPORTS
+- Generate professional PDF reports for insurance claims
+- Create room-by-room inventories
+- Export loss lists in case of theft or disaster
+- Share reports via email, AirDrop, or cloud services
+
+SYNC ACROSS DEVICES
+- iCloud sync keeps your inventory up-to-date on all your devices
+- Automatic backup protects your data
+- Export and restore backups manually
+
+PRO FEATURES
+Upgrade to Pro for unlimited items, photo-rich PDF exports, CSV/JSON data export, and priority support.
+
+Nestory Pro - Document what matters, protect what's yours.
