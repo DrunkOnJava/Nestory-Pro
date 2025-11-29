@@ -230,15 +230,17 @@ When you check out a task, add an entry here:
   - Design tokens: 12pt corner radius, 16pt section spacing, 40% photo height
   - PhotoThumbnailView component for async photo loading
 
-- [ ] **2.3.2** Hook up documentation score & badges
-  - Implement `DocumentationScoreCalculator` (if not already) using weights from DATA_MODEL.md
-  - Badges for photo/value/room/category/receipt/serial status
-  - Tooltip "What's missing?" sheet explaining doc score
+- [x] **2.3.2** Hook up documentation score & badges ✓ 2025-11-29
+  - Documentation score uses 6-field weighted calculation in Item model
+  - DocumentationBadge component in SharedComponents.swift with weight display
+  - "What's missing?" info sheet with field explanations in ItemDetailView
+  - Progress bar with green/orange/red thresholds
 
-- [ ] **2.3.3** Editing flow
-  - Implement Edit mode for item detail that matches "minimal first–then deepen" philosophy
-  - Quick edit for core fields, advanced section for extra details
-  - Ensure edits trigger `updatedAt` updates
+- [x] **2.3.3** Editing flow ✓ 2025-11-29
+  - EditItemView in AddItemView.swift with full form support
+  - EditItemViewModel handles form state and validation
+  - Updates `updatedAt` timestamp on save
+  - Sections: Basic Info, Location, Purchase, Condition, Warranty
 
 ### 2.4 Photo Storage Service
 
@@ -309,9 +311,11 @@ When you check out a task, add an entry here:
   - Raw OCR text section for review
   - DEPENDS: 2.6.3
 
-- [ ] **2.6.5** Link receipts to items
-  - Ability to attach a receipt to an existing item or create a new item from the receipt
-  - Reflect attached receipts on ItemDetail with thumbnails and dates
+- [x] **2.6.5** Link receipts to items ✓ 2025-11-29
+  - ReceiptReviewSheet has "Link to Item" toggle and item picker
+  - Saves linkedItem relationship on Receipt
+  - ItemDetailView shows linked receipts with vendor, total, date
+  - Receipts can be saved standalone or linked to existing items
 
 ### 2.7 Barcode Scanning (Scan-Only v1.0)
 
