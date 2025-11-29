@@ -354,8 +354,8 @@ When you check out a task, add an entry here:
   - Use @Observable macro
   - Inject via @Environment
 
-- [ ] **5.1.2** Create AddItemViewModel
-  - File: `Nestory-Pro/ViewModels/AddItemViewModel.swift` (create)
+- [x] **5.1.2** Create AddItemViewModel ✓ 2025-11-29
+  - File: `Nestory-Pro/ViewModels/AddItemViewModel.swift` (created)
   - Move form state and validation from AddItemView
   - Handle save with limit checking
   - DEPENDS: 4.1.1
@@ -606,4 +606,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 73 tasks (0 in progress, 38 completed, 35 remaining)*
+*Task Count: 73 tasks (0 in progress, 39 completed, 34 remaining)*

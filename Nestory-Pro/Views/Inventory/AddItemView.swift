@@ -30,46 +30,35 @@ import SwiftData
 struct AddItemView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppEnvironment.self) private var env
 
     @Query(sort: \Category.sortOrder) private var categories: [Category]
     @Query(sort: \Room.sortOrder) private var rooms: [Room]
     @Query private var items: [Item] // Task 4.1.1: Count existing items for free tier limit
     
-    @State private var name = ""
-    @State private var brand = ""
-    @State private var modelNumber = ""
-    @State private var serialNumber = ""
-    @State private var purchasePrice = ""
-    @State private var purchaseDate = Date()
-    @State private var hasPurchaseDate = false
-    @State private var selectedCategory: Category?
-    @State private var selectedRoom: Room?
-    @State private var condition: ItemCondition = .good
-    @State private var conditionNotes = ""
-    @State private var warrantyExpiryDate = Date()
-    @State private var hasWarranty = false
-    @State private var showingPaywall = false // Task 4.1.1: Show paywall when free tier limit reached
-
-    @Environment(AppEnvironment.self) private var env
+    @State private var viewModel: AddItemViewModel
     
-    private var canSave: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    init() {
+        // ViewModel will be properly initialized via @Environment in body
+        _viewModel = State(initialValue: AddItemViewModel(settings: SettingsManager()))
     }
     
     var body: some View {
-        NavigationStack {
+        @Bindable var vm = viewModel
+        
+        return NavigationStack {
             Form {
                 // Basic Info
                 Section("Basic Information") {
-                    TextField("Item Name *", text: $name)
-                    TextField("Brand", text: $brand)
-                    TextField("Model Number", text: $modelNumber)
-                    TextField("Serial Number", text: $serialNumber)
+                    TextField("Item Name *", text: $vm.name)
+                    TextField("Brand", text: $vm.brand)
+                    TextField("Model Number", text: $vm.modelNumber)
+                    TextField("Serial Number", text: $vm.serialNumber)
                 }
                 
                 // Location
                 Section("Location") {
-                    Picker("Category", selection: $selectedCategory) {
+                    Picker("Category", selection: $vm.selectedCategory) {
                         Text("None").tag(nil as Category?)
                         ForEach(categories) { category in
                             Label(category.name, systemImage: category.iconName)
@@ -77,7 +66,7 @@ struct AddItemView: View {
                         }
                     }
                     
-                    Picker("Room", selection: $selectedRoom) {
+                    Picker("Room", selection: $vm.selectedRoom) {
                         Text("None").tag(nil as Room?)
                         ForEach(rooms) { room in
                             Label(room.name, systemImage: room.iconName)
@@ -91,16 +80,16 @@ struct AddItemView: View {
                     HStack {
                         Text(env.settings.currencySymbol)
                             .foregroundStyle(.secondary)
-                        TextField("Purchase Price", text: $purchasePrice)
+                        TextField("Purchase Price", text: $vm.purchasePrice)
                             .keyboardType(.decimalPad)
                     }
                     
-                    Toggle("Purchase Date", isOn: $hasPurchaseDate)
+                    Toggle("Purchase Date", isOn: $vm.hasPurchaseDate)
                     
-                    if hasPurchaseDate {
+                    if vm.hasPurchaseDate {
                         DatePicker(
                             "Date",
-                            selection: $purchaseDate,
+                            selection: $vm.purchaseDate,
                             displayedComponents: .date
                         )
                     }
@@ -108,24 +97,24 @@ struct AddItemView: View {
                 
                 // Condition
                 Section("Condition") {
-                    Picker("Condition", selection: $condition) {
+                    Picker("Condition", selection: $vm.condition) {
                         ForEach(ItemCondition.allCases, id: \.self) { condition in
                             Text(condition.displayName).tag(condition)
                         }
                     }
                     
-                    TextField("Condition Notes", text: $conditionNotes, axis: .vertical)
+                    TextField("Condition Notes", text: $vm.conditionNotes, axis: .vertical)
                         .lineLimit(3...6)
                 }
                 
                 // Warranty
                 Section("Warranty") {
-                    Toggle("Has Warranty", isOn: $hasWarranty)
+                    Toggle("Has Warranty", isOn: $vm.hasWarranty)
                     
-                    if hasWarranty {
+                    if vm.hasWarranty {
                         DatePicker(
                             "Expiry Date",
-                            selection: $warrantyExpiryDate,
+                            selection: $vm.warrantyExpiryDate,
                             displayedComponents: .date
                         )
                     }
@@ -141,102 +130,55 @@ struct AddItemView: View {
                     Button("Save") {
                         saveItem()
                     }
-                    .disabled(!canSave)
+                    .disabled(!viewModel.canSave)
                 }
             }
-            .sheet(isPresented: $showingPaywall) {
+            .sheet(isPresented: $vm.showingPaywall) {
                 ProPaywallView()
+            }
+            .task {
+                // Initialize with proper AppEnvironment settings
+                viewModel = env.makeAddItemViewModel()
             }
         }
     }
 
     private func saveItem() {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty else { return }
-
-        // Task 4.1.1: Enforce 100-item free tier limit
-        if items.count >= env.settings.maxFreeItems && !env.settings.isProUnlocked {
-            showingPaywall = true
-            return // Don't save until user upgrades or dismisses
+        if viewModel.saveItem(modelContext: modelContext, itemCount: items.count) != nil {
+            dismiss()
         }
-
-        let item = Item(
-            name: trimmedName,
-            brand: brand.isEmpty ? nil : brand,
-            modelNumber: modelNumber.isEmpty ? nil : modelNumber,
-            serialNumber: serialNumber.isEmpty ? nil : serialNumber,
-            purchasePrice: Decimal(string: purchasePrice),
-            purchaseDate: hasPurchaseDate ? purchaseDate : nil,
-            currencyCode: env.settings.preferredCurrencyCode,
-            category: selectedCategory,
-            room: selectedRoom,
-            condition: condition,
-            conditionNotes: conditionNotes.isEmpty ? nil : conditionNotes,
-            warrantyExpiryDate: hasWarranty ? warrantyExpiryDate : nil
-        )
-
-        modelContext.insert(item)
-        dismiss()
+        // If saveItem returns nil, either validation failed or paywall is shown
     }
 }
 
 // MARK: - Edit Item View
 struct EditItemView: View {
-    @Bindable var item: Item
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppEnvironment.self) private var env
     
     @Query(sort: \Category.sortOrder) private var categories: [Category]
     @Query(sort: \Room.sortOrder) private var rooms: [Room]
     
-    @State private var name: String
-    @State private var brand: String
-    @State private var modelNumber: String
-    @State private var serialNumber: String
-    @State private var purchasePrice: String
-    @State private var purchaseDate: Date
-    @State private var hasPurchaseDate: Bool
-    @State private var selectedCategory: Category?
-    @State private var selectedRoom: Room?
-    @State private var condition: ItemCondition
-    @State private var conditionNotes: String
-    @State private var warrantyExpiryDate: Date
-    @State private var hasWarranty = false
-
-    @Environment(AppEnvironment.self) private var env
+    @State private var viewModel: EditItemViewModel
     
     init(item: Item) {
-        self.item = item
-        _name = State(initialValue: item.name)
-        _brand = State(initialValue: item.brand ?? "")
-        _modelNumber = State(initialValue: item.modelNumber ?? "")
-        _serialNumber = State(initialValue: item.serialNumber ?? "")
-        _purchasePrice = State(initialValue: item.purchasePrice.map { "\($0)" } ?? "")
-        _purchaseDate = State(initialValue: item.purchaseDate ?? Date())
-        _hasPurchaseDate = State(initialValue: item.purchaseDate != nil)
-        _selectedCategory = State(initialValue: item.category)
-        _selectedRoom = State(initialValue: item.room)
-        _condition = State(initialValue: item.condition)
-        _conditionNotes = State(initialValue: item.conditionNotes ?? "")
-        _warrantyExpiryDate = State(initialValue: item.warrantyExpiryDate ?? Date())
-        _hasWarranty = State(initialValue: item.warrantyExpiryDate != nil)
-    }
-    
-    private var canSave: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        _viewModel = State(initialValue: EditItemViewModel(item: item))
     }
     
     var body: some View {
-        NavigationStack {
+        @Bindable var vm = viewModel
+        
+        return NavigationStack {
             Form {
                 Section("Basic Information") {
-                    TextField("Item Name *", text: $name)
-                    TextField("Brand", text: $brand)
-                    TextField("Model Number", text: $modelNumber)
-                    TextField("Serial Number", text: $serialNumber)
+                    TextField("Item Name *", text: $vm.name)
+                    TextField("Brand", text: $vm.brand)
+                    TextField("Model Number", text: $vm.modelNumber)
+                    TextField("Serial Number", text: $vm.serialNumber)
                 }
                 
                 Section("Location") {
-                    Picker("Category", selection: $selectedCategory) {
+                    Picker("Category", selection: $vm.selectedCategory) {
                         Text("None").tag(nil as Category?)
                         ForEach(categories) { category in
                             Label(category.name, systemImage: category.iconName)
@@ -244,7 +186,7 @@ struct EditItemView: View {
                         }
                     }
                     
-                    Picker("Room", selection: $selectedRoom) {
+                    Picker("Room", selection: $vm.selectedRoom) {
                         Text("None").tag(nil as Room?)
                         ForEach(rooms) { room in
                             Label(room.name, systemImage: room.iconName)
@@ -257,33 +199,33 @@ struct EditItemView: View {
                     HStack {
                         Text(env.settings.currencySymbol)
                             .foregroundStyle(.secondary)
-                        TextField("Purchase Price", text: $purchasePrice)
+                        TextField("Purchase Price", text: $vm.purchasePrice)
                             .keyboardType(.decimalPad)
                     }
                     
-                    Toggle("Purchase Date", isOn: $hasPurchaseDate)
+                    Toggle("Purchase Date", isOn: $vm.hasPurchaseDate)
                     
-                    if hasPurchaseDate {
-                        DatePicker("Date", selection: $purchaseDate, displayedComponents: .date)
+                    if vm.hasPurchaseDate {
+                        DatePicker("Date", selection: $vm.purchaseDate, displayedComponents: .date)
                     }
                 }
                 
                 Section("Condition") {
-                    Picker("Condition", selection: $condition) {
+                    Picker("Condition", selection: $vm.condition) {
                         ForEach(ItemCondition.allCases, id: \.self) { condition in
                             Text(condition.displayName).tag(condition)
                         }
                     }
                     
-                    TextField("Condition Notes", text: $conditionNotes, axis: .vertical)
+                    TextField("Condition Notes", text: $vm.conditionNotes, axis: .vertical)
                         .lineLimit(3...6)
                 }
                 
                 Section("Warranty") {
-                    Toggle("Has Warranty", isOn: $hasWarranty)
+                    Toggle("Has Warranty", isOn: $vm.hasWarranty)
                     
-                    if hasWarranty {
-                        DatePicker("Expiry Date", selection: $warrantyExpiryDate, displayedComponents: .date)
+                    if vm.hasWarranty {
+                        DatePicker("Expiry Date", selection: $vm.warrantyExpiryDate, displayedComponents: .date)
                     }
                 }
             }
@@ -297,26 +239,14 @@ struct EditItemView: View {
                     Button("Save") {
                         saveChanges()
                     }
-                    .disabled(!canSave)
+                    .disabled(!viewModel.canSave)
                 }
             }
         }
     }
     
     private func saveChanges() {
-        item.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        item.brand = brand.isEmpty ? nil : brand
-        item.modelNumber = modelNumber.isEmpty ? nil : modelNumber
-        item.serialNumber = serialNumber.isEmpty ? nil : serialNumber
-        item.purchasePrice = Decimal(string: purchasePrice)
-        item.purchaseDate = hasPurchaseDate ? purchaseDate : nil
-        item.category = selectedCategory
-        item.room = selectedRoom
-        item.condition = condition
-        item.conditionNotes = conditionNotes.isEmpty ? nil : conditionNotes
-        item.warrantyExpiryDate = hasWarranty ? warrantyExpiryDate : nil
-        item.updatedAt = Date()
-        
+        viewModel.saveChanges()
         dismiss()
     }
 }

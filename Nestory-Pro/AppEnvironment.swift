@@ -56,6 +56,12 @@ final class AppEnvironment {
     /// Inventory tab view model
     let inventoryViewModel: InventoryTabViewModel
     
+    /// Create a new AddItemViewModel instance
+    /// Each AddItemView sheet gets its own fresh instance
+    func makeAddItemViewModel() -> AddItemViewModel {
+        AddItemViewModel(settings: settings)
+    }
+    
     // MARK: - Initialization
     
     /// Creates app environment with all services
