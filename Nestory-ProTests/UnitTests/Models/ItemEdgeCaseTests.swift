@@ -241,7 +241,7 @@ final class ItemEdgeCaseTests: XCTestCase {
     // MARK: - Documentation Score Edge Cases
 
     @MainActor
-    func testDocumentationScore_WithOnlyPhoto_Returns0Point25() throws {
+    func testDocumentationScore_WithOnlyPhoto_Returns0Point30() throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -256,8 +256,8 @@ final class ItemEdgeCaseTests: XCTestCase {
         // Act
         let score = item.documentationScore
 
-        // Assert
-        XCTAssertEqual(score, 0.25, accuracy: 0.001)
+        // Assert - 6-field weighted scoring: Photo = 30%
+        XCTAssertEqual(score, 0.30, accuracy: 0.001)
     }
 
     @MainActor
@@ -272,12 +272,12 @@ final class ItemEdgeCaseTests: XCTestCase {
         // Act
         let score = item.documentationScore
 
-        // Assert
+        // Assert - 6-field weighted scoring: Value = 25%
         XCTAssertEqual(score, 0.25, accuracy: 0.001)
     }
 
     @MainActor
-    func testDocumentationScore_WithOnlyCategory_Returns0Point25() throws {
+    func testDocumentationScore_WithOnlyCategory_Returns0Point10() throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -295,12 +295,12 @@ final class ItemEdgeCaseTests: XCTestCase {
         // Act
         let score = item.documentationScore
 
-        // Assert
-        XCTAssertEqual(score, 0.25, accuracy: 0.001)
+        // Assert - 6-field weighted scoring: Category = 10%
+        XCTAssertEqual(score, 0.10, accuracy: 0.001)
     }
 
     @MainActor
-    func testDocumentationScore_WithOnlyRoom_Returns0Point25() throws {
+    func testDocumentationScore_WithOnlyRoom_Returns0Point15() throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -318,15 +318,15 @@ final class ItemEdgeCaseTests: XCTestCase {
         // Act
         let score = item.documentationScore
 
-        // Assert
-        XCTAssertEqual(score, 0.25, accuracy: 0.001)
+        // Assert - 6-field weighted scoring: Room = 15%
+        XCTAssertEqual(score, 0.15, accuracy: 0.001)
     }
 
     // MARK: - Missing Documentation Edge Cases
 
     @MainActor
-    func testMissingDocumentation_OnlyTracksCoreFourFields() {
-        // Arrange - Item with only value set (missing Photo, Room, Category)
+    func testMissingDocumentation_TracksSixFields() {
+        // Arrange - Item with only value set
         let item = Item(
             name: "Partial Documentation",
             purchasePrice: Decimal(100),
@@ -336,14 +336,13 @@ final class ItemEdgeCaseTests: XCTestCase {
         // Act
         let missing = item.missingDocumentation
 
-        // Assert - Only the 4 core fields are tracked (Photo, Value, Room, Category)
-        // Receipt and Serial are NOT part of the core documentation score
-        XCTAssertEqual(missing.count, 3) // Missing: Photo, Room, Category (has Value)
+        // Assert - 6-field scoring tracks all fields (Task 1.4.3)
+        XCTAssertEqual(missing.count, 5) // Missing: Photo, Room, Category, Receipt, Serial (has Value)
         XCTAssertTrue(missing.contains("Photo"))
         XCTAssertTrue(missing.contains("Room"))
         XCTAssertTrue(missing.contains("Category"))
-        XCTAssertFalse(missing.contains("Receipt")) // Not in core fields
-        XCTAssertFalse(missing.contains("Serial Number")) // Not in core fields
+        XCTAssertTrue(missing.contains("Receipt"))
+        XCTAssertTrue(missing.contains("Serial Number"))
     }
 
     // MARK: - Currency Code Edge Cases
