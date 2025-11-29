@@ -35,10 +35,6 @@ actor OCRService: OCRServiceProtocol {
     private init() {
         self.photoStorage = PhotoStorageService.shared
     }
-    
-    nonisolated static func createInstance() -> OCRService {
-        return OCRService()
-    }
 
     // MARK: - OCRServiceProtocol Implementation
 

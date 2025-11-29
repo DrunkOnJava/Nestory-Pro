@@ -119,8 +119,10 @@ struct ItemDetailView: View {
                     photoCarousel
                 }
             }
+            .frame(height: geometry.size.height)
         }
-        .frame(height: UIScreen.main.bounds.height * 0.4)
+        .frame(idealHeight: 300)
+        .frame(maxHeight: 400)
     }
 
     private var emptyPhotoPlaceholder: some View {

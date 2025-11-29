@@ -24,7 +24,7 @@ import Accelerate
 
 /// File-based photo storage service using the Documents directory
 actor PhotoStorageService: PhotoStorageProtocol {
-    static let shared = PhotoStorageService()
+    nonisolated static let shared = PhotoStorageService()
 
     // MARK: - Configuration
 

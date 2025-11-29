@@ -61,7 +61,6 @@ struct Nestory_ProApp: App {
         WindowGroup {
             MainTabView()
                 .environment(appEnv)
-                .preferredColorScheme(appEnv.settings.themePreference.colorScheme)
                 .onAppear {
                     seedDefaultDataIfNeeded()
                 }

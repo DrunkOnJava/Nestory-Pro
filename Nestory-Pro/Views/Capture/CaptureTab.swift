@@ -310,7 +310,7 @@ struct RecentCaptureCell: View {
                 Rectangle()
                     .fill(Color(.tertiarySystemFill))
                 
-                if let photo = item.photos.first {
+                if !item.photos.isEmpty {
                     // TODO: Load actual photo from PhotoStorageService
                     Image(systemName: item.category?.iconName ?? "cube.fill")
                         .font(.title2)

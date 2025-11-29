@@ -24,7 +24,7 @@ import SwiftData
 
 /// Actor-based backup service for exporting and importing inventory data
 actor BackupService {
-    static let shared = BackupService()
+    nonisolated static let shared = BackupService()
 
     // MARK: - Private Properties
 
@@ -45,6 +45,7 @@ actor BackupService {
     ///   - rooms: Rooms to export
     ///   - receipts: Receipts to export
     /// - Returns: URL to the exported JSON file in temp directory
+    @MainActor
     func exportToJSON(
         items: [Item],
         categories: [Category],
@@ -61,17 +62,15 @@ actor BackupService {
 
         logger.info("Starting JSON export: \(items.count) items, \(categories.count) categories, \(rooms.count) rooms, \(receipts.count) receipts")
 
-        // Build export data structure on MainActor since models are @MainActor
-        let exportData = await MainActor.run {
-            BackupData(
-                exportDate: ISO8601DateFormatter().string(from: Date()),
-                appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
-                items: items.map { ItemExport(from: $0) },
-                categories: categories.map { CategoryExport(from: $0) },
-                rooms: rooms.map { RoomExport(from: $0) },
-                receipts: receipts.map { ReceiptExport(from: $0) }
-            )
-        }
+        // Build export data structure (already on MainActor)
+        let exportData = BackupData(
+            exportDate: ISO8601DateFormatter().string(from: Date()),
+            appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
+            items: items.map { ItemExport(from: $0) },
+            categories: categories.map { CategoryExport(from: $0) },
+            rooms: rooms.map { RoomExport(from: $0) },
+            receipts: receipts.map { ReceiptExport(from: $0) }
+        )
 
         // Encode to JSON
         let encoder = JSONEncoder()
@@ -597,7 +596,7 @@ actor BackupService {
 // MARK: - Export Data Structures
 
 /// Root backup data structure
-struct BackupData: Codable {
+struct BackupData: Codable, Sendable {
     let exportDate: String
     let appVersion: String
     let items: [ItemExport]
@@ -607,7 +606,7 @@ struct BackupData: Codable {
 }
 
 /// Flattened item export with relationship names
-struct ItemExport: Codable {
+struct ItemExport: Codable, Sendable {
     let id: UUID
     let name: String
     let brand: String?
@@ -654,7 +653,7 @@ struct ItemExport: Codable {
 }
 
 /// Category export
-struct CategoryExport: Codable {
+struct CategoryExport: Codable, Sendable {
     let id: UUID
     let name: String
     let iconName: String
@@ -673,7 +672,7 @@ struct CategoryExport: Codable {
 }
 
 /// Room export
-struct RoomExport: Codable {
+struct RoomExport: Codable, Sendable {
     let id: UUID
     let name: String
     let iconName: String
@@ -690,7 +689,7 @@ struct RoomExport: Codable {
 }
 
 /// Receipt export
-struct ReceiptExport: Codable {
+struct ReceiptExport: Codable, Sendable {
     let id: UUID
     let vendor: String?
     let total: Decimal?

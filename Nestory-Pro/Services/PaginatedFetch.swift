@@ -9,13 +9,13 @@ import Foundation
 import SwiftData
 
 /// Configuration for paginated fetching
-struct PaginationConfig {
+struct PaginationConfig: Sendable {
     let pageSize: Int
     let prefetchDistance: Int
 
-    static let `default` = PaginationConfig(pageSize: 50, prefetchDistance: 10)
-    static let small = PaginationConfig(pageSize: 20, prefetchDistance: 5)
-    static let large = PaginationConfig(pageSize: 100, prefetchDistance: 20)
+    nonisolated static let `default` = PaginationConfig(pageSize: 50, prefetchDistance: 10)
+    nonisolated static let small = PaginationConfig(pageSize: 20, prefetchDistance: 5)
+    nonisolated static let large = PaginationConfig(pageSize: 100, prefetchDistance: 20)
 }
 
 /// Manages paginated fetching of SwiftData models

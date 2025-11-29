@@ -28,6 +28,9 @@ struct MainTabView: View {
     @Environment(AppEnvironment.self) private var env
     @Environment(\.scenePhase) private var scenePhase
     
+    // Direct AppStorage observation for theme changes (fixes theme toggle)
+    @AppStorage("themePreference") private var themePreference: ThemePreference = .system
+    
     @State private var selectedTab: AppTab = .inventory
     @State private var isLocked = false
     @State private var lastBackgroundTime: Date?
@@ -71,6 +74,7 @@ struct MainTabView: View {
                     .transition(.opacity)
             }
         }
+        .preferredColorScheme(themePreference.colorScheme)
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhaseChange(oldPhase: oldPhase, newPhase: newPhase)
         }

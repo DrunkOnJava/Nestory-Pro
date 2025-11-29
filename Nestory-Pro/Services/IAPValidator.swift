@@ -28,8 +28,8 @@ final class IAPValidator {
     // MARK: - Transaction Listener
 
     /// Task handle for transaction updates listener
-    /// Marked nonisolated(unsafe) to allow cleanup in deinit
-    /// Task.cancel() is thread-safe and can be called from any context
+    /// Using nonisolated(unsafe) allows access from deinit.
+    /// This is safe because Task.cancel() is thread-safe.
     nonisolated(unsafe) private var transactionListener: Task<Void, Error>?
 
     // MARK: - Initialization
