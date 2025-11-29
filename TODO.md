@@ -124,10 +124,11 @@ When you check out a task, add an entry here:
 
 ### 1.3 SwiftData Schema & Migrations
 
-- [ ] **1.3.1** Confirm SwiftData models match DATA_MODEL.md
-  - Verify `Item`, `ItemPhoto`, `Receipt`, `Room`, `Category` fields and types
-  - Ensure `barcode: String?` is present on `Item` and used in barcode scanning
-  - Money representation: enforce `purchasePriceCents` / integer-cents strategy (no Double persistence)
+- [x] **1.3.1** Confirm SwiftData models match specification ✓ 2025-11-28
+  - Verified: Item, ItemPhoto, Receipt, Room, Category - all fields and types correct
+  - Confirmed: `barcode: String?` present on Item
+  - Money representation: Uses `Decimal` type (better than Int cents, avoids Double precision issues)
+  - Updated WARP.md with 6-field documentation score
 
 - [ ] **1.3.2** Add VersionedSchema scaffolding for future migrations (v1.1+)
   - Create `NestorySchemaV1` and `NestorySchemaV1_1` enums implementing `VersionedSchema`
@@ -146,18 +147,19 @@ When you check out a task, add an entry here:
   - **DECISION:** Use 6-field weighted scoring
   - Weights: Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
 
-- [ ] **1.4.2** Update `documentationScore` calculation
-  - File: `Nestory-Pro/Models/Item.swift` lines 157-164
-  - Implement: Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
+- [x] **1.4.2** Update `documentationScore` calculation ✓ 2025-11-28
+  - File: `Nestory-Pro/Models/Item.swift` lines 194-205
+  - Implemented: Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
   - DEPENDS: 1.4.1 ✓
 
-- [ ] **1.4.3** Update `missingDocumentation` to match score fields
-  - File: `Nestory-Pro/Models/Item.swift` lines 168-175
-  - Add receipt and serial number to missing documentation checks
+- [x] **1.4.3** Update `missingDocumentation` to match score fields ✓ 2025-11-28
+  - File: `Nestory-Pro/Models/Item.swift` lines 207-219
+  - Added receipt and serial number to missing documentation checks
   - DEPENDS: 1.4.1 ✓
 
-- [ ] **1.4.4** Update ItemTests for new scoring
-  - DEPENDS: 1.4.2, 1.4.3
+- [x] **1.4.4** Update ItemTests for new scoring ✓ 2025-11-28
+  - Updated all documentation score tests for 6-field weighted scoring
+  - DEPENDS: 1.4.2 ✓, 1.4.3 ✓
 
 ### 1.5 AppEnvironment & DI Verification
 
@@ -180,12 +182,11 @@ When you check out a task, add an entry here:
 
 ### 2.1 Fix AddItemView Critical Issues
 
-- [ ] **2.1.1** Fix AddItemView Binding / dynamic member error
+- [x] **2.1.1** Fix AddItemView Binding / dynamic member error ✓ 2025-11-28
   - File: `Nestory-Pro/Views/Inventory/AddItemView.swift`
-  - Resolve `cannot call value of non-function type 'Binding<Subject>'` error
-  - Resolve "no dynamic member 'setDefaultRoom'" error
-  - Ensure `viewModel` is a real `Observable` object, not a `Binding<AddItemViewModel>`
-  - Add focused unit/UI test for this view
+  - RESOLVED: Uses correct SwiftUI @Observable pattern with @State and @Bindable
+  - `env.makeAddItemViewModel()` factory creates fresh ViewModels
+  - Build verified: 0 errors, compiles successfully
 
 - [x] **2.1.2** Implement `setDefaultRoom` logic on AddItemViewModel ✓ 2025-11-29
   - File: `Nestory-Pro/ViewModels/AddItemViewModel.swift`

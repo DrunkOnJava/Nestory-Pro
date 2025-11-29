@@ -196,13 +196,19 @@ All models use `@Model` macro with relationships:
   - Cascade deletes with parent Item
 
 ### Documentation Status Logic
-An item is "documented" when it has:
+An item is "documented" when it has the 4 core fields:
 1. At least one photo
 2. Purchase value
 3. Category assigned
 4. Room/location assigned
 
-Score is calculated as percentage (0.25 points each).
+**Documentation Score (6-field weighted - Task 1.4.1):**
+- Photo: 30%
+- Value: 25%
+- Room: 15%
+- Category: 10%
+- Receipt: 10%
+- Serial Number: 10%
 
 ## Key Technical Decisions
 

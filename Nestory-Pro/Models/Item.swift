@@ -13,12 +13,11 @@
 // COMPLETED MODEL UPDATES (TODO.md Phase 1):
 // - Task 1.1.1: Added `notes: String?` property (distinct from conditionNotes) ✓
 //
-// DOCUMENTATION SCORE (Lines 157-164):
-// - BLOCKED pending decision on Task 1.2.1
-// - Current: 4 fields at 25% each (Photo, Value, Room, Category)
-// - Spec option: 6-field weighted (Photo 30%, Value 25%, Room 15%,
-//   Category 10%, Receipt 10%, Serial 10%)
-// - DO NOT modify until 1.2.1 decision is made
+// DOCUMENTATION SCORE (Lines ~195-215):
+// - Task 1.4.1 DECIDED: 6-field weighted scoring (2025-11-28)
+// - Photo: 30%, Value: 25%, Room: 15%, Category: 10%, Receipt: 10%, Serial: 10%
+// - Total: 100% when all fields present
+// - isDocumented: requires 4 core fields (Photo, Value, Room, Category)
 //
 // TESTING REQUIREMENTS:
 // - All changes must update TestFixtures.swift
@@ -192,23 +191,30 @@ extension Item {
         hasPhoto && hasValue && hasCategory && hasLocation
     }
 
+    /// Documentation score using 6-field weighted calculation (Task 1.4.1)
+    /// Weights: Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
     var documentationScore: Double {
         var score = 0.0
-        if hasPhoto { score += 0.25 }
+        if hasPhoto { score += 0.30 }
         if hasValue { score += 0.25 }
-        if hasCategory { score += 0.25 }
-        if hasLocation { score += 0.25 }
+        if hasLocation { score += 0.15 }
+        if hasCategory { score += 0.10 }
+        if hasReceipt { score += 0.10 }
+        if hasSerial { score += 0.10 }
         return score
     }
 
     /// Returns documentation fields missing for insurance purposes.
-    /// Aligned with `documentationScore` - only the 4 core fields: Photo, Value, Room, Category
+    /// Aligned with `documentationScore` 6-field calculation (Task 1.4.3)
+    /// Order matches weight priority: Photo, Value, Room, Category, Receipt, Serial
     var missingDocumentation: [String] {
         var missing: [String] = []
         if !hasPhoto { missing.append("Photo") }
         if !hasValue { missing.append("Value") }
         if !hasLocation { missing.append("Room") }
         if !hasCategory { missing.append("Category") }
+        if !hasReceipt { missing.append("Receipt") }
+        if !hasSerial { missing.append("Serial Number") }
         return missing
     }
 }

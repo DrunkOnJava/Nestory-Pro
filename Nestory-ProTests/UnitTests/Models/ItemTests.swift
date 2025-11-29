@@ -15,28 +15,30 @@ final class ItemTests: XCTestCase {
     
     @MainActor
     func testDocumentationScore_AllFieldsFilled_Returns1() throws {
-        // Arrange
+        // Arrange - 6-field weighted scoring (Task 1.4.1)
+        // Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
         let container = TestContainer.empty()
         let context = container.mainContext
-        
+
         let category = TestFixtures.testCategory()
         let room = TestFixtures.testRoom()
         context.insert(category)
         context.insert(room)
-        
+
+        // testDocumentedItem includes: value, category, room, serial, and photo
         let item = TestFixtures.testDocumentedItem(
             category: category,
             room: room
         )
         context.insert(item)
-        
-        let photo = TestFixtures.testItemPhoto()
-        photo.item = item
-        context.insert(photo)
-        
+
+        // Add receipt for full 100% score
+        let receipt = TestFixtures.testReceipt(linkedItem: item)
+        context.insert(receipt)
+
         // Act
         let score = item.documentationScore
-        
+
         // Assert
         XCTAssertEqual(score, 1.0, accuracy: 0.001)
         XCTAssertTrue(item.isDocumented)
@@ -47,40 +49,50 @@ final class ItemTests: XCTestCase {
     func testDocumentationScore_NoFieldsFilled_Returns0() {
         // Arrange
         let item = TestFixtures.testUndocumentedItem()
-        
+
         // Act
         let score = item.documentationScore
-        
-        // Assert
+
+        // Assert - 6-field scoring (Task 1.4.1)
         XCTAssertEqual(score, 0.0)
         XCTAssertFalse(item.isDocumented)
-        XCTAssertEqual(item.missingDocumentation.count, 4)
+        XCTAssertEqual(item.missingDocumentation.count, 6)
+        XCTAssertTrue(item.missingDocumentation.contains("Photo"))
+        XCTAssertTrue(item.missingDocumentation.contains("Value"))
+        XCTAssertTrue(item.missingDocumentation.contains("Room"))
+        XCTAssertTrue(item.missingDocumentation.contains("Category"))
+        XCTAssertTrue(item.missingDocumentation.contains("Receipt"))
+        XCTAssertTrue(item.missingDocumentation.contains("Serial Number"))
     }
     
     @MainActor
     func testDocumentationScore_HalfFieldsFilled_Returns0Point5() throws {
-        // Arrange
+        // Arrange - 6-field weighted scoring (Task 1.4.1)
+        // Value (25%) + Room (15%) + Category (10%) = 50%
         let container = TestContainer.empty()
         let context = container.mainContext
-        
+
         let category = TestFixtures.testCategory()
+        let room = TestFixtures.testRoom()
         context.insert(category)
-        
+        context.insert(room)
+
         let item = Item(
             name: "Test Item",
-            purchasePrice: Decimal(100),
-            category: category,
-            room: nil,
+            purchasePrice: Decimal(100),  // +25%
+            category: category,            // +10%
+            room: room,                    // +15%
             condition: .good
+            // No photo, no receipt, no serial = missing 55%
         )
         context.insert(item)
-        
+
         // Act
         let score = item.documentationScore
-        
+
         // Assert
         XCTAssertEqual(score, 0.5, accuracy: 0.001)
-        XCTAssertFalse(item.isDocumented)
+        XCTAssertFalse(item.isDocumented)  // Still needs photo
     }
     
     // MARK: - Has Photo Tests
@@ -137,35 +149,37 @@ final class ItemTests: XCTestCase {
     
     @MainActor
     func testMissingDocumentation_CompleteItem_ReturnsEmptyArray() throws {
-        // Arrange
+        // Arrange - 6-field scoring (Task 1.4.3)
         let container = TestContainer.empty()
         let context = container.mainContext
-        
+
         let category = TestFixtures.testCategory()
         let room = TestFixtures.testRoom()
         context.insert(category)
         context.insert(room)
-        
+
+        // testDocumentedItem includes: value, category, room, serial, and photo
         let item = TestFixtures.testDocumentedItem(
             category: category,
             room: room
         )
         context.insert(item)
-        
-        let photo = TestFixtures.testItemPhoto()
-        photo.item = item
-        context.insert(photo)
-        
+
+        // Add receipt for complete documentation
+        let receipt = TestFixtures.testReceipt(linkedItem: item)
+        context.insert(receipt)
+
         // Act
         let missing = item.missingDocumentation
-        
+
         // Assert
         XCTAssertTrue(missing.isEmpty)
     }
     
     @MainActor
     func testMissingDocumentation_IncompleteItem_ReturnsCorrectFields() {
-        // Arrange - item has value but missing photo, room, and category
+        // Arrange - 6-field scoring (Task 1.4.3)
+        // Item has only value, missing everything else
         let item = Item(
             name: "Test Item",
             purchasePrice: Decimal(100),
@@ -177,11 +191,14 @@ final class ItemTests: XCTestCase {
         // Act
         let missing = item.missingDocumentation
 
-        // Assert - should be missing Photo, Room, and Category (3 fields)
-        XCTAssertEqual(missing.count, 3)
+        // Assert - should be missing 5 fields (has value only)
+        XCTAssertEqual(missing.count, 5)
         XCTAssertTrue(missing.contains("Photo"))
         XCTAssertTrue(missing.contains("Room"))
         XCTAssertTrue(missing.contains("Category"))
+        XCTAssertTrue(missing.contains("Receipt"))
+        XCTAssertTrue(missing.contains("Serial Number"))
+        XCTAssertFalse(missing.contains("Value"))  // Value is present
     }
     
     // MARK: - Initialization Tests
