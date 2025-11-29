@@ -39,7 +39,7 @@ struct AddItemView: View {
     @State private var viewModel: AddItemViewModel
     
     init() {
-        // ViewModel will be properly initialized via @Environment in body
+        // ViewModel will be initialized in .task using AppEnvironment.makeAddItemViewModel()
         _viewModel = State(initialValue: AddItemViewModel(settings: SettingsManager()))
     }
     

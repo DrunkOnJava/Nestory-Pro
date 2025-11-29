@@ -40,10 +40,10 @@ final class AppEnvironment {
     let iapValidator: IAPValidator
     
     /// Photo file storage (actor-isolated)
-    nonisolated let photoStorage: PhotoStorageService
+    nonisolated let photoStorage: any PhotoStorageProtocol
     
     /// OCR text recognition (actor-isolated)
-    nonisolated let ocrService: OCRService
+    nonisolated let ocrService: any OCRServiceProtocol
     
     /// PDF report generation (actor-isolated)
     nonisolated let reportGenerator: ReportGeneratorService
@@ -52,7 +52,7 @@ final class AppEnvironment {
     nonisolated let backupService: BackupService
     
     /// Biometric authentication and app lock
-    let appLockService: AppLockService
+    let appLockService: any AppLockProviding
     
     // MARK: - ViewModels
     
@@ -79,11 +79,11 @@ final class AppEnvironment {
     init(
         settings: SettingsManager? = nil,
         iapValidator: IAPValidator? = nil,
-        photoStorage: PhotoStorageService? = nil,
-        ocrService: OCRService? = nil,
+        photoStorage: (any PhotoStorageProtocol)? = nil,
+        ocrService: (any OCRServiceProtocol)? = nil,
         reportGenerator: ReportGeneratorService? = nil,
         backupService: BackupService? = nil,
-        appLockService: AppLockService? = nil
+        appLockService: (any AppLockProviding)? = nil
     ) {
         // Use provided services or create defaults
         self.settings = settings ?? SettingsManager()
@@ -109,22 +109,43 @@ final class AppEnvironment {
     ///   - preferredCurrencyCode: Currency code for formatting
     /// - Returns: AppEnvironment configured for testing
     static func mock(
+        settings: SettingsManager? = nil,
+        iapValidator: IAPValidator? = nil,
+        photoStorage: (any PhotoStorageProtocol)? = nil,
+        ocrService: (any OCRServiceProtocol)? = nil,
+        reportGenerator: ReportGeneratorService? = nil,
+        backupService: BackupService? = nil,
+        appLockService: (any AppLockProviding)? = nil,
         isProUnlocked: Bool = true,
         preferredCurrencyCode: String = "USD"
     ) -> AppEnvironment {
-        let settings = SettingsManager()
-        settings.isProUnlocked = isProUnlocked
+        // Base settings provider
+        let baseSettings: SettingsManager
+        if let settings {
+            baseSettings = settings
+        } else {
+            let concrete = SettingsManager()
+            concrete.isProUnlocked = isProUnlocked
+            concrete.preferredCurrencyCode = preferredCurrencyCode
+            baseSettings = concrete
+        }
         
-        let iapValidator = IAPValidator()
+        // Default concrete services remain the same, but can be overridden in tests
+        let concreteIAP = iapValidator ?? IAPValidator()
+        let concretePhotoStorage = photoStorage ?? PhotoStorageService.shared
+        let concreteOCR = ocrService ?? OCRService.shared
+        let concreteReportGenerator = reportGenerator ?? ReportGeneratorService.shared
+        let concreteBackup = backupService ?? BackupService.shared
+        let concreteAppLock = appLockService ?? AppLockService()
         
         return AppEnvironment(
-            settings: settings,
-            iapValidator: iapValidator,
-            photoStorage: PhotoStorageService.shared,
-            ocrService: OCRService.shared,
-            reportGenerator: ReportGeneratorService.shared,
-            backupService: BackupService.shared,
-            appLockService: AppLockService()
+            settings: baseSettings,
+            iapValidator: concreteIAP,
+            photoStorage: concretePhotoStorage,
+            ocrService: concreteOCR,
+            reportGenerator: concreteReportGenerator,
+            backupService: concreteBackup,
+            appLockService: concreteAppLock
         )
     }
     #endif

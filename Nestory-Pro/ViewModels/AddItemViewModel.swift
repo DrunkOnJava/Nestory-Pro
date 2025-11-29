@@ -34,11 +34,11 @@ final class AddItemViewModel {
     
     // MARK: - Private Dependencies
     
-    private let settings: SettingsManager
+    private let settings: any SettingsProviding
     
     // MARK: - Initialization
     
-    init(settings: SettingsManager) {
+    init(settings: any SettingsProviding) {
         self.settings = settings
     }
     

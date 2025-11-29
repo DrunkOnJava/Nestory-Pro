@@ -26,13 +26,13 @@ final class InventoryTabViewModel {
     var showingProPaywall: Bool = false
     var itemLimitBannerDismissed: Bool = false
     
-    // MARK: - Private Dependencies
+    // MARK: - Dependencies
     
-    private let settings: SettingsManager
+    private let settings: any SettingsProviding
     
     // MARK: - Initialization
     
-    init(settings: SettingsManager) {
+    init(settings: any SettingsProviding) {
         self.settings = settings
     }
     

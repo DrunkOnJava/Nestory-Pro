@@ -25,6 +25,9 @@ final class MockSettingsManager: SettingsProviding {
     var requiresBiometrics: Bool = false
     var lockAfterInactivity: Bool = false
 
+    // MARK: - Default Room
+    var defaultRoomId: String? = nil
+
     // MARK: - Notifications
     var enableDocumentationReminders: Bool = false
     var weeklyReminderEnabled: Bool = false
@@ -63,6 +66,7 @@ final class MockSettingsManager: SettingsProviding {
         preferredCurrencyCode = "USD"
         requiresBiometrics = false
         lockAfterInactivity = false
+        defaultRoomId = nil
         enableDocumentationReminders = false
         weeklyReminderEnabled = false
         hasCompletedOnboarding = false

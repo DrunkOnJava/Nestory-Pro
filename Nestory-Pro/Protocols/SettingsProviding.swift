@@ -24,6 +24,9 @@ protocol SettingsProviding {
     var requiresBiometrics: Bool { get set }
     var lockAfterInactivity: Bool { get set }
 
+    // MARK: - Default Room
+    var defaultRoomId: String? { get set }
+
     // MARK: - Notifications
     var enableDocumentationReminders: Bool { get set }
     var weeklyReminderEnabled: Bool { get set }

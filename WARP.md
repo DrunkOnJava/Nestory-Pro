@@ -449,6 +449,10 @@ Nestory-ProTests/
 
 ### Writing Unit Tests
 
+- Use `AppEnvironment.mock(...)` in tests when you need a fully wired environment without touching real services:
+  - Pass protocol-conforming mocks from `Nestory-ProTests/Mocks` for `SettingsProviding`, `PhotoStorageProtocol`, `OCRServiceProtocol`, and `BackupServiceProtocol`.
+  - Example: `let env = AppEnvironment.mock(settings: MockSettingsManager(), photoStorage: MockPhotoStorageService(), ocrService: MockOCRService(), backupService: MockBackupService())`.
+
 ```swift
 import XCTest
 @testable import Nestory_Pro
