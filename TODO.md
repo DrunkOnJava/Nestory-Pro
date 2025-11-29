@@ -401,12 +401,12 @@ When you check out a task, add an entry here:
 
 ### 6.1 Default Room Setting
 
-- [ ] **6.1.1** Add defaultRoomId to SettingsManager
+- [x] **6.1.1** Add defaultRoomId to SettingsManager ✓ 2025-11-28
   - File: `Nestory-Pro/Services/SettingsManager.swift`
   - Add `@AppStorage("defaultRoomId") var defaultRoomId: String?`
   - Add room picker in SettingsTab
 
-- [ ] **6.1.2** Use default room in AddItemView
+- [x] **6.1.2** Use default room in AddItemView ✓ 2025-11-28
   - Pre-select room when creating new item
   - DEPENDS: 6.1.1
 
@@ -606,4 +606,4 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 73 tasks (0 in progress, 42 completed, 31 remaining)*
+*Task Count: 73 tasks (0 in progress, 44 completed, 29 remaining)*
