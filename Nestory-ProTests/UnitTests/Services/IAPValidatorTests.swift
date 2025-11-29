@@ -33,7 +33,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testKeychainSync_SetProUnlocked_ReflectsInKeychain() throws {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         #if DEBUG
         // Act - Use debug method to set Pro status
@@ -55,7 +55,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testKeychainSync_ResetProStatus_ReflectsInKeychain() throws {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         #if DEBUG
         validator.simulateProUnlock()
@@ -87,7 +87,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testIsPurchasing_InitiallyFalse() {
         // Arrange & Act
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Assert
         XCTAssertFalse(validator.isPurchasing, "isPurchasing should be false on initialization")
@@ -95,7 +95,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testPurchaseError_InitiallyNil() {
         // Arrange & Act
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Assert
         XCTAssertNil(validator.purchaseError, "purchaseError should be nil on initialization")
@@ -118,7 +118,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testStartTransactionListener_CreatesTask() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Act
         validator.startTransactionListener()
@@ -134,7 +134,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testStopTransactionListener_CancelsTask() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
         validator.startTransactionListener()
 
         // Act
@@ -148,7 +148,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testStopTransactionListener_WhenNotStarted_DoesNotCrash() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Act & Assert - Should not crash
         validator.stopTransactionListener()
@@ -158,7 +158,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testStartTransactionListener_CalledMultipleTimes_DoesNotCrash() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Act - Call multiple times
         validator.startTransactionListener()
@@ -177,7 +177,7 @@ final class IAPValidatorTests: XCTestCase {
     #if DEBUG
     func testSimulateProUnlock_UpdatesStateAndKeychain() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
         // Reset first to ensure clean state
         validator.resetProStatus()
 
@@ -194,7 +194,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testResetProStatus_UpdatesStateAndKeychain() throws {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
         try KeychainManager.setProUnlocked(true)
         validator.simulateProUnlock()
         XCTAssertTrue(validator.isProUnlocked, "Should be unlocked initially")
@@ -209,7 +209,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testSimulateProUnlock_CanBeCalledMultipleTimes() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Act - Call multiple times
         validator.simulateProUnlock()
@@ -223,7 +223,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testResetProStatus_CanBeCalledMultipleTimes() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Act - Call multiple times
         validator.resetProStatus()
@@ -237,7 +237,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testSimulateAndReset_Cycle() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Act & Assert - Cycle through multiple state changes
         validator.resetProStatus()
@@ -258,7 +258,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testIsProUnlocked_IsObservable() {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
         let initialState = validator.isProUnlocked
 
         // Act - Change state via Debug method
@@ -277,7 +277,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testIsPurchasing_IsObservable() {
         // Arrange & Act
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
         let isPurchasing = validator.isPurchasing
 
         // Assert - Verify property is observable (accessible)
@@ -287,7 +287,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testPurchaseError_IsObservable() {
         // Arrange & Act
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
         let error = validator.purchaseError
 
         // Assert - Verify property is observable (accessible)
@@ -299,8 +299,8 @@ final class IAPValidatorTests: XCTestCase {
 
     func testShared_ReturnsSameInstance() {
         // Arrange & Act
-        let instance1 = IAPValidator.shared
-        let instance2 = IAPValidator.shared
+        let instance1 = IAPValidator()
+        let instance2 = IAPValidator()
 
         // Assert
         XCTAssertTrue(instance1 === instance2, "shared should return the same instance")
@@ -310,7 +310,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testKeychainIntegration_StateChangesArePersisted() throws {
         // Arrange
-        let validator = IAPValidator.shared
+        let validator = IAPValidator()
 
         // Act - Simulate Pro unlock
         #if DEBUG
@@ -333,7 +333,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testKeychainIntegration_InitializationReadsCorrectly() throws {
         // Note: This test documents the initialization behavior
-        // In production, IAPValidator.shared is already initialized
+        // In production, IAPValidator() is already initialized
         // We can only verify that Keychain operations work correctly
 
         // Arrange
@@ -402,9 +402,9 @@ final class IAPValidatorTests: XCTestCase {
 
     func testMainActorIsolation_PropertiesAccessibleOnMainActor() async {
         // Arrange & Act - Access properties on MainActor
-        let isUnlocked = await IAPValidator.shared.isProUnlocked
-        let isPurchasing = await IAPValidator.shared.isPurchasing
-        let error = await IAPValidator.shared.purchaseError
+        let isUnlocked = await IAPValidator().isProUnlocked
+        let isPurchasing = await IAPValidator().isPurchasing
+        let error = await IAPValidator().purchaseError
 
         // Assert - Should be accessible without issues
         XCTAssertNotNil(isUnlocked)
@@ -415,7 +415,7 @@ final class IAPValidatorTests: XCTestCase {
 
     func testMainActorIsolation_MethodsCallableOnMainActor() async {
         // Arrange
-        let validator = await IAPValidator.shared
+        let validator = await IAPValidator()
 
         // Act & Assert - Should be callable without issues
         await validator.startTransactionListener()

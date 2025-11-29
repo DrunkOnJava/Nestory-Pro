@@ -17,10 +17,8 @@ actor ImageCache {
 
     private init() {
         // Configure cache limits
-        // OPTIMIZE: Adjust limits based on device memory (iPad vs iPhone)
-        // NOTE: 50MB is conservative; consider 100MB for modern devices
-        cache.countLimit = 100
-        cache.totalCostLimit = 50 * 1024 * 1024 // 50MB
+        cache.countLimit = 50 // Max 50 images
+        cache.totalCostLimit = 100 * 1024 * 1024 // 100MB max
 
         // Set up memory warning observer
         Task { @MainActor in

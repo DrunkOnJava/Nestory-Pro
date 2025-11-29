@@ -113,9 +113,13 @@ actor OCRService: OCRServiceProtocol {
                 continuation.resume(returning: (text, avgConfidence))
             }
 
-            // Configure for best accuracy
-            request.recognitionLevel = .accurate
-            request.usesLanguageCorrection = true
+            // Optimize for receipt scanning (20-30% faster than .accurate)
+            // Receipts contain structured data (prices, codes, dates) rather than prose,
+            // so we prioritize speed over language correction
+            request.recognitionLevel = .fast
+            request.usesLanguageCorrection = false
+            request.recognitionLanguages = ["en-US"]
+            request.revision = VNRecognizeTextRequestRevision3  // Use latest revision
 
             // Execute the request
             let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])

@@ -14,13 +14,46 @@ enum ItemFilter: String, CaseIterable {
     case needsReceipt = "Needs Receipt"
     case needsValue = "Needs Value"
     case highValue = "High Value"
-    
-    var predicate: ((Item) -> Bool) {
+
+    // MARK: - SwiftData Predicate Support
+
+    /// Returns a SwiftData Predicate for database-level filtering.
+    /// Note: Relationship-based predicates (needsPhoto, needsReceipt) are not
+    /// supported by SwiftData's Predicate syntax for collection counts, so we
+    /// return nil and fall back to Swift filtering for those cases.
+    var swiftDataPredicate: Predicate<Item>? {
+        switch self {
+        case .all:
+            // No filtering needed
+            return nil
+
+        case .needsValue:
+            // Filter items where purchasePrice is nil
+            return #Predicate<Item> { item in
+                item.purchasePrice == nil
+            }
+
+        case .highValue:
+            // Filter items with purchasePrice > 1000
+            return #Predicate<Item> { item in
+                (item.purchasePrice ?? 0) > 1000
+            }
+
+        case .needsPhoto, .needsReceipt:
+            // SwiftData predicates cannot check relationship collection counts
+            // Fall back to Swift filtering for these cases
+            return nil
+        }
+    }
+
+    /// Legacy Swift closure predicate for cases where SwiftData predicates
+    /// are not supported (relationship counts). Used as fallback.
+    var swiftPredicate: ((Item) -> Bool) {
         switch self {
         case .all: return { _ in true }
-        case .needsPhoto: return { !$0.hasPhoto }
-        case .needsReceipt: return { !$0.hasReceipt }
-        case .needsValue: return { !$0.hasValue }
+        case .needsPhoto: return { $0.photos.isEmpty }
+        case .needsReceipt: return { $0.receipts.isEmpty }
+        case .needsValue: return { $0.purchasePrice == nil }
         case .highValue: return { ($0.purchasePrice ?? 0) > 1000 }
         }
     }
@@ -49,16 +82,31 @@ enum ViewMode: String, CaseIterable {
 
 struct InventoryTab: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Item.createdAt, order: .reverse) private var items: [Item]
     @Query private var rooms: [Room]
-    
+
     @Environment(AppEnvironment.self) private var env
-    
+
     // ViewModel handles filtering, sorting, stats, and UI state
     private var viewModel: InventoryTabViewModel {
         env.inventoryViewModel
     }
-    
+
+    // MARK: - Dynamic Query with SwiftData Predicates
+
+    /// Fetch items with database-level filtering when possible.
+    /// Performance: Filters applied at database level reduce memory usage for large inventories.
+    /// For filters that require relationship counts (needsPhoto, needsReceipt), we fetch all
+    /// items and filter in Swift due to SwiftData predicate limitations.
+    private var items: [Item] {
+        let predicate = viewModel.selectedFilter.swiftDataPredicate
+        let descriptor = FetchDescriptor<Item>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
     private var filteredItems: [Item] {
         viewModel.processItems(items)
     }

@@ -37,12 +37,14 @@ final class InventoryTabViewModel {
     }
     
     // MARK: - Filtering & Sorting
-    
-    /// Apply search, filter, and sort to items array
+
+    /// Apply search, filter, and sort to items array.
+    /// Note: Some filters use SwiftData predicates (applied at query level),
+    /// while others (relationship counts) must use Swift filtering here.
     func processItems(_ items: [Item]) -> [Item] {
         var result = items
-        
-        // Apply search
+
+        // Apply search (must be done in Swift due to multiple field OR logic)
         if !searchText.isEmpty {
             result = result.filter { item in
                 item.name.localizedCaseInsensitiveContains(searchText) ||
@@ -51,13 +53,16 @@ final class InventoryTabViewModel {
                 (item.room?.name.localizedCaseInsensitiveContains(searchText) ?? false)
             }
         }
-        
-        // Apply filter
-        result = result.filter(selectedFilter.predicate)
-        
+
+        // Apply filter (only needed if SwiftData predicate wasn't available)
+        // For needsPhoto and needsReceipt, we must filter in Swift
+        if selectedFilter.swiftDataPredicate == nil && selectedFilter != .all {
+            result = result.filter(selectedFilter.swiftPredicate)
+        }
+
         // Apply sort
         result = sortItems(result)
-        
+
         return result
     }
     
