@@ -619,9 +619,12 @@ When you check out a task, add an entry here:
   - Created PRIVACY.md in repo root (linked from App Store metadata)
   - Support via GitHub Issues: https://github.com/DrunkOnJava/Nestory-Pro/issues
 
-- [ ] **7.3.3** App Review readiness
-  - Double-check no private APIs, no non-compliant behaviors
-  - Ensure any experimental features (CloudKit sync) are stable or hidden
+- [x] **7.3.3** App Review readiness ✓ 2025-11-29
+  - No private APIs used
+  - All debug code wrapped in #if DEBUG (simulateProUnlock, PreviewContent)
+  - CloudKit disabled in code (capability present for v1.1, cloudKit: false in NestorySchema)
+  - Proper usage descriptions: Camera, Photo Library, Face ID
+  - Entitlements verified: aps-environment, iCloud capability
 
 ---
 
