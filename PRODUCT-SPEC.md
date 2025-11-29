@@ -897,6 +897,67 @@ Examples:
 
 ---
 
+# 15. Implementation Status Summary
+
+**Last Updated:** 2025-11-29
+
+## Core Features Status
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Inventory Management** | ✅ Complete | Grid/list views, filtering, search |
+| **Item Model** | ✅ Complete | All fields, documentation score, validation |
+| **Photo Capture** | ✅ Complete | Camera + Photos picker, async loading |
+| **Receipt OCR** | ✅ Complete | Vision framework, confidence scoring |
+| **Barcode Scanning** | ✅ Complete | Scan-only v1.0, stores barcode string |
+| **Full Inventory PDF** | ✅ Complete | Grouping options, Pro photo support |
+| **Loss List PDF** | ✅ Complete | Multi-select, incident details, 20-item free limit |
+| **Data Export (JSON)** | ✅ Complete | Full backup with relationships |
+| **Data Export (CSV)** | ✅ Complete | Pro-gated |
+| **Data Import/Restore** | ✅ Complete | Merge/replace strategies |
+| **Pro Paywall** | ✅ Complete | StoreKit 2, contextual prompts |
+| **Item Limit Enforcement** | ✅ Complete | 100-item free tier |
+| **App Lock (Biometrics)** | ✅ Complete | Face ID / Touch ID |
+| **Settings Tab** | ✅ Complete | All v1 options |
+
+## Architecture Status
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| **SwiftData Models** | ✅ Complete | Item, Category, Room, Receipt, ItemPhoto |
+| **VersionedSchema** | ✅ Complete | Migration scaffolding ready |
+| **MVVM ViewModels** | ✅ Complete | All tabs have @Observable VMs |
+| **AppEnvironment DI** | ✅ Complete | 7 services injected via @Environment |
+| **Protocol-based Testing** | ✅ Complete | Mock implementations for all services |
+
+## Pending for v1.0 Release
+
+| Task | Priority | Category |
+|------|----------|----------|
+| Sync spec docs with code (this task) | P0 | Documentation |
+| Fix Match / API key configuration | P1 | Release Engineering |
+| Finalize fastlane lanes | P1 | Release Engineering |
+| GitHub Actions CI workflows | P1 | Release Engineering |
+| App Store metadata & screenshots | P1 | Release Engineering |
+| Privacy policy & support URL | P1 | Release Engineering |
+| Accessibility labels (WCAG 2.1 AA) | P2 | Accessibility |
+| Additional service tests | P2 | Testing |
+| UI flow tests | P2 | Testing |
+
+## Known Issues
+
+1. **CloudKit sync disabled for v1.0** - Using local-only SwiftData container pending CloudKit configuration
+2. **Photo backup not in ZIP** - Photos stored locally, not included in JSON backup (planned for v1.1)
+3. **No product lookup from barcode** - Barcode is stored but not used for auto-fill (planned for v1.1)
+
+## Task Progress
+
+- **Completed:** 82 tasks
+- **Pending:** 42 tasks
+- **Overall Progress:** ~66%
+
+---
+
 This gives you:
 
 * A sharply defined v1 that you can actually ship.
