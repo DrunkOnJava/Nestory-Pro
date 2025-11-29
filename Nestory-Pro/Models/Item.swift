@@ -94,6 +94,10 @@ final class Item {
     var warrantyExpiryDate: Date?
     var tags: [String]
     
+    /// Product barcode (UPC, EAN, etc.) scanned from the item
+    // NOTE: Task 2.7.2 - Stored for future product lookup (v1.1+)
+    var barcode: String?
+    
     var createdAt: Date
     var updatedAt: Date
     

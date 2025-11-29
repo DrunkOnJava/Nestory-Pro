@@ -6,32 +6,36 @@
 //
 
 // ============================================================================
-// CLAUDE CODE AGENT: CAPTURE TAB - Task 2.2.3 COMPLETE
+// CLAUDE CODE AGENT: CAPTURE TAB - Tasks 2.5.3, 2.7.1 COMPLETE
 // ============================================================================
 // This view implements the main Capture tab with segmented control for:
 // - Photo capture (implemented)
-// - Receipt capture (placeholder)
-// - Barcode scanning (placeholder)
+// - Receipt capture (implemented - ReceiptCaptureView)
+// - Barcode scanning (implemented - BarcodeScanView)
 //
 // ARCHITECTURE:
 // - Segmented control for capture type selection
 // - PhotoCaptureView for camera/photo library access
 // - QuickAddItemSheet for post-capture item creation
-// - Future: CaptureTabViewModel (Task 5.1.4) for state management
+// - BarcodeScanView for barcode scanning (Task 2.7.1)
+// - ReceiptCaptureView for receipt OCR
+// - CaptureTabViewModel for state management (Task 5.1.4)
 //
-// WORKFLOW:
+// WORKFLOW (Photo):
 // 1. User selects Photo segment
 // 2. Taps "Start Photo Capture" button
 // 3. PhotoCaptureView modal appears (camera or library)
 // 4. After image selection, QuickAddItemSheet appears
 // 5. User enters item name and room, saves to SwiftData
 //
-// FUTURE TASKS:
-// - Task 2.3.x: Receipt OCR flow
-// - Task 2.4.x: Barcode scanning
-// - Task 5.1.4: Add CaptureTabViewModel
+// WORKFLOW (Barcode):
+// 1. User selects Barcode segment
+// 2. Taps "Start Barcode Scan" button
+// 3. BarcodeScanView modal appears with camera
+// 4. After barcode detected, QuickAddBarcodeSheet appears
+// 5. User enters item name, barcode is pre-filled
 //
-// SEE: TODO.md Phase 2 | PhotoCaptureView.swift | QuickAddItemSheet.swift
+// SEE: TODO.md Phase 2 | PhotoCaptureView.swift | BarcodeScanView.swift
 // ============================================================================
 
 import SwiftUI
@@ -67,13 +71,14 @@ struct CaptureTab: View {
                 case .photo:
                     photoSegmentContent
                 case .receipt:
-                    receiptPlaceholder
+                    receiptSegmentContent
                 case .barcode:
-                    barcodePlaceholder
+                    barcodeSegmentContent
                 }
             }
             .navigationTitle("Capture")
         }
+        // Photo capture sheets
         .sheet(isPresented: $vm.showingPhotoCapture) {
             PhotoCaptureView(
                 selectedImage: $vm.capturedImage,
@@ -85,12 +90,43 @@ struct CaptureTab: View {
                 QuickAddItemSheet(capturedImage: capturedImage)
             }
         }
+        // Barcode scanning sheets (Task 2.7.1)
+        .sheet(isPresented: $vm.showingBarcodeScanner) {
+            BarcodeScanView(isPresented: $vm.showingBarcodeScanner) { barcode in
+                viewModel.handleScannedBarcode(barcode)
+            }
+        }
+        .sheet(isPresented: $vm.showingBarcodeQuickAdd) {
+            if let barcode = vm.scannedBarcode {
+                QuickAddBarcodeSheet(scannedBarcode: barcode)
+            }
+        }
+        // Receipt capture sheet
+        .sheet(isPresented: $vm.showingReceiptCapture) {
+            ReceiptCaptureView(
+                onReceiptCaptured: { receiptData, image in
+                    // TODO: Handle receipt capture - create Receipt and optionally link to item
+                    print("Receipt captured: \(receiptData.vendor ?? "Unknown vendor")")
+                },
+                onManualEntry: {
+                    // TODO: Show manual receipt entry form
+                    print("Manual entry requested")
+                }
+            )
+        }
+        // Photo capture state handlers
         .onChange(of: vm.capturedImage) { _, newImage in
             viewModel.handleCapturedImage(newImage)
         }
         .onChange(of: vm.showingQuickAdd) { _, isShowing in
             if !isShowing {
                 viewModel.clearCapturedImage()
+            }
+        }
+        // Barcode state handler
+        .onChange(of: vm.showingBarcodeQuickAdd) { _, isShowing in
+            if !isShowing {
+                viewModel.clearScannedBarcode()
             }
         }
     }
@@ -137,53 +173,86 @@ struct CaptureTab: View {
         }
     }
 
-    // MARK: - Receipt Placeholder
+    // MARK: - Receipt Segment
 
-    private var receiptPlaceholder: some View {
+    private var receiptSegmentContent: some View {
         VStack(spacing: 24) {
             Spacer()
 
             Image(systemName: "doc.text.viewfinder")
                 .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.accentColor)
 
-            Text("Receipt capture coming soon")
-                .font(.title3)
-                .fontWeight(.medium)
-                .foregroundStyle(.secondary)
+            Text("Receipt Capture")
+                .font(.title2)
+                .fontWeight(.semibold)
 
             Text("Scan receipts to automatically extract purchase details and attach them to items.")
                 .font(.subheadline)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
 
             Spacer()
+
+            // Action Button
+            Button(action: viewModel.startReceiptCapture) {
+                Label("Scan Receipt", systemImage: "doc.text.viewfinder")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.accentColor)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 32)
+            .padding(.bottom, 48)
+            .accessibilityIdentifier("captureTab.startReceiptCaptureButton")
         }
     }
 
-    // MARK: - Barcode Placeholder
+    // MARK: - Barcode Segment (Task 2.7.1)
 
-    private var barcodePlaceholder: some View {
+    private var barcodeSegmentContent: some View {
         VStack(spacing: 24) {
             Spacer()
 
             Image(systemName: "barcode.viewfinder")
                 .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.accentColor)
 
-            Text("Barcode scan coming soon")
-                .font(.title3)
-                .fontWeight(.medium)
-                .foregroundStyle(.secondary)
+            Text("Barcode Scan")
+                .font(.title2)
+                .fontWeight(.semibold)
 
-            Text("Scan product barcodes to quickly look up item details and pricing.")
+            Text("Scan product barcodes to quickly add items. The barcode is saved for your records.")
                 .font(.subheadline)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
+            
+            // v1.0 notice
+            Text("Product lookup coming in a future update")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
 
             Spacer()
+
+            // Action Button
+            Button(action: viewModel.startBarcodeScanning) {
+                Label("Start Barcode Scan", systemImage: "barcode.viewfinder")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.accentColor)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 32)
+            .padding(.bottom, 48)
+            .accessibilityIdentifier("captureTab.startBarcodeScanButton")
         }
     }
 }

@@ -21,11 +21,19 @@ final class CaptureTabViewModel {
     var capturedImage: UIImage?
     var showingQuickAdd: Bool = false
     
+    // Barcode scanning state (Task 2.7.1)
+    var showingBarcodeScanner: Bool = false
+    var scannedBarcode: String?
+    var showingBarcodeQuickAdd: Bool = false
+    
+    // Receipt capture state
+    var showingReceiptCapture: Bool = false
+    
     // MARK: - Initialization
     
     init() {}
     
-    // MARK: - Actions
+    // MARK: - Photo Actions
     
     /// Start photo capture flow
     func startPhotoCapture() {
@@ -51,6 +59,32 @@ final class CaptureTabViewModel {
         if !showingQuickAdd {
             clearCapturedImage()
         }
+    }
+    
+    // MARK: - Barcode Actions (Task 2.7.1)
+    
+    /// Start barcode scanning flow
+    func startBarcodeScanning() {
+        showingBarcodeScanner = true
+    }
+    
+    /// Handle scanned barcode
+    /// - Parameter barcode: The scanned barcode string
+    func handleScannedBarcode(_ barcode: String) {
+        scannedBarcode = barcode
+        showingBarcodeQuickAdd = true
+    }
+    
+    /// Clear scanned barcode after sheet is dismissed
+    func clearScannedBarcode() {
+        scannedBarcode = nil
+    }
+    
+    // MARK: - Receipt Actions
+    
+    /// Start receipt capture flow
+    func startReceiptCapture() {
+        showingReceiptCapture = true
     }
 }
 

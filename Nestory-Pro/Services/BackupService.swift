@@ -118,7 +118,7 @@ actor BackupService {
         var csvLines: [String] = []
 
         // Headers
-        csvLines.append("Name,Description,Value,Condition,Room,Category,Purchase Date,Serial Number,Has Photo,Has Receipt")
+        csvLines.append("Name,Description,Value,Condition,Room,Category,Purchase Date,Serial Number,Barcode,Has Photo,Has Receipt")
 
         // Data rows
         for item in items {
@@ -131,6 +131,7 @@ actor BackupService {
                 escapeCSVField(item.category?.name ?? ""),
                 item.purchaseDate.map { formatDate($0) } ?? "",
                 escapeCSVField(item.serialNumber ?? ""),
+                escapeCSVField(item.barcode ?? ""),
                 item.hasPhoto ? "Yes" : "No",
                 item.hasReceipt ? "Yes" : "No"
             ]
@@ -262,6 +263,7 @@ struct ItemExport: Codable {
     let brand: String?
     let modelNumber: String?
     let serialNumber: String?
+    let barcode: String?
     let purchasePrice: Decimal?
     let purchaseDate: Date?
     let currencyCode: String
@@ -283,6 +285,7 @@ struct ItemExport: Codable {
         self.brand = item.brand
         self.modelNumber = item.modelNumber
         self.serialNumber = item.serialNumber
+        self.barcode = item.barcode
         self.purchasePrice = item.purchasePrice
         self.purchaseDate = item.purchaseDate
         self.currencyCode = item.currencyCode
