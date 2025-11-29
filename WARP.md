@@ -18,8 +18,8 @@ open Nestory-Pro.xcodeproj
 # Build from command line (Debug)
 xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -configuration Debug
 
-# Build for simulator (specific device)
-xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15'
+# Build for simulator (specific device - always use iPhone 17 Pro Max)
+xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 ```
 
 ### Testing
@@ -28,7 +28,7 @@ xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -sdk iphonesimulat
 bundle exec fastlane test
 
 # Run tests directly with xcodebuild
-xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -destination 'platform=iOS Simulator,name=iPhone 15'
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 
 # Run specific test target
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -only-testing:Nestory-ProTests
@@ -63,48 +63,108 @@ bundle exec fastlane bump_version type:major   # Major: 1.0.0 → 2.0.0
 │         Presentation Layer          │
 │  SwiftUI Views + @Observable VMs    │
 │  (Feature-oriented organization)    │
-└──────────────┬──────────────────────┘
+└──────────────┴───────────────────────┘
                │
-┌──────────────▼──────────────────────┐
+┌──────────────┴───────────────────────┐
 │          Service Layer              │
 │  OCR, Reports, Backup, AppLock      │
 │  (Business logic & operations)      │
-└──────────────┬──────────────────────┘
+└──────────────┴───────────────────────┘
                │
-┌──────────────▼──────────────────────┐
+┌──────────────┴───────────────────────┐
 │         Repository Layer            │
 │  (Future: Data access abstraction)  │
-└──────────────┬──────────────────────┘
+└──────────────┴───────────────────────┘
                │
-┌──────────────▼──────────────────────┐
+┌──────────────┴───────────────────────┐
 │           Model Layer               │
 │  SwiftData @Model + Value Types     │
 │  (Domain entities & data)           │
-└─────────────────────────────────────┘
+└─────────────────────────────────────────┘
 ```
+
+### Dependency Injection Pattern
+
+**AppEnvironment Container** - All services are initialized once and injected via `@Environment`:
+
+```swift
+// In views
+@Environment(AppEnvironment.self) private var env
+
+// Access services
+let isProUnlocked = env.settings.isProUnlocked
+await env.photoStorage.savePhoto(data)
+
+// ViewModels receive AppEnvironment in initializer
+class MyViewModel {
+    init(settings: SettingsManager) { ... }
+}
+```
+
+**Key Points:**
+- **No .shared singletons** - All services managed by AppEnvironment
+- **Actor-isolated services** - PhotoStorage, OCR, ReportGenerator, BackupService
+- **MainActor services** - SettingsManager, IAPValidator, AppLockService
+- **Injected at app root** - `MainTabView().environment(appEnv)` in Nestory_ProApp.swift
+- **Testing support** - `AppEnvironment.mock()` for previews and tests
 
 ### Directory Structure
 ```
 Nestory-Pro/
 ├── Nestory-Pro/                # Main app source
 │   ├── Nestory_ProApp.swift    # App entry point, DI setup, SwiftData container
+│   ├── AppEnvironment.swift    # Dependency injection container (all services)
 │   ├── Models/                 # SwiftData models
 │   │   ├── Item.swift          # Core inventory item model
 │   │   ├── ItemPhoto.swift     # Photo metadata
 │   │   ├── Receipt.swift       # Receipt OCR data
 │   │   ├── Category.swift      # Item categorization
 │   │   └── Room.swift          # Room/location data
-│   ├── Services/               # Business logic services
-│   │   └── SettingsManager.swift
-│   └── Views/                  # Feature-organized SwiftUI views
-│       ├── MainTabView.swift   # 4-tab navigation structure
-│       ├── Inventory/          # Main inventory tab & item detail
-│       ├── Capture/            # Photo/receipt/barcode capture
-│       ├── Reports/            # PDF generation & export
-│       ├── Settings/           # Configuration & Pro purchase
-│       └── SharedUI/           # Reusable components (badges, cards, pills)
+│   ├── ViewModels/             # @Observable view models
+│   │   ├── InventoryTabViewModel.swift
+│   │   ├── CaptureTabViewModel.swift
+│   │   ├── ReportsTabViewModel.swift
+│   │   ├── AddItemViewModel.swift
+│   │   └── ItemDetailViewModel.swift
+│   ├── Services/               # Business logic services (actor-isolated)
+│   │   ├── SettingsManager.swift       # User preferences
+│   │   ├── IAPValidator.swift          # StoreKit 2 purchases
+│   │   ├── PhotoStorageService.swift   # File-based photo storage
+│   │   ├── OCRService.swift            # Vision framework OCR
+│   │   ├── ReportGeneratorService.swift # PDF generation
+│   │   ├── BackupService.swift         # Data export/import
+│   │   ├── AppLockService.swift        # LocalAuthentication
+│   │   ├── NetworkMonitor.swift        # Connectivity status
+│   │   ├── HapticManager.swift         # Haptic feedback
+│   │   ├── KeychainManager.swift       # Secure storage
+│   │   ├── ImageCache.swift            # Photo caching
+│   │   ├── PaginatedFetch.swift        # SwiftData pagination
+│   │   └── PerformanceLogger.swift     # Performance tracking
+│   ├── Protocols/              # Service protocols and interfaces
+│   ├── Utilities/              # Helper utilities
+│   │   ├── BackgroundTaskManager.swift
+│   │   ├── ModelContextOptimization.swift
+│   │   └── MemoryPressureObserver.swift
+│   ├── Views/                  # Feature-organized SwiftUI views
+│   │   ├── MainTabView.swift   # 4-tab navigation structure
+│   │   ├── Inventory/          # Main inventory tab & item detail
+│   │   ├── Capture/            # Photo/receipt/barcode capture
+│   │   ├── Reports/            # PDF generation & export
+│   │   ├── Settings/           # Configuration & Pro purchase
+│   │   └── SharedUI/           # Reusable components (badges, cards, pills)
+│   └── PreviewContent/         # Preview fixtures and containers
+│       ├── PreviewFixtures.swift   # Sample data factory
+│       ├── PreviewContainer.swift  # In-memory containers
+│       └── PreviewHelpers.swift    # Preview utilities
 ├── Nestory-ProTests/           # Unit & integration tests
+│   ├── UnitTests/
+│   ├── IntegrationTests/
+│   ├── PerformanceTests/
+│   ├── TestUtilities/
+│   └── TestFixtures.swift      # Test-specific fixtures
 ├── Nestory-ProUITests/         # UI automation tests
+│   ├── Flows/
+│   └── TestUtilities/
 ├── fastlane/                   # Deployment automation
 │   ├── Fastfile                # Lanes: test, beta, release, bump_version
 │   ├── Appfile                 # App ID, Apple ID, Team ID
@@ -192,8 +252,32 @@ Score is calculated as percentage (0.25 points each).
 ### Adding New Services
 1. Create service class in `Services/` directory
 2. Use `actor` for thread-safe services with state
-3. Inject dependencies via initializer (future: DI container pattern)
-4. Mark async operations with `async throws` when appropriate
+3. Add service to `AppEnvironment` container
+4. Inject service via `@Environment(AppEnvironment.self)` in views
+5. Pass specific services to ViewModels via their initializers
+6. Mark async operations with `async throws` when appropriate
+
+**Example:**
+```swift
+// 1. Create service
+actor MyNewService {
+    func doSomething() async throws { ... }
+}
+
+// 2. Add to AppEnvironment.swift
+final class AppEnvironment {
+    nonisolated let myNewService: MyNewService
+    
+    init(..., myNewService: MyNewService? = nil) {
+        self.myNewService = myNewService ?? MyNewService()
+        ...
+    }
+}
+
+// 3. Use in views
+@Environment(AppEnvironment.self) private var env
+Task { await env.myNewService.doSomething() }
+```
 
 ### Adding New Views
 1. Organize by feature in `Views/` subdirectories
@@ -245,6 +329,41 @@ Score is calculated as percentage (0.25 points each).
 - All data local-first with optional iCloud sync
 - No third-party analytics or tracking SDKs
 - Privacy policy required for App Store compliance
+
+## Code Conventions
+
+### Inline Documentation Comments
+
+The codebase uses structured inline comments for critical architectural decisions:
+
+```swift
+// ============================================================================
+// CLAUDE CODE AGENT: READ BEFORE MODIFYING
+// ============================================================================
+// Brief description of the file's purpose and key architectural notes
+//
+// ARCHITECTURE:
+// - Key architectural decision 1
+// - Key architectural decision 2
+//
+// WHEN ADDING NEW FEATURES:
+// 1. Step-by-step guidance
+// 2. Important considerations
+//
+// SEE: Related files | Documentation references
+// ============================================================================
+```
+
+**When you see these comments:**
+- Read them carefully before making changes
+- They document critical architectural decisions
+- Follow the guidance provided for adding new features
+- Update them if you make significant architectural changes
+
+**Common locations:**
+- `Nestory_ProApp.swift` - App entry point and DI setup
+- `AppEnvironment.swift` - Dependency injection container
+- Key service files with architectural significance
 
 ## Common Pitfalls
 
@@ -417,22 +536,27 @@ bundle exec fastlane test
 
 # Unit tests only
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
   -only-testing:Nestory-ProTests/UnitTests
 
 # Integration tests
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
   -only-testing:Nestory-ProTests/IntegrationTests
 
 # Performance tests
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
   -only-testing:Nestory-ProTests/PerformanceTests
 
 # UI tests
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
   -only-testing:Nestory-ProUITests
 
 # Specific test class
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
   -only-testing:Nestory-ProTests/ItemTests
 ```
 
