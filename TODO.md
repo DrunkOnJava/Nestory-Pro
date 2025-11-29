@@ -593,10 +593,10 @@ When you check out a task, add an entry here:
   - Resolve `api_key_path` error by pointing to a real App Store Connect API key JSON
   - Document setup steps in `WARP.md` / `DEV_SETUP.md`
 
-- [ ] **7.1.2** Finalize lanes
-  - `fastlane ios test`: run unit + UI tests on simulator
+- [x] **7.1.2** Finalize lanes ✓ 2025-11-29
+  - `fastlane ios test`: run unit + UI tests on simulator (+ test_unit for faster CI)
   - `fastlane ios beta`: build & upload to TestFlight
-  - `fastlane ios release`: increment version/build, tag, and submit for review (with manual gating)
+  - `fastlane ios release`: increment version/build, commit, tag, push, and submit for review (manual gating)
 
 ### 7.2 GitHub Actions / CI
 
