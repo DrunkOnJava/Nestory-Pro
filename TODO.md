@@ -79,138 +79,238 @@ When you check out a task, add an entry here:
 
 ---
 
-## Phase 1: Data Model Completion (P0)
+## Phase 1: Foundation & Spec Alignment (P0)
 
-> **Goal:** Align SwiftData models with specification
+> **Goal:** Lock down bundle ID, align specs with codebase, ensure SwiftData models match specification
 
-### 1.1 Item Model Updates
+### 1.1 Bundle ID & Project Configuration
 
-- [x] **1.1.1** Add `notes: String?` property to Item model ✓ 2025-11-28
+- [ ] **1.1.1** Lock bundle ID plan for 1.0
+  - Decide final 1.0 bundle ID (`com.nestory.app` vs staying on `com.drunkonjava.Nestory-Pro`)
+  - Update README and spec files to reflect decision
+  - Ensure PRODUCT-SPEC.md, TECHNICAL_SPEC.md, and DATA_MODEL.md all agree
+
+- [ ] **1.1.2** Align Xcode target + fastlane with chosen bundle ID
+  - Update Xcode target bundle identifier to match final ID
+  - Update `fastlane/Appfile` and `fastlane/Matchfile`
+  - Regenerate provisioning profiles via `bundle exec fastlane match`
+  - Fix `APP_STORE_CONNECT_API_KEY_PATH` / `api_key_path` error in fastlane
+
+- [ ] **1.1.3** Sync spec suite with current codebase
+  - Validate PRODUCT-SPEC.md, TECHNICAL_SPEC.md, DATA_MODEL.md, DESIGN_SYSTEM.md match actual code
+  - Update "Implementation Status Summary" in PRODUCT-SPEC.md
+  - Add any new "Known Issues" to specs
+
+### 1.2 Item Model Updates
+
+- [x] **1.2.1** Add `notes: String?` property to Item model ✓ 2025-11-28
   - File: `Nestory-Pro/Models/Item.swift`
   - Add after `conditionNotes` property
   - Update `Item.init()` with default nil
   - Add to TestFixtures.testItem()
 
-- [x] **1.1.2** Add ItemPhoto ordering fields ✓ 2025-11-28
+- [x] **1.2.2** Add ItemPhoto ordering fields ✓ 2025-11-28
   - File: `Nestory-Pro/Models/ItemPhoto.swift`
   - Add `sortOrder: Int = 0`
   - Add `isPrimary: Bool = false`
   - Update init and TestFixtures
 
-- [x] **1.1.3** Add Room.isDefault property ✓ 2025-11-28
+- [x] **1.2.3** Add Room.isDefault property ✓ 2025-11-28
   - File: `Nestory-Pro/Models/Room.swift`
   - Add `isDefault: Bool = false` (default for user-created rooms)
   - Update default room seeding in `Nestory_ProApp.swift`
   - Ensure user-created rooms have `isDefault = false`
 
-### 1.2 Documentation Score Alignment
+### 1.3 SwiftData Schema & Migrations
 
-- [ ] **1.2.1** Decide: Keep 4-field (current) or switch to 6-field weighted scoring
+- [ ] **1.3.1** Confirm SwiftData models match DATA_MODEL.md
+  - Verify `Item`, `ItemPhoto`, `Receipt`, `Room`, `Category` fields and types
+  - Ensure `barcode: String?` is present on `Item` and used in barcode scanning
+  - Money representation: enforce `purchasePriceCents` / integer-cents strategy (no Double persistence)
+
+- [ ] **1.3.2** Add VersionedSchema scaffolding for future migrations (v1.1+)
+  - Create `NestorySchemaV1` and `NestorySchemaV1_1` enums implementing `VersionedSchema`
+  - Add `NestoryMigrationPlan: SchemaMigrationPlan` with placeholder `migrateV1toV1_1` stage
+  - Wire `ModelContainer` to use `NestorySchemaV1` for 1.0
+
+- [ ] **1.3.3** DataModel test harness
+  - Add unit tests to confirm model invariants (non-optional fields, default values)
+  - Test creating hundreds of `Item` records with relationships (Item ↔ ItemPhoto / Receipts / Room / Category)
+
+### 1.4 Documentation Score Alignment
+
+- [ ] **1.4.1** Decide: Keep 4-field (current) or switch to 6-field weighted scoring
   - Current: Photo/Value/Room/Category at 25% each = 100%
   - Spec option: Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
   - **DECISION REQUIRED:** Update this task with chosen approach before proceeding
   - DEPENDS: Human decision
 
-- [-] **1.2.2** Update `documentationScore` calculation (BLOCKED)
+- [-] **1.4.2** Update `documentationScore` calculation (BLOCKED)
   - File: `Nestory-Pro/Models/Item.swift` lines 157-164
-  - DEPENDS: 1.2.1
+  - DEPENDS: 1.4.1
 
-- [-] **1.2.3** Update `missingDocumentation` to match score fields (BLOCKED)
+- [-] **1.4.3** Update `missingDocumentation` to match score fields (BLOCKED)
   - File: `Nestory-Pro/Models/Item.swift` lines 168-175
-  - DEPENDS: 1.2.1
+  - DEPENDS: 1.4.1
 
-- [-] **1.2.4** Update ItemTests for new scoring (BLOCKED)
-  - DEPENDS: 1.2.2, 1.2.3
+- [-] **1.4.4** Update ItemTests for new scoring (BLOCKED)
+  - DEPENDS: 1.4.2, 1.4.3
+
+### 1.5 AppEnvironment & DI Verification
+
+- [ ] **1.5.1** Verify AppEnvironment matches TECHNICAL_SPEC.md
+  - Ensure it exposes: `settingsManager`, `iapValidator`, `photoStorage`, `ocrService`, `reportGenerator`, `backupService`, `appLockService`
+  - Replace any remaining ad-hoc singletons with AppEnvironment-backed injection
+  - DEPENDS: 5.2.1 (AppEnvironment creation already complete)
+
+- [ ] **1.5.2** Add test AppEnvironment factory
+  - Create `AppEnvironment.mock()` variant with in-memory SwiftData, fake repositories, stubbed services
+  - Use this in unit/UI tests to avoid file/network side effects
+  - Document in WARP.md testing section
 
 ---
 
-## Phase 2: Capture Flows (P0)
+## Phase 2: Inventory & Add Item Flow (P0)
 
-> **Goal:** Implement photo capture, receipt OCR, and barcode scanning
+> **Goal:** Fix AddItemView issues, complete inventory list/grid, and implement capture flows
 
-### 2.1 Photo Storage Service
+### 2.1 Fix AddItemView Critical Issues
 
-- [x] **2.1.1** Implement PhotoStorageService conforming to protocol ✓ 2025-11-28
+- [ ] **2.1.1** Fix AddItemView Binding / dynamic member error
+  - File: `Nestory-Pro/Views/Inventory/AddItemView.swift`
+  - Resolve `cannot call value of non-function type 'Binding<Subject>'` error
+  - Resolve "no dynamic member 'setDefaultRoom'" error
+  - Ensure `viewModel` is a real `Observable` object, not a `Binding<AddItemViewModel>`
+  - Add focused unit/UI test for this view
+
+- [ ] **2.1.2** Implement `setDefaultRoom` logic on AddItemViewModel
+  - File: `Nestory-Pro/ViewModels/AddItemViewModel.swift`
+  - Method should accept fetched `rooms` and select a default (e.g., first room or "Living Room")
+  - Respect user-chosen default room from Settings if present
+  - Ensure default room behavior matches PRODUCT-SPEC "Adding First Item" expectations
+  - DEPENDS: 6.1.1 (default room setting)
+
+### 2.2 Inventory List / Grid & Filtering
+
+- [ ] **2.2.1** Ensure Inventory list/grid matches spec
+  - File: `Nestory-Pro/Views/Inventory/InventoryTab.swift`
+  - List cell: 60×60 thumbnail, name, "Room • Category • $Value", documentation badges
+  - Grid cell: square thumbnail, two-line name, value
+  - Implement view toggle state persistence (list vs grid)
+
+- [ ] **2.2.2** Implement filters & search per spec
+  - Filter chips: All, Needs photo, Needs value, High value
+  - Search across name, brand, tags, notes
+  - Verify performance with 1000+ items
+
+- [ ] **2.2.3** Empty states
+  - Add empty Inventory state ("Add your first item" CTA) aligned with DESIGN_SYSTEM.md
+  - Add filtered-empty state ("No items match these filters")
+
+### 2.3 Item Detail & Documentation Badges
+
+- [ ] **2.3.1** Implement ItemDetail layout per spec
+  - File: `Nestory-Pro/Views/Inventory/ItemDetailView.swift`
+  - Photo carousel (top ~40%), key fields sections, receipts section, doc badges
+  - Action bar (Edit, Add Photo, Add Receipt)
+  - Use spacing and corner tokens from DESIGN_SYSTEM.md (no magic numbers)
+
+- [ ] **2.3.2** Hook up documentation score & badges
+  - Implement `DocumentationScoreCalculator` (if not already) using weights from DATA_MODEL.md
+  - Badges for photo/value/room/category/receipt/serial status
+  - Tooltip "What's missing?" sheet explaining doc score
+
+- [ ] **2.3.3** Editing flow
+  - Implement Edit mode for item detail that matches "minimal first–then deepen" philosophy
+  - Quick edit for core fields, advanced section for extra details
+  - Ensure edits trigger `updatedAt` updates
+
+### 2.4 Photo Storage Service
+
+- [x] **2.4.1** Implement PhotoStorageService conforming to protocol ✓ 2025-11-28
   - File: `Nestory-Pro/Services/PhotoStorageService.swift` (created)
   - Protocol: `Nestory-Pro/Protocols/PhotoStorageProtocol.swift`
   - Use FileManager, save to Documents/Photos/
   - Resize images to max 2048px, JPEG quality 0.8
   - Include cleanup method for orphaned files
 
-- [x] **2.1.2** Add PhotoStorageService unit tests ✓ 2025-11-28
+- [x] **2.4.2** Add PhotoStorageService unit tests ✓ 2025-11-28
   - File: `Nestory-ProTests/UnitTests/Services/PhotoStorageServiceTests.swift`
   - Test save, load, delete, cleanup
-  - DEPENDS: 2.1.1
+  - DEPENDS: 2.4.1
 
-### 2.2 Photo Capture UI
+### 2.5 Photo Capture UI
 
-- [x] **2.2.1** Create PhotoCaptureView with camera integration ✓ 2025-11-28
+- [x] **2.5.1** Create PhotoCaptureView with camera integration ✓ 2025-11-28
   - File: `Nestory-Pro/Views/Capture/PhotoCaptureView.swift` (created)
   - Use UIImagePickerController or PhotosUI
   - Handle camera permissions gracefully
   - Show permission rationale before requesting
 
-- [x] **2.2.2** Create QuickAddItemSheet for post-capture ✓ 2025-11-28
+- [x] **2.5.2** Create QuickAddItemSheet for post-capture ✓ 2025-11-28
   - File: `Nestory-Pro/Views/Capture/QuickAddItemSheet.swift` (created)
   - Minimal form: name (required), room picker, save button
   - Auto-attach captured photo
-  - DEPENDS: 2.1.1, 2.2.1
+  - DEPENDS: 2.4.1, 2.5.1
 
-- [x] **2.2.3** Wire CaptureTab to Photo Capture flow ✓ 2025-11-28
+- [x] **2.5.3** Wire CaptureTab to Photo Capture flow ✓ 2025-11-28
   - File: `Nestory-Pro/Views/Capture/CaptureTab.swift` (updated)
   - Segmented control: Photo | Receipt | Barcode
   - Photo segment integrated with PhotoCaptureView and QuickAddItemSheet
-  - DEPENDS: 2.2.1, 2.2.2
+  - DEPENDS: 2.5.1, 2.5.2
 
-### 2.3 Receipt OCR Service
+- [ ] **2.5.4** Recent captures strip
+  - Implement bottom strip of recent captures in Capture tab (3 items)
+  - Tapping thumbnail navigates to the associated item
 
-- [x] **2.3.1** Implement OCRService using Vision framework ✓ 2025-11-28
+### 2.6 Receipt OCR Service
+
+- [x] **2.6.1** Implement OCRService using Vision framework ✓ 2025-11-28
   - File: `Nestory-Pro/Services/OCRService.swift` (created)
   - Protocol: `Nestory-Pro/Protocols/OCRServiceProtocol.swift`
   - Use VNRecognizeTextRequest for text extraction
   - Parse vendor, total, date, tax from raw text
   - Return confidence score (0.0-1.0)
 
-- [x] **2.3.2** Add OCRService unit tests ✓ 2025-11-28
+- [x] **2.6.2** Add OCRService unit tests ✓ 2025-11-28
   - File: `Nestory-ProTests/UnitTests/Services/OCRServiceTests.swift` (created)
   - Test text extraction, amount parsing, date parsing
   - Test low-confidence handling (31 test methods)
-  - DEPENDS: 2.3.1
+  - DEPENDS: 2.6.1
 
-- [x] **2.3.3** Create ReceiptCaptureView ✓ 2025-11-28
+- [x] **2.6.3** Create ReceiptCaptureView ✓ 2025-11-28
   - File: `Nestory-Pro/Views/Capture/ReceiptCaptureView.swift` (created)
   - Camera preview with receipt frame overlay
   - Loading state with progress indicator during OCR
   - Confidence indicator (green/yellow/red) based on OCR confidence
   - Manual entry fallback, PhotosPicker support
-  - DEPENDS: 2.3.1
+  - DEPENDS: 2.6.1
 
-- [x] **2.3.4** Create ReceiptReviewSheet ✓ 2025-11-28
+- [x] **2.6.4** Create ReceiptReviewSheet ✓ 2025-11-28
   - File: `Nestory-Pro/Views/Capture/ReceiptReviewSheet.swift` (created)
   - Editable fields with confidence badges (green/yellow/red)
   - Item linking with SwiftData @Query
   - Raw OCR text section for review
-  - DEPENDS: 2.3.3
+  - DEPENDS: 2.6.3
 
-### 2.4 Barcode Scanning (Stretch for v1)
+- [ ] **2.6.5** Link receipts to items
+  - Ability to attach a receipt to an existing item or create a new item from the receipt
+  - Reflect attached receipts on ItemDetail with thumbnails and dates
 
-- [ ] **2.4.1** Create BarcodeLookupService protocol
-  - File: `Nestory-Pro/Protocols/BarcodeLookupProtocol.swift` (create)
-  - Define `lookupBarcode(code: String) async throws -> ProductInfo?`
-  - ProductInfo: name, brand, category suggestion
+### 2.7 Barcode Scanning (Scan-Only v1.0)
 
-- [ ] **2.4.2** Implement BarcodeLookupService (basic)
-  - File: `Nestory-Pro/Services/BarcodeLookupService.swift` (create)
-  - Option A: Local database of common UPCs
-  - Option B: Minimal external API (UPC only, no context)
-  - Always fallback gracefully to manual entry
-  - DEPENDS: 2.4.1
-
-- [ ] **2.4.3** Create BarcodeScanView
+- [ ] **2.7.1** Implement barcode scanning mode
   - File: `Nestory-Pro/Views/Capture/BarcodeScanView.swift` (create)
-  - Use AVFoundation for barcode detection
-  - Show product info if found, otherwise manual entry
-  - DEPENDS: 2.4.2
+  - Barcode mode in Capture tab using AVFoundation or Vision
+  - On successful scan, show minimal form with pre-filled barcode field and manual entry for name/brand
+
+- [ ] **2.7.2** Persist barcode string on Item
+  - Ensure `Item.barcode` is saved via SwiftData and surfaced in item detail
+  - Confirm JSON export includes barcode field
+
+- [ ] **2.7.3** Graceful failure / offline behavior
+  - No network lookup in v1.0; scanning must work entirely offline
+  - Show clear messaging that lookup is a future enhancement, not a promise
 
 ---
 
@@ -268,7 +368,7 @@ When you check out a task, add an entry here:
   - Error handling for invalid PDFs
   - DEPENDS: 3.3.1, 3.3.2
 
-### 3.4 Data Export
+### 3.4 Data Export & Backup Import
 
 - [x] **3.4.1** Implement BackupService conforming to protocol ✓ 2025-11-28
   - File: `Nestory-Pro/Services/BackupService.swift` (created, 393 lines)
@@ -434,103 +534,183 @@ When you check out a task, add an entry here:
 - [ ] **6.3.2** Wire import button in Settings
   - Show document picker for .json files
   - Confirm before importing
-  - DEPENDS: 6.3.1
+  - DEPENDS: 3.4.1
+
+### 3.5 Backup Import (v1.1 Preparation)
+
+- [ ] **3.5.1** Design import format and reconciliation rules
+  - Define how IDs, conflicts, and missing photos are handled
+  - Document in DATA_MODEL.md under "Migrations / Backup Import"
+
+- [ ] **3.5.2** Implement ImportBackupService (P2)
+  - Parse manifest + photos ZIP and import into current store
+  - For 1.0, optional: hide behind debug-only flag or internal switch
+  - Add tests that import a v1.0 backup and verify no data loss
 
 ---
 
-## Phase 7: Accessibility (P2)
+## Phase 7: Release Engineering & CI (P1)
+
+> **Goal:** Finalize fastlane, CI/CD, and App Store preparation
+
+### 7.1 Fastlane & Match
+
+- [ ] **7.1.1** Fix Match / API key configuration
+  - Resolve `api_key_path` error by pointing to a real App Store Connect API key JSON
+  - Document setup steps in `WARP.md` / `DEV_SETUP.md`
+
+- [ ] **7.1.2** Finalize lanes
+  - `fastlane ios test`: run unit + UI tests on simulator
+  - `fastlane ios beta`: build & upload to TestFlight
+  - `fastlane ios release`: increment version/build, tag, and submit for review (with manual gating)
+
+### 7.2 GitHub Actions / CI
+
+- [ ] **7.2.1** Robust CI workflows
+  - Update existing GitHub Actions workflows to:
+    - Run `fastlane ios test` on PRs
+    - Fail on warnings/error counts you care about
+    - Cache derived data appropriately
+
+- [ ] **7.2.2** Beta lane automation (optional)
+  - Add workflow to trigger `fastlane ios beta` on tagged commits (e.g., `v1.0.0-betaX`)
+
+### 7.3 App Store Prep
+
+- [ ] **7.3.1** App Store metadata
+  - Prepare app description, keywords, support URL, marketing URL
+  - Generate initial screenshots for key devices and languages (English only for v1.0)
+
+- [ ] **7.3.2** Privacy policy & support
+  - Publish privacy policy that matches actual app behavior (on a simple site or GitHub Pages)
+  - Provide support email and link inside the app (Settings → About)
+
+- [ ] **7.3.3** App Review readiness
+  - Double-check no private APIs, no non-compliant behaviors
+  - Ensure any experimental features (CloudKit sync) are stable or hidden
+
+---
+
+## Phase 8: Accessibility (P2)
 
 > **Goal:** WCAG 2.1 AA compliance
 
-### 7.1 Accessibility Labels
+### 8.1 Accessibility Labels
 
-- [ ] **7.1.1** Add labels to Inventory interactive elements
+- [ ] **8.1.1** Add labels to Inventory interactive elements
   - File: `Nestory-Pro/Views/Inventory/InventoryTab.swift`
   - Filter chips, sort menu, view toggle
   - Pattern: `.accessibilityLabel("descriptive text")`
 
-- [ ] **7.1.2** Add labels to Item cells
+- [ ] **8.1.2** Add labels to Item cells
   - File: `Nestory-Pro/Views/SharedUI/SharedComponents.swift`
   - ItemListCell and ItemGridCell
   - Format: "[Name], in [Room], valued at [Price], documentation [status]"
 
-- [ ] **7.1.3** Add labels to Settings toggles
+- [ ] **8.1.3** Add labels to Settings toggles
   - File: `Nestory-Pro/Views/Settings/SettingsTab.swift`
   - All toggles and buttons
 
-- [ ] **7.1.4** Add labels to Item Detail actions
+- [ ] **8.1.4** Add labels to Item Detail actions
   - File: `Nestory-Pro/Views/Inventory/ItemDetailView.swift`
   - All buttons and interactive elements
 
-### 7.2 Color Alternatives
+### 8.2 Color Alternatives
 
-- [ ] **7.2.1** Add text to DocumentationBadge
+- [ ] **8.2.1** Add text to DocumentationBadge
   - File: `Nestory-Pro/Views/SharedUI/SharedComponents.swift`
   - Show "Complete" or "Missing" text alongside color
   - Or use `.accessibilityValue()` for VoiceOver
 
-- [ ] **7.2.2** Add status text to documentation score
+- [ ] **8.2.2** Add status text to documentation score
   - "Good" (80%+), "Fair" (50-79%), "Needs Work" (<50%)
   - Display alongside color indicator
 
-### 7.3 TipKit Integration
+### 8.3 TipKit Integration
 
-- [ ] **7.3.1** Create documentation score tip
+- [ ] **8.3.1** Create documentation score tip
   - Show on first visit to inventory with score < 70%
   - Explain what documentation means
 
-- [ ] **7.3.2** Create iCloud sync tip
+- [ ] **8.3.2** Create iCloud sync tip
   - Show when user enables iCloud
   - Explain what syncs and when
 
-- [ ] **7.3.3** Create Pro features tip
+- [ ] **8.3.3** Create Pro features tip
   - Show when user hits a limit
   - Highlight key Pro benefits
 
 ---
 
-## Phase 8: Testing (P2)
+## Phase 9: Testing (P2)
 
 > **Goal:** Comprehensive test coverage
 
-### 8.1 Service Tests
+### 9.1 Service Tests
 
-- [ ] **8.1.1** Add PhotoStorageService tests
-  - DEPENDS: 2.1.1
+- [ ] **9.1.1** Add PhotoStorageService tests
+  - DEPENDS: 2.4.1
 
-- [ ] **8.1.2** Add OCRService tests
-  - DEPENDS: 2.3.1
+- [ ] **9.1.2** Add OCRService tests
+  - DEPENDS: 2.6.1
 
-- [ ] **8.1.3** Add BackupService tests
+- [ ] **9.1.3** Add BackupService tests
   - DEPENDS: 3.4.1
 
-- [ ] **8.1.4** Add ReportGeneratorService tests
+- [ ] **9.1.4** Add ReportGeneratorService tests
   - DEPENDS: 3.1.1
 
-- [ ] **8.1.5** Add AppLockService tests
+- [ ] **9.1.5** Add AppLockService tests
   - DEPENDS: 6.2.1
 
-### 8.2 UI Tests
+### 9.2 UI Tests
 
-- [ ] **8.2.1** Add Photo Capture flow UI test
+- [ ] **9.2.1** Add Photo Capture flow UI test
   - Test: Open capture tab, take photo, add item name, save
   - Verify item appears in inventory
-  - DEPENDS: 2.2.3
+  - DEPENDS: 2.5.3
 
-- [ ] **8.2.2** Add Receipt OCR flow UI test
+- [ ] **9.2.2** Add Receipt OCR flow UI test
   - Test: Scan receipt, review extracted data, link to item
-  - DEPENDS: 2.3.4
+  - DEPENDS: 2.6.4
 
-- [ ] **8.2.3** Add Loss List flow UI test
+- [ ] **9.2.3** Add Loss List flow UI test
   - Test: Select items, add incident, generate PDF
   - DEPENDS: 3.3.3
 
-### 8.3 Snapshot Tests
+### 9.3 Snapshot Tests
 
-- [ ] **8.3.1** Add Inventory list snapshot
-- [ ] **8.3.2** Add Item detail snapshot
-- [ ] **8.3.3** Add Paywall snapshot
-- [ ] **8.3.4** Add Reports tab snapshot
+- [ ] **9.3.1** Add Inventory list snapshot
+- [ ] **9.3.2** Add Item detail snapshot
+- [ ] **9.3.3** Add Paywall snapshot
+- [ ] **9.3.4** Add Reports tab snapshot
+
+---
+
+## Phase 10: v1.1 Hooks & Experimental Features (P3)
+
+> **Goal:** Preparation for post-1.0 enhancements
+
+### 10.1 CloudKit Sync Toggle
+
+- [ ] **10.1.1** Make sync explicitly opt-in & experimental
+  - Default `cloudKitDatabase: .none` for v1.0 configuration
+  - If CloudKit is implemented, hide behind a Settings toggle labeled "Sync (Experimental)"
+  - Add clear explanation and warning in Settings and specs
+
+- [ ] **10.1.2** Sync stability monitoring plan
+  - Add coarse logging (non-PII) for sync errors in debug builds
+  - Keep CloudKit disabled in production until tested thoroughly on sample data
+
+### 10.2 Warranty & Search Enhancements
+
+- [ ] **10.2.1** Warranty list with expiry filters
+  - New screen / filter showing items with upcoming warranty expiry
+  - Simple local notifications if user opts in
+
+- [ ] **10.2.2** Enhanced search syntax
+  - Search by `room:Kitchen`, `category:Electronics`, or `value>1000`
+  - Document syntax in a small "Search help" sheet
 
 ---
 
@@ -595,8 +775,9 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 - See handoff section at top of this file for agent behavior rules
 
 ### Key Decisions Needed
-1. Documentation score: 4-field vs 6-field weighted (Task 1.2.1)
-2. Barcode API: Local database vs external service (Task 2.4.2)
+1. Bundle ID: `com.nestory.app` vs `com.drunkonjava.Nestory-Pro` (Task 1.1.1)
+2. Documentation score: 4-field vs 6-field weighted (Task 1.4.1)
+3. CloudKit sync: Enable in v1.0 or wait for v1.1+ (Task 10.1.1)
 
 ### Testing Requirements
 - All new code must have tests
@@ -606,4 +787,17 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 ---
 
 *Last Updated: November 29, 2025*
-*Task Count: 73 tasks (0 in progress, 45 completed, 28 remaining)*
+*Task Count: 116 tasks (0 in progress, 45 completed, 71 remaining)*
+
+### Changelog
+- **2025-11-29**: Merged comprehensive v1.0 production-readiness tasks
+  - Added Phase 1.1 (Bundle ID & Project Configuration)
+  - Added Phase 1.3 (SwiftData Schema & Migrations)
+  - Added Phase 1.5 (AppEnvironment verification)
+  - Added Phase 2.1 (Fix AddItemView critical issues)
+  - Added Phase 2.2-2.3 (Inventory polish tasks)
+  - Added Phase 3.5 (Backup Import preparation)
+  - Added Phase 7 (Release Engineering & CI)
+  - Added Phase 10 (v1.1 Hooks & Experimental Features)
+  - Renumbered existing tasks to accommodate new structure
+  - Total: +43 new tasks for production readiness
