@@ -47,102 +47,25 @@ enum ViewMode: String, CaseIterable {
     }
 }
 
-enum ItemLimitWarningLevel {
-    case none
-    case approaching
-    case limitReached
-}
-
 struct InventoryTab: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Item.createdAt, order: .reverse) private var items: [Item]
     @Query private var rooms: [Room]
     
-    @State private var searchText = ""
-    @State private var selectedFilter: ItemFilter = .all
-    @State private var selectedSort: ItemSort = .newest
-    @State private var viewMode: ViewMode = .list
-    @State private var showingAddItem = false
-    @State private var showingDocumentationInfo = false
-    @State private var showingProPaywall = false
-    @State private var itemLimitBannerDismissed = false
-
     @Environment(AppEnvironment.self) private var env
     
+    // ViewModel handles filtering, sorting, stats, and UI state
+    private var viewModel: InventoryTabViewModel {
+        env.inventoryViewModel
+    }
+    
     private var filteredItems: [Item] {
-        var result = items
-        
-        // Apply search
-        if !searchText.isEmpty {
-            result = result.filter { item in
-                item.name.localizedCaseInsensitiveContains(searchText) ||
-                (item.brand?.localizedCaseInsensitiveContains(searchText) ?? false) ||
-                (item.category?.name.localizedCaseInsensitiveContains(searchText) ?? false) ||
-                (item.room?.name.localizedCaseInsensitiveContains(searchText) ?? false)
-            }
-        }
-        
-        // Apply filter
-        result = result.filter(selectedFilter.predicate)
-        
-        // Apply sort
-        result = sortItems(result)
-        
-        return result
-    }
-    
-    private func sortItems(_ items: [Item]) -> [Item] {
-        switch selectedSort {
-        case .nameAsc:
-            return items.sorted { $0.name.localizedCompare($1.name) == .orderedAscending }
-        case .nameDesc:
-            return items.sorted { $0.name.localizedCompare($1.name) == .orderedDescending }
-        case .valueHigh:
-            return items.sorted { ($0.purchasePrice ?? 0) > ($1.purchasePrice ?? 0) }
-        case .valueLow:
-            return items.sorted { ($0.purchasePrice ?? 0) < ($1.purchasePrice ?? 0) }
-        case .newest:
-            return items.sorted { $0.createdAt > $1.createdAt }
-        case .oldest:
-            return items.sorted { $0.createdAt < $1.createdAt }
-        }
-    }
-    
-    // MARK: - Computed Stats
-    private var totalValue: Decimal {
-        items.compactMap(\.purchasePrice).reduce(0, +)
-    }
-    
-    private var documentedCount: Int {
-        items.filter(\.isDocumented).count
-    }
-    
-    private var documentationScore: Int {
-        guard !items.isEmpty else { return 0 }
-        return Int((Double(documentedCount) / Double(items.count)) * 100)
-    }
-    
-    private var uniqueRoomCount: Int {
-        Set(items.compactMap(\.room?.id)).count
-    }
-
-    // MARK: - Item Limit Warning Logic (Task 4.1.2)
-
-    private var shouldShowItemLimitWarning: Bool {
-        !env.settings.isProUnlocked && items.count >= 80 && !itemLimitBannerDismissed
-    }
-
-    private var itemLimitWarningLevel: ItemLimitWarningLevel {
-        if items.count >= 100 {
-            return .limitReached
-        } else if items.count >= 80 {
-            return .approaching
-        } else {
-            return .none
-        }
+        viewModel.processItems(items)
     }
 
     var body: some View {
+        @Bindable var vm = viewModel
+        
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
@@ -150,7 +73,7 @@ struct InventoryTab: View {
                     summarySection
 
                     // Item Limit Warning Banner (Task 4.1.2)
-                    if shouldShowItemLimitWarning {
+                    if viewModel.shouldShowItemLimitWarning(itemCount: items.count) {
                         itemLimitWarningBanner
                     }
 
@@ -166,27 +89,27 @@ struct InventoryTab: View {
             .navigationTitle("Inventory")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button(action: { showingAddItem = true }) {
+                    Button(action: viewModel.addItem) {
                         Image(systemName: "plus")
                     }
                     .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.addButton)
                     .accessibilityLabel("Add Item")
                 }
             }
-            .searchable(text: $searchText, prompt: "Search items...")
+            .searchable(text: $vm.searchText, prompt: "Search items...")
             .onSubmit(of: .search) {
                 // Search text binding is automatically updated
             }
-            .sheet(isPresented: $showingAddItem) {
+            .sheet(isPresented: $vm.showingAddItem) {
                 AddItemView()
             }
-            .sheet(isPresented: $showingDocumentationInfo) {
+            .sheet(isPresented: $vm.showingDocumentationInfo) {
                 DocumentationInfoSheet(
                     totalItems: items.count,
-                    documentedCount: documentedCount
+                    documentedCount: viewModel.calculateDocumentedCount(items)
                 )
             }
-            .sheet(isPresented: $showingProPaywall) {
+            .sheet(isPresented: $vm.showingProPaywall) {
                 ProPaywallView()
             }
         }
@@ -195,26 +118,28 @@ struct InventoryTab: View {
     // MARK: - Item Limit Warning Banner (Task 4.1.2)
 
     private var itemLimitWarningBanner: some View {
-        HStack(alignment: .top, spacing: 12) {
+        let warningLevel = viewModel.itemLimitWarningLevel(itemCount: items.count)
+        
+        return HStack(alignment: .top, spacing: 12) {
             // Warning icon
-            Image(systemName: itemLimitWarningLevel == .limitReached ? "exclamationmark.triangle.fill" : "info.circle.fill")
+            Image(systemName: warningLevel == .limitReached ? "exclamationmark.triangle.fill" : "info.circle.fill")
                 .font(.title3)
-                .foregroundStyle(itemLimitWarningLevel == .limitReached ? .red : .orange)
+                .foregroundStyle(warningLevel == .limitReached ? .red : .orange)
 
             // Message
             VStack(alignment: .leading, spacing: 8) {
-                Text(itemLimitWarningLevel == .limitReached ? "Item Limit Reached" : "Approaching Item Limit")
+                Text(warningLevel == .limitReached ? "Item Limit Reached" : "Approaching Item Limit")
                     .font(.headline)
-                    .foregroundStyle(itemLimitWarningLevel == .limitReached ? .red : .orange)
+                    .foregroundStyle(warningLevel == .limitReached ? .red : .orange)
 
-                Text(itemLimitWarningLevel == .limitReached
+                Text(warningLevel == .limitReached
                      ? "You've reached the 100-item limit for free users. Upgrade to Pro for unlimited items."
                      : "You've used \(items.count) of 100 free items. Upgrade to Pro for unlimited storage.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
                 // Upgrade button
-                Button(action: { showingProPaywall = true }) {
+                Button(action: viewModel.showProPaywall) {
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
                         Text("Upgrade to Pro")
@@ -223,7 +148,7 @@ struct InventoryTab: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(itemLimitWarningLevel == .limitReached ? Color.red : Color.orange)
+                    .background(warningLevel == .limitReached ? Color.red : Color.orange)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
                 .padding(.top, 4)
@@ -234,7 +159,7 @@ struct InventoryTab: View {
             // Dismiss button
             Button(action: {
                 withAnimation {
-                    itemLimitBannerDismissed = true
+                    viewModel.dismissItemLimitWarning()
                 }
             }) {
                 Image(systemName: "xmark")
@@ -246,19 +171,24 @@ struct InventoryTab: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(itemLimitWarningLevel == .limitReached
+                .fill(warningLevel == .limitReached
                       ? Color.red.opacity(0.1)
                       : Color.orange.opacity(0.1))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(itemLimitWarningLevel == .limitReached ? Color.red : Color.orange, lineWidth: 1)
+                .stroke(warningLevel == .limitReached ? Color.red : Color.orange, lineWidth: 1)
         )
     }
 
     // MARK: - Summary Section
     private var summarySection: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        let totalValue = viewModel.calculateTotalValue(items)
+        let documentationScore = viewModel.calculateDocumentationScore(items)
+        let documentedCount = viewModel.calculateDocumentedCount(items)
+        let uniqueRoomCount = viewModel.calculateUniqueRoomCount(items)
+        
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 SummaryCard(
                     title: "Total Items",
@@ -283,7 +213,7 @@ struct InventoryTab: View {
                     iconName: "checkmark.shield.fill",
                     color: documentationScore >= 80 ? .green : (documentationScore >= 50 ? .orange : .red)
                 ) {
-                    showingDocumentationInfo = true
+                    viewModel.showDocumentationInfo()
                 }
             }
             .padding(.vertical, 4)
@@ -292,17 +222,19 @@ struct InventoryTab: View {
     
     // MARK: - Filter Section
     private var filterSection: some View {
-        VStack(spacing: 12) {
+        @Bindable var vm = viewModel
+        
+        return VStack(spacing: 12) {
             // Filter chips
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(ItemFilter.allCases, id: \.self) { filter in
                         FilterChip(
                             label: filter.rawValue,
-                            isSelected: selectedFilter == filter
+                            isSelected: vm.selectedFilter == filter
                         ) {
                             withAnimation(.easeInOut(duration: 0.2)) {
-                                selectedFilter = filter
+                                vm.selectedFilter = filter
                             }
                         }
                         .accessibilityIdentifier(AccessibilityIdentifiers.Inventory.filterChip)
@@ -313,7 +245,7 @@ struct InventoryTab: View {
             // View mode and sort
             HStack {
                 // View mode toggle
-                Picker("View", selection: $viewMode) {
+                Picker("View", selection: $vm.viewMode) {
                     ForEach(ViewMode.allCases, id: \.self) { mode in
                         Image(systemName: mode.iconName)
                             .tag(mode)
@@ -328,10 +260,10 @@ struct InventoryTab: View {
                 // Sort menu
                 Menu {
                     ForEach(ItemSort.allCases, id: \.self) { sort in
-                        Button(action: { selectedSort = sort }) {
+                        Button(action: { vm.selectedSort = sort }) {
                             HStack {
                                 Text(sort.rawValue)
-                                if selectedSort == sort {
+                                if vm.selectedSort == sort {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -355,7 +287,7 @@ struct InventoryTab: View {
     private var itemsSection: some View {
         if filteredItems.isEmpty {
             emptyStateView
-        } else if viewMode == .list {
+        } else if viewModel.viewMode == .list {
             LazyVStack(spacing: 8) {
                 ForEach(filteredItems) { item in
                     NavigationLink(destination: ItemDetailView(item: item)) {
@@ -412,7 +344,7 @@ struct InventoryTab: View {
                 title: "No Items Yet",
                 message: "Start by adding your first item. Tap the + button to begin documenting your belongings.",
                 buttonTitle: "Add First Item",
-                buttonAction: { showingAddItem = true }
+                buttonAction: viewModel.addItem
             )
             .frame(minHeight: 300)
         } else {

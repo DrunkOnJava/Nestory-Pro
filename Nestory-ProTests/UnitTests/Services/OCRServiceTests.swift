@@ -18,6 +18,7 @@
 import XCTest
 @testable import Nestory_Pro
 
+@MainActor
 final class OCRServiceTests: XCTestCase {
 
     // MARK: - Properties
@@ -28,7 +29,7 @@ final class OCRServiceTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        sut = OCRService.shared
+        sut = await OCRService.shared
     }
 
     override func tearDown() async throws {

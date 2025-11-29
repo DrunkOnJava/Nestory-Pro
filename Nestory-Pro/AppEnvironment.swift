@@ -51,6 +51,11 @@ final class AppEnvironment {
     /// Data backup/restore (actor-isolated)
     nonisolated let backupService: BackupService
     
+    // MARK: - ViewModels
+    
+    /// Inventory tab view model
+    let inventoryViewModel: InventoryTabViewModel
+    
     // MARK: - Initialization
     
     /// Creates app environment with all services
@@ -71,6 +76,9 @@ final class AppEnvironment {
         self.ocrService = ocrService ?? OCRService.shared
         self.reportGenerator = reportGenerator ?? ReportGeneratorService.shared
         self.backupService = backupService ?? BackupService.shared
+        
+        // Initialize ViewModels with service dependencies
+        self.inventoryViewModel = InventoryTabViewModel(settings: self.settings)
     }
     
     // MARK: - Testing Support

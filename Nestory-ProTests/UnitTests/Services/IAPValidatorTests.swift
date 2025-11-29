@@ -27,38 +27,60 @@ final class IAPValidatorTests: XCTestCase {
         try await super.tearDown()
     }
 
-    // MARK: - Initialization Tests
+    // MARK: - Keychain Synchronization Tests
+    // Note: Singleton initialization tests removed - singletons can't be re-initialized
+    // These tests verify the Keychain integration works correctly instead
 
-    func testInit_LoadsProStatusFromKeychain_WhenProUnlocked() throws {
-        // Arrange - Set Pro status in Keychain before creating IAPValidator
+    func testKeychainSync_SetProUnlocked_ReflectsInKeychain() throws {
+        // Arrange
+        let validator = IAPValidator.shared
+
+        #if DEBUG
+        // Act - Use debug method to set Pro status
+        validator.simulateProUnlock()
+
+        // Assert - Keychain should reflect the change
+        XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should be updated when Pro status changes")
+        XCTAssertTrue(validator.isProUnlocked, "Validator should reflect Pro status")
+
+        // Cleanup
+        validator.resetProStatus()
+        #else
+        // In release builds, just verify Keychain operations work
         try KeychainManager.setProUnlocked(true)
-
-        // Act - Create new instance (simulating app launch)
-        let validator = IAPValidator.shared
-
-        // Assert
-        XCTAssertTrue(validator.isProUnlocked, "Should load Pro status from Keychain on initialization")
-    }
-
-    func testInit_LoadsProStatusFromKeychain_WhenProLocked() throws {
-        // Arrange - Set Pro status to false in Keychain
+        XCTAssertTrue(KeychainManager.isProUnlocked())
         try KeychainManager.setProUnlocked(false)
-
-        // Act
-        let validator = IAPValidator.shared
-
-        // Assert
-        XCTAssertFalse(validator.isProUnlocked, "Should load locked status from Keychain")
+        #endif
     }
 
-    func testInit_LoadsProStatusFromKeychain_WhenNoStatusSet() {
-        // Arrange - Ensure no status in Keychain (setUp already did this)
-
-        // Act
+    func testKeychainSync_ResetProStatus_ReflectsInKeychain() throws {
+        // Arrange
         let validator = IAPValidator.shared
 
+        #if DEBUG
+        validator.simulateProUnlock()
+        XCTAssertTrue(validator.isProUnlocked)
+
+        // Act
+        validator.resetProStatus()
+
         // Assert
-        XCTAssertFalse(validator.isProUnlocked, "Should default to locked when no Keychain entry exists")
+        XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should reflect locked status")
+        XCTAssertFalse(validator.isProUnlocked, "Validator should reflect locked status")
+        #else
+        // In release builds, verify Keychain read/write works
+        try KeychainManager.setProUnlocked(false)
+        XCTAssertFalse(KeychainManager.isProUnlocked())
+        #endif
+    }
+
+    func testKeychainManager_ReadWrite_WorksCorrectly() throws {
+        // Test that KeychainManager operations work correctly
+        try KeychainManager.setProUnlocked(true)
+        XCTAssertTrue(KeychainManager.isProUnlocked(), "Should read true from Keychain")
+
+        try KeychainManager.setProUnlocked(false)
+        XCTAssertFalse(KeychainManager.isProUnlocked(), "Should read false from Keychain")
     }
 
     // MARK: - Initial State Tests
@@ -156,7 +178,8 @@ final class IAPValidatorTests: XCTestCase {
     func testSimulateProUnlock_UpdatesStateAndKeychain() {
         // Arrange
         let validator = IAPValidator.shared
-        XCTAssertFalse(validator.isProUnlocked, "Should start locked")
+        // Reset first to ensure clean state
+        validator.resetProStatus()
 
         // Act
         validator.simulateProUnlock()
@@ -164,6 +187,9 @@ final class IAPValidatorTests: XCTestCase {
         // Assert
         XCTAssertTrue(validator.isProUnlocked, "Should be unlocked after simulation")
         XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should reflect Pro status")
+
+        // Cleanup
+        validator.resetProStatus()
     }
 
     func testResetProStatus_UpdatesStateAndKeychain() throws {

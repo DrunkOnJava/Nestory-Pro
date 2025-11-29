@@ -348,8 +348,8 @@ When you check out a task, add an entry here:
 
 ### 5.1 ViewModels
 
-- [ ] **5.1.1** Create InventoryTabViewModel
-  - File: `Nestory-Pro/ViewModels/InventoryTabViewModel.swift` (create)
+- [x] **5.1.1** Create InventoryTabViewModel ✓ 2025-11-29
+  - File: `Nestory-Pro/ViewModels/InventoryTabViewModel.swift` (created)
   - Move filtering, sorting, stats calculation from InventoryTab
   - Use @Observable macro
   - Inject via @Environment
@@ -605,5 +605,5 @@ Format: - [x] **X.Y.Z** Description (completed YYYY-MM-DD)
 
 ---
 
-*Last Updated: November 28, 2025*
-*Task Count: 73 tasks (0 in progress, 37 completed, 36 remaining)*
+*Last Updated: November 29, 2025*
+*Task Count: 73 tasks (0 in progress, 38 completed, 35 remaining)*
