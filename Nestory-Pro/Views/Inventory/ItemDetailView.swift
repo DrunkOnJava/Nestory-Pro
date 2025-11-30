@@ -36,6 +36,7 @@ struct ItemDetailView: View {
     @State private var viewModel: ItemDetailViewModel
     @State private var selectedPhotoIndex = 0
     @State private var showingDocumentationInfo = false
+    @State private var showingTagEditor = false
 
     init(item: Item) {
         self.item = item
@@ -51,6 +52,9 @@ struct ItemDetailView: View {
                 VStack(spacing: 20) {
                     // Title & Location
                     titleSection
+                    
+                    // Tags (P2-05)
+                    tagsSection
                     
                     // Documentation Status
                     documentationSection
@@ -279,6 +283,39 @@ extension ItemDetailView {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    // MARK: - Tags Section (P2-05)
+    private var tagsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Tags")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    showingTagEditor = true
+                } label: {
+                    Image(systemName: "plus.circle")
+                        .foregroundStyle(.blue)
+                }
+                .accessibilityLabel("Add tags")
+            }
+            
+            if item.tagObjects.isEmpty {
+                Text("No tags")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                TagFlowView(tags: item.tagObjects) { tag in
+                    item.tagObjects.removeAll { $0.id == tag.id }
+                    item.updatedAt = Date()
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .sheet(isPresented: $showingTagEditor) {
+            TagEditorSheet(item: item)
+        }
     }
     
     // MARK: - Documentation Section (6-field scoring per Task 1.4.1)

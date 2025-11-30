@@ -296,17 +296,33 @@ COMMIT RULES:
 
 ---
 
-#### [ ] P2-05 – Tags & quick categorization
-- Checked-out-by: none
+#### [x] P2-05 – Tags & quick categorization ✓ 2025-11-30
+- Checked-out-by: Claude (session-2025-11-30)
 - Blocked-by: P2-03 ✓
+- Status: **Complete**
 
 **Goal:** Flexible tagging that doesn't feel like a database UI.
 
 **Subtasks:**
-- [ ] Define `Tag` model with Item relationship
-- [ ] Implement pill-style tag UI on item detail
-- [ ] Tag favorites: "Essential", "High value", "Electronics", "Insurance-critical"
-- [ ] Add tag-based filtering view
+- [x] Define `Tag` model with Item relationship ✓ 2025-11-30
+  - Tag.swift with id, name, colorHex, isFavorite, createdAt
+  - Many-to-many relationship with Item via tagObjects
+  - Validation for name and colorHex format
+- [x] Implement pill-style tag UI on item detail ✓ 2025-11-30
+  - TagPillView: Single capsule with color and optional remove button
+  - TagFlowView: Horizontal wrapping layout using FlowLayout
+  - TagEditorSheet: Full-featured tag management
+- [x] Tag favorites: "Essential", "High value", "Electronics", "Insurance-critical" ✓ 2025-11-30
+  - Predefined in Tag.defaultFavorites
+  - Tag.createDefaultTags(in:) for new user setup
+- [x] Add tag-based filtering view ✓ 2025-11-30
+  - Tags section added to ItemDetailView
+  - Inline tag removal with "x" button
+  - "+" button to open TagEditorSheet
+
+**Files Created:**
+- `Nestory-Pro/Models/Tag.swift` (148 lines)
+- `Nestory-Pro/Views/Tags/TagPillView.swift` (372 lines)
 
 ---
 

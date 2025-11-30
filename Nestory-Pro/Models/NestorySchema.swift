@@ -41,7 +41,8 @@ enum NestorySchemaV1: VersionedSchema {
             ItemPhoto.self,
             Receipt.self,
             Category.self,
-            Room.self
+            Room.self,
+            Tag.self
         ]
     }
 }

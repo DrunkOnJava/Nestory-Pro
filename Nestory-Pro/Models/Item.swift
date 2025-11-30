@@ -91,7 +91,13 @@ final class Item {
     var receipts: [Receipt]
     
     var warrantyExpiryDate: Date?
+    
+    /// Legacy string-based tags (kept for backward compatibility)
     var tags: [String]
+    
+    /// Tag objects relationship (P2-05: Tags & quick categorization)
+    @Relationship(deleteRule: .nullify)
+    var tagObjects: [Tag]
     
     /// Product barcode (UPC, EAN, etc.) scanned from the item
     // NOTE: Task 2.7.2 - Stored for future product lookup (v1.1+)
@@ -131,6 +137,7 @@ final class Item {
         self.notes = notes
         self.photos = []
         self.receipts = []
+        self.tagObjects = []
         self.warrantyExpiryDate = warrantyExpiryDate
         self.tags = tags
         self.createdAt = Date()
