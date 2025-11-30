@@ -20,22 +20,6 @@ import XCTest
 
 final class OCRServiceTests: XCTestCase {
 
-    // MARK: - Properties
-
-    var sut: OCRService!
-
-    // MARK: - Setup & Teardown
-
-    override func setUp() async throws {
-        try await super.setUp()
-        sut = await OCRService.shared
-    }
-
-    override func tearDown() async throws {
-        sut = nil
-        try await super.tearDown()
-    }
-
     // MARK: - Date Parsing Tests
 
     func testProcessReceipt_DateFormatMMDDYYYY_ParsesCorrectly() async throws {

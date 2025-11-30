@@ -18,392 +18,218 @@ final class KeychainManagerTests: XCTestCase {
     // MARK: - Setup & Teardown
 
     override func setUp() async throws {
+        try await super.setUp()
+        let stringKey = testStringKey
+        let migKey = migrationTestKey
         await MainActor.run {
-            super.setUp()
-            // Clean Keychain before each test to ensure isolated state
             try? KeychainManager.removeProStatus()
-            try? KeychainManager.removeValue(forKey: testStringKey)
-
-            // Clean UserDefaults for migration tests
+            try? KeychainManager.removeValue(forKey: stringKey)
             UserDefaults.standard.removeObject(forKey: "isProUnlocked")
-            UserDefaults.standard.removeObject(forKey: migrationTestKey)
+            UserDefaults.standard.removeObject(forKey: migKey)
         }
     }
 
     override func tearDown() async throws {
+        let stringKey = testStringKey
+        let migKey = migrationTestKey
         await MainActor.run {
-            // Clean up Keychain after each test to avoid pollution
             try? KeychainManager.removeProStatus()
-            try? KeychainManager.removeValue(forKey: testStringKey)
-
-            // Clean UserDefaults
+            try? KeychainManager.removeValue(forKey: stringKey)
             UserDefaults.standard.removeObject(forKey: "isProUnlocked")
-            UserDefaults.standard.removeObject(forKey: migrationTestKey)
-
-            super.tearDown()
+            UserDefaults.standard.removeObject(forKey: migKey)
         }
+        try await super.tearDown()
     }
 
     // MARK: - Pro Status Tests
 
-    func testSetProUnlocked_True_StoresInKeychain() async throws {
-        await MainActor.run {
-            // When: Setting Pro unlocked to true
-            try? KeychainManager.setProUnlocked(true)
+    @MainActor
+    func testSetProUnlocked_True_StoresInKeychain() throws {
+        try KeychainManager.setProUnlocked(true)
+        let result = KeychainManager.isProUnlocked()
+        XCTAssertTrue(result, "Pro status should be true after setting to true")
+    }
 
-            // Then: The value should be stored and retrievable
-            let result = KeychainManager.isProUnlocked()
-            XCTAssertTrue(result, "Pro status should be true after setting to true")
+    @MainActor
+    func testSetProUnlocked_False_StoresInKeychain() throws {
+        try KeychainManager.setProUnlocked(true)
+        XCTAssertTrue(KeychainManager.isProUnlocked())
+        try KeychainManager.setProUnlocked(false)
+        let result = KeychainManager.isProUnlocked()
+        XCTAssertFalse(result, "Pro status should be false after setting to false")
+    }
+
+    @MainActor
+    func testIsProUnlocked_WhenNotSet_ReturnsFalse() {
+        let result = KeychainManager.isProUnlocked()
+        XCTAssertFalse(result, "Pro status should default to false when not set")
+    }
+
+    @MainActor
+    func testRemoveProStatus_RemovesStoredValue() throws {
+        try KeychainManager.setProUnlocked(true)
+        XCTAssertTrue(KeychainManager.isProUnlocked())
+        try KeychainManager.removeProStatus()
+        let result = KeychainManager.isProUnlocked()
+        XCTAssertFalse(result, "Pro status should be false after removal")
+    }
+
+    @MainActor
+    func testRemoveProStatus_WhenNotSet_DoesNotThrow() {
+        do {
+            try KeychainManager.removeProStatus()
+        } catch {
+            XCTFail("Removing non-existent Pro status should not throw: \(error)")
         }
     }
 
-    func testSetProUnlocked_False_StoresInKeychain() async throws {
-        await MainActor.run {
-            // Given: Pro status is initially true
-            try? KeychainManager.setProUnlocked(true)
-            XCTAssertTrue(KeychainManager.isProUnlocked())
-
-            // When: Setting Pro unlocked to false
-            try? KeychainManager.setProUnlocked(false)
-
-            // Then: The value should be updated to false
-            let result = KeychainManager.isProUnlocked()
-            XCTAssertFalse(result, "Pro status should be false after setting to false")
-        }
-    }
-
-    func testIsProUnlocked_WhenNotSet_ReturnsFalse() async {
-        await MainActor.run {
-            // When: No Pro status has been set
-            let result = KeychainManager.isProUnlocked()
-
-            // Then: Should return false by default
-            XCTAssertFalse(result, "Pro status should default to false when not set")
-        }
-    }
-
-    func testIsProUnlocked_AfterSettingTrue_ReturnsTrue() async throws {
-        await MainActor.run {
-            // Given: Pro status is set to true
-            try? KeychainManager.setProUnlocked(true)
-
-            // When: Checking Pro status
-            let result = KeychainManager.isProUnlocked()
-
-            // Then: Should return true
-            XCTAssertTrue(result, "Pro status should persist as true")
-        }
-    }
-
-    func testRemoveProStatus_RemovesValue() async throws {
-        await MainActor.run {
-            // Given: Pro status is set to true
-            try? KeychainManager.setProUnlocked(true)
-            XCTAssertTrue(KeychainManager.isProUnlocked())
-
-            // When: Removing Pro status
-            try? KeychainManager.removeProStatus()
-
-            // Then: Should return to default false state
-            let result = KeychainManager.isProUnlocked()
-            XCTAssertFalse(result, "Pro status should be false after removal")
-        }
-    }
-
-    func testRemoveProStatus_WhenNotSet_DoesNotThrow() async {
-        await MainActor.run {
-            // When: Removing Pro status that was never set
-            // Then: Should not throw an error
-            do {
-                try KeychainManager.removeProStatus()
-            } catch {
-                XCTFail("Removing non-existent Pro status should not throw: \(error)")
-            }
-        }
-    }
-
-    func testSetProUnlocked_MultipleUpdates_UpdatesCorrectly() async throws {
-        await MainActor.run {
-            // When: Setting Pro status multiple times
-            try? KeychainManager.setProUnlocked(true)
-            XCTAssertTrue(KeychainManager.isProUnlocked())
-
-            try? KeychainManager.setProUnlocked(false)
-            XCTAssertFalse(KeychainManager.isProUnlocked())
-
-            try? KeychainManager.setProUnlocked(true)
-            XCTAssertTrue(KeychainManager.isProUnlocked())
-
-            // Then: Each update should be persisted correctly
-            let finalResult = KeychainManager.isProUnlocked()
-            XCTAssertTrue(finalResult, "Final Pro status should be true after multiple updates")
-        }
+    @MainActor
+    func testSetProUnlocked_MultipleUpdates_UpdatesCorrectly() throws {
+        try KeychainManager.setProUnlocked(true)
+        XCTAssertTrue(KeychainManager.isProUnlocked())
+        try KeychainManager.setProUnlocked(false)
+        XCTAssertFalse(KeychainManager.isProUnlocked())
+        try KeychainManager.setProUnlocked(true)
+        XCTAssertTrue(KeychainManager.isProUnlocked())
     }
 
     // MARK: - Generic String Storage Tests
 
-    func testSetString_StoresValue() async throws {
-        await MainActor.run {
-            // Given: A test string
-            let testValue = "testValue123"
+    @MainActor
+    func testSetString_StoresValue() throws {
+        let testValue = "TestValue123"
+        try KeychainManager.setString(testValue, forKey: testStringKey)
+        let result = KeychainManager.getString(forKey: testStringKey)
+        XCTAssertEqual(result, testValue, "Should retrieve the exact stored value")
+    }
 
-            // When: Storing the string
-            try? KeychainManager.setString(testValue, forKey: testStringKey)
+    @MainActor
+    func testGetString_WhenNotSet_ReturnsNil() {
+        let result = KeychainManager.getString(forKey: "nonExistentKey")
+        XCTAssertNil(result, "Getting non-existent key should return nil")
+    }
 
-            // Then: The value should be retrievable
-            let result = KeychainManager.getString(forKey: testStringKey)
-            XCTAssertEqual(result, testValue, "Retrieved value should match stored value")
+    @MainActor
+    func testRemoveValue_RemovesStoredString() throws {
+        let testValue = "valueToRemove"
+        try KeychainManager.setString(testValue, forKey: testStringKey)
+        XCTAssertNotNil(KeychainManager.getString(forKey: testStringKey))
+        try KeychainManager.removeValue(forKey: testStringKey)
+        let result = KeychainManager.getString(forKey: testStringKey)
+        XCTAssertNil(result, "Value should be nil after removal")
+    }
+
+    @MainActor
+    func testRemoveValue_WhenNotSet_DoesNotThrow() {
+        do {
+            try KeychainManager.removeValue(forKey: "nonExistentKey")
+        } catch {
+            XCTFail("Removing non-existent value should not throw: \(error)")
         }
     }
 
-    func testGetString_RetrievesStoredValue() async throws {
-        await MainActor.run {
-            // Given: A stored string
-            let testValue = "anotherTestValue"
-            try? KeychainManager.setString(testValue, forKey: testStringKey)
-
-            // When: Retrieving the string
-            let result = KeychainManager.getString(forKey: testStringKey)
-
-            // Then: Should return the correct value
-            XCTAssertEqual(result, testValue, "Should retrieve the exact stored value")
-        }
+    @MainActor
+    func testSetString_UpdatesExistingValue() throws {
+        try KeychainManager.setString("oldValue", forKey: testStringKey)
+        XCTAssertEqual(KeychainManager.getString(forKey: testStringKey), "oldValue")
+        let newValue = "newValue"
+        try KeychainManager.setString(newValue, forKey: testStringKey)
+        let result = KeychainManager.getString(forKey: testStringKey)
+        XCTAssertEqual(result, newValue, "Should retrieve updated value")
     }
 
-    func testGetString_WhenNotSet_ReturnsNil() async {
-        await MainActor.run {
-            // When: Getting a string that was never set
-            let result = KeychainManager.getString(forKey: "nonExistentKey")
-
-            // Then: Should return nil
-            XCTAssertNil(result, "Getting non-existent key should return nil")
-        }
+    @MainActor
+    func testSetString_HandlesSpecialCharacters() throws {
+        let testValue = "Test!@#$%^&*()_+-=[]{}|;':\",./<>?`~"
+        try KeychainManager.setString(testValue, forKey: testStringKey)
+        let result = KeychainManager.getString(forKey: testStringKey)
+        XCTAssertEqual(result, testValue, "Should preserve special characters")
     }
 
-    func testRemoveValue_RemovesStoredString() async throws {
-        await MainActor.run {
-            // Given: A stored string
-            let testValue = "valueToRemove"
-            try? KeychainManager.setString(testValue, forKey: testStringKey)
-            XCTAssertNotNil(KeychainManager.getString(forKey: testStringKey))
-
-            // When: Removing the value
-            try? KeychainManager.removeValue(forKey: testStringKey)
-
-            // Then: The value should no longer be retrievable
-            let result = KeychainManager.getString(forKey: testStringKey)
-            XCTAssertNil(result, "Value should be nil after removal")
-        }
+    @MainActor
+    func testSetString_HandlesUnicode() throws {
+        let testValue = "Hello 世界 🌍 مرحبا"
+        try KeychainManager.setString(testValue, forKey: testStringKey)
+        let result = KeychainManager.getString(forKey: testStringKey)
+        XCTAssertEqual(result, testValue, "Should preserve Unicode characters")
     }
 
-    func testRemoveValue_WhenNotSet_DoesNotThrow() async {
-        await MainActor.run {
-            // When: Removing a value that was never set
-            // Then: Should not throw an error
-            do {
-                try KeychainManager.removeValue(forKey: "nonExistentKey")
-            } catch {
-                XCTFail("Removing non-existent value should not throw: \(error)")
-            }
-        }
+    @MainActor
+    func testSetString_HandlesEmptyString() throws {
+        let testValue = ""
+        try KeychainManager.setString(testValue, forKey: testStringKey)
+        let result = KeychainManager.getString(forKey: testStringKey)
+        XCTAssertEqual(result, testValue, "Should handle empty string")
     }
 
-    func testSetString_UpdatesExistingValue() async throws {
-        await MainActor.run {
-            // Given: An existing stored value
-            try? KeychainManager.setString("oldValue", forKey: testStringKey)
-            XCTAssertEqual(KeychainManager.getString(forKey: testStringKey), "oldValue")
-
-            // When: Updating with a new value
-            let newValue = "newValue"
-            try? KeychainManager.setString(newValue, forKey: testStringKey)
-
-            // Then: Should retrieve the updated value
-            let result = KeychainManager.getString(forKey: testStringKey)
-            XCTAssertEqual(result, newValue, "Should retrieve updated value, not old value")
-        }
-    }
-
-    func testSetString_HandlesSpecialCharacters() async throws {
-        await MainActor.run {
-            // Given: A string with special characters
-            let testValue = "Test!@#$%^&*()_+-=[]{}|;':\",./<>?`~"
-
-            // When: Storing and retrieving
-            try? KeychainManager.setString(testValue, forKey: testStringKey)
-            let result = KeychainManager.getString(forKey: testStringKey)
-
-            // Then: Should handle special characters correctly
-            XCTAssertEqual(result, testValue, "Should preserve special characters")
-        }
-    }
-
-    func testSetString_HandlesUnicode() async throws {
-        await MainActor.run {
-            // Given: A string with Unicode characters
-            let testValue = "Hello 世界 🌍 مرحبا"
-
-            // When: Storing and retrieving
-            try? KeychainManager.setString(testValue, forKey: testStringKey)
-            let result = KeychainManager.getString(forKey: testStringKey)
-
-            // Then: Should handle Unicode correctly
-            XCTAssertEqual(result, testValue, "Should preserve Unicode characters")
-        }
-    }
-
-    func testSetString_HandlesEmptyString() async throws {
-        await MainActor.run {
-            // Given: An empty string
-            let testValue = ""
-
-            // When: Storing and retrieving
-            try? KeychainManager.setString(testValue, forKey: testStringKey)
-            let result = KeychainManager.getString(forKey: testStringKey)
-
-            // Then: Should store and retrieve empty string
-            XCTAssertEqual(result, testValue, "Should handle empty string")
-        }
-    }
-
-    func testSetString_HandlesLongString() async throws {
-        await MainActor.run {
-            // Given: A very long string
-            let testValue = String(repeating: "A", count: 10_000)
-
-            // When: Storing and retrieving
-            try? KeychainManager.setString(testValue, forKey: testStringKey)
-            let result = KeychainManager.getString(forKey: testStringKey)
-
-            // Then: Should handle long strings
-            XCTAssertEqual(result, testValue, "Should handle long strings")
-        }
+    @MainActor
+    func testSetString_HandlesLongString() throws {
+        let testValue = String(repeating: "A", count: 10_000)
+        try KeychainManager.setString(testValue, forKey: testStringKey)
+        let result = KeychainManager.getString(forKey: testStringKey)
+        XCTAssertEqual(result, testValue, "Should handle long strings")
     }
 
     // MARK: - Migration Tests
 
-    func testMigration_WhenUserDefaultsHasValue_MigratesToKeychain() async {
-        await MainActor.run {
-            // Given: Pro status stored in UserDefaults
-            UserDefaults.standard.set(true, forKey: "isProUnlocked")
-            XCTAssertTrue(UserDefaults.standard.bool(forKey: "isProUnlocked"))
-
-            // When: Running migration
-            KeychainManager.migrateProStatusFromUserDefaults()
-
-            // Then: Value should be in Keychain
-            XCTAssertTrue(KeychainManager.isProUnlocked(),
-                         "Pro status should be migrated to Keychain")
-
-            // And: UserDefaults should be cleaned up
-            XCTAssertFalse(UserDefaults.standard.bool(forKey: "isProUnlocked"),
-                          "UserDefaults value should be removed after migration")
-
-            // And: Migration should be marked complete
-            XCTAssertTrue(UserDefaults.standard.bool(forKey: migrationTestKey),
-                         "Migration should be marked complete")
-        }
+    @MainActor
+    func testMigration_WhenUserDefaultsHasValue_MigratesToKeychain() {
+        UserDefaults.standard.set(true, forKey: "isProUnlocked")
+        XCTAssertTrue(UserDefaults.standard.bool(forKey: "isProUnlocked"))
+        KeychainManager.migrateProStatusFromUserDefaults()
+        XCTAssertTrue(KeychainManager.isProUnlocked(), "Pro status should be migrated")
+        XCTAssertFalse(UserDefaults.standard.bool(forKey: "isProUnlocked"), "UserDefaults should be cleaned")
+        XCTAssertTrue(UserDefaults.standard.bool(forKey: migrationTestKey), "Migration should be marked complete")
     }
 
-    func testMigration_WhenUserDefaultsIsFalse_DoesNotMigrate() async {
-        await MainActor.run {
-            // Given: Pro status is false in UserDefaults
-            UserDefaults.standard.set(false, forKey: "isProUnlocked")
-
-            // When: Running migration
-            KeychainManager.migrateProStatusFromUserDefaults()
-
-            // Then: Keychain should remain false (default)
-            XCTAssertFalse(KeychainManager.isProUnlocked(),
-                          "Should not migrate false value")
-
-            // And: Migration should still be marked complete
-            XCTAssertTrue(UserDefaults.standard.bool(forKey: migrationTestKey),
-                         "Migration should be marked complete even for false value")
-        }
+    @MainActor
+    func testMigration_WhenUserDefaultsIsFalse_DoesNotMigrate() {
+        UserDefaults.standard.set(false, forKey: "isProUnlocked")
+        KeychainManager.migrateProStatusFromUserDefaults()
+        XCTAssertFalse(KeychainManager.isProUnlocked(), "Should not migrate false value")
+        XCTAssertTrue(UserDefaults.standard.bool(forKey: migrationTestKey), "Migration should be marked complete")
     }
 
-    func testMigration_WhenAlreadyMigrated_DoesNotMigrateAgain() async {
-        await MainActor.run {
-            // Given: Migration already completed
-            UserDefaults.standard.set(true, forKey: migrationTestKey)
-            UserDefaults.standard.set(true, forKey: "isProUnlocked")
-
-            // When: Running migration again
-            KeychainManager.migrateProStatusFromUserDefaults()
-
-            // Then: Should not migrate (Keychain should remain false)
-            XCTAssertFalse(KeychainManager.isProUnlocked(),
-                          "Should not re-migrate when already complete")
-
-            // And: UserDefaults value should remain (not cleaned up)
-            XCTAssertTrue(UserDefaults.standard.bool(forKey: "isProUnlocked"),
-                         "Should not touch UserDefaults on subsequent migrations")
-        }
+    @MainActor
+    func testMigration_WhenAlreadyMigrated_DoesNotMigrateAgain() {
+        UserDefaults.standard.set(true, forKey: migrationTestKey)
+        UserDefaults.standard.set(true, forKey: "isProUnlocked")
+        KeychainManager.migrateProStatusFromUserDefaults()
+        XCTAssertFalse(KeychainManager.isProUnlocked(), "Should not re-migrate")
+        XCTAssertTrue(UserDefaults.standard.bool(forKey: "isProUnlocked"), "Should not touch UserDefaults")
     }
 
-    func testMigration_WhenUserDefaultsNotSet_CompletesWithoutError() async {
-        await MainActor.run {
-            // Given: No value in UserDefaults
-            UserDefaults.standard.removeObject(forKey: "isProUnlocked")
-
-            // When: Running migration
-            KeychainManager.migrateProStatusFromUserDefaults()
-
-            // Then: Should complete without error
-            XCTAssertTrue(UserDefaults.standard.bool(forKey: migrationTestKey),
-                         "Migration should be marked complete")
-
-            // And: Keychain should remain false
-            XCTAssertFalse(KeychainManager.isProUnlocked(),
-                          "Keychain should remain false when nothing to migrate")
-        }
+    @MainActor
+    func testMigration_WhenUserDefaultsNotSet_CompletesWithoutError() {
+        UserDefaults.standard.removeObject(forKey: "isProUnlocked")
+        KeychainManager.migrateProStatusFromUserDefaults()
+        XCTAssertTrue(UserDefaults.standard.bool(forKey: migrationTestKey), "Migration should be marked complete")
+        XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should remain false")
     }
 
-    // MARK: - Edge Cases & Error Handling
+    // MARK: - Edge Cases
 
-    func testKeyIsolation_DifferentKeys_DoNotInterfere() async throws {
-        await MainActor.run {
-            // Given: Multiple different keys with values
-            try? KeychainManager.setString("value1", forKey: "key1")
-            try? KeychainManager.setString("value2", forKey: "key2")
-            try? KeychainManager.setString("value3", forKey: "key3")
-
-            // When: Retrieving each value
-            let result1 = KeychainManager.getString(forKey: "key1")
-            let result2 = KeychainManager.getString(forKey: "key2")
-            let result3 = KeychainManager.getString(forKey: "key3")
-
-            // Then: Each should return its own value
-            XCTAssertEqual(result1, "value1")
-            XCTAssertEqual(result2, "value2")
-            XCTAssertEqual(result3, "value3")
-
-            // Cleanup
-            try? KeychainManager.removeValue(forKey: "key1")
-            try? KeychainManager.removeValue(forKey: "key2")
-            try? KeychainManager.removeValue(forKey: "key3")
-        }
+    @MainActor
+    func testKeyIsolation_DifferentKeys_DoNotInterfere() throws {
+        try KeychainManager.setString("value1", forKey: "key1")
+        try KeychainManager.setString("value2", forKey: "key2")
+        try KeychainManager.setString("value3", forKey: "key3")
+        XCTAssertEqual(KeychainManager.getString(forKey: "key1"), "value1")
+        XCTAssertEqual(KeychainManager.getString(forKey: "key2"), "value2")
+        XCTAssertEqual(KeychainManager.getString(forKey: "key3"), "value3")
+        try KeychainManager.removeValue(forKey: "key1")
+        try KeychainManager.removeValue(forKey: "key2")
+        try KeychainManager.removeValue(forKey: "key3")
     }
 
-    func testProStatus_IndependentFromGenericStrings() async throws {
-        await MainActor.run {
-            // Given: Generic string stored
-            try? KeychainManager.setString("testValue", forKey: testStringKey)
-
-            // When: Setting Pro status
-            try? KeychainManager.setProUnlocked(true)
-
-            // Then: Both should coexist independently
-            XCTAssertTrue(KeychainManager.isProUnlocked())
-            XCTAssertEqual(KeychainManager.getString(forKey: testStringKey), "testValue")
-
-            // When: Removing Pro status
-            try? KeychainManager.removeProStatus()
-
-            // Then: Generic string should remain
-            XCTAssertFalse(KeychainManager.isProUnlocked())
-            XCTAssertEqual(KeychainManager.getString(forKey: testStringKey), "testValue")
-        }
+    @MainActor
+    func testProStatus_IndependentFromGenericStrings() throws {
+        try KeychainManager.setString("testValue", forKey: testStringKey)
+        try KeychainManager.setProUnlocked(true)
+        XCTAssertTrue(KeychainManager.isProUnlocked())
+        XCTAssertEqual(KeychainManager.getString(forKey: testStringKey), "testValue")
+        try KeychainManager.removeProStatus()
+        XCTAssertFalse(KeychainManager.isProUnlocked())
+        XCTAssertEqual(KeychainManager.getString(forKey: testStringKey), "testValue")
     }
 }
