@@ -54,6 +54,9 @@ final class AppEnvironment {
     /// Biometric authentication and app lock
     let appLockService: any AppLockProviding
     
+    /// Local notification reminders (P5-03)
+    let reminderService: ReminderService
+    
     // MARK: - ViewModels
     
     /// Inventory tab view model
@@ -83,7 +86,8 @@ final class AppEnvironment {
         ocrService: (any OCRServiceProtocol)? = nil,
         reportGenerator: ReportGeneratorService? = nil,
         backupService: BackupService? = nil,
-        appLockService: (any AppLockProviding)? = nil
+        appLockService: (any AppLockProviding)? = nil,
+        reminderService: ReminderService? = nil
     ) {
         // Use provided services or create defaults
         self.settings = settings ?? SettingsManager()
@@ -93,6 +97,7 @@ final class AppEnvironment {
         self.reportGenerator = reportGenerator ?? ReportGeneratorService.shared
         self.backupService = backupService ?? BackupService.shared
         self.appLockService = appLockService ?? AppLockService()
+        self.reminderService = reminderService ?? ReminderService()
         
         // Initialize ViewModels with service dependencies
         self.inventoryViewModel = InventoryTabViewModel(settings: self.settings)

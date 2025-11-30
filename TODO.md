@@ -373,17 +373,36 @@ COMMIT RULES:
 
 ---
 
-#### [ ] P5-03 – Quick actions: inventory tasks & reminders
-- Checked-out-by: none
+#### [x] P5-03 – Quick actions: inventory tasks & reminders ✓ 2025-11-30
+- Checked-out-by: Claude (session-2025-11-30)
 - Blocked-by: P2-06 ✓
+- Status: **Complete**
 
 **Goal:** Transform static database into ongoing companion.
 
 **Subtasks:**
-- [ ] Add warranty expiry reminders
-- [ ] Implement reminders list view ("Things to review this month")
-- [ ] Integrate local notifications
-- [ ] Respect feature flags for Pro reminder features
+- [x] Add warranty expiry reminders ✓ 2025-11-30
+  - ReminderService schedules notifications 7 days before expiry
+  - UNUserNotificationCenter integration with categories
+  - Request authorization flow
+- [x] Implement reminders list view ("Things to review this month") ✓ 2025-11-30
+  - RemindersView with 3 categories: Warranty Expiring, Needs Review, Missing Info
+  - Expandable category cards with item lists
+  - Summary header showing total items needing attention
+- [x] Integrate local notifications ✓ 2025-11-30
+  - scheduleWarrantyReminder(for:) schedules at 9 AM
+  - scheduleAllWarrantyReminders(context:) bulk scheduling
+  - Notification actions: View Item, Dismiss
+- [x] Respect feature flags for Pro reminder features ✓ 2025-11-30
+  - NotificationSettingsSheet for managing preferences
+  - Clear all reminders option
+
+**Files Created:**
+- `Nestory-Pro/Services/ReminderService.swift` (238 lines)
+- `Nestory-Pro/Views/Reminders/RemindersView.swift` (421 lines)
+
+**Navigation:**
+- Bell icon in Inventory tab toolbar links to RemindersView
 
 ---
 

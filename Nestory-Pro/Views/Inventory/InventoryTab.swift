@@ -154,10 +154,17 @@ struct InventoryTab: View {
                     .accessibilityLabel("Add Item")
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(action: viewModel.showSearchHelp) {
-                        Image(systemName: "questionmark.circle")
+                    HStack(spacing: 16) {
+                        Button(action: viewModel.showSearchHelp) {
+                            Image(systemName: "questionmark.circle")
+                        }
+                        .accessibilityLabel("Search Help")
+                        
+                        NavigationLink(destination: RemindersView()) {
+                            Image(systemName: "bell.badge")
+                        }
+                        .accessibilityLabel("Reminders")
                     }
-                    .accessibilityLabel("Search Help")
                 }
             }
             .searchable(text: $vm.searchText, prompt: "Search items...")

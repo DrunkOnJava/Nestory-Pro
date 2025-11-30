@@ -14,6 +14,7 @@
 		0DA4FEBA5265489F9F0E7BED /* WarrantyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE6F5FB0133F75B60744060 /* WarrantyListView.swift */; };
 		0FDB606A50ED3671FB4BB2CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67CB8EFEE8BB66D286013C4F /* Assets.xcassets */; };
 		10193AD6F5D84CD7DE0F8C91 /* ContextualPaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C05C4629B01E23E03DBDD1 /* ContextualPaywallSheet.swift */; };
+		109282CF10AF56F6539622B1 /* RemindersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA5035EDC850CE1E0BD7A20 /* RemindersView.swift */; };
 		15771584CD95FCCD707BB7D7 /* CategoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DD9D6C89EA50CD19485C57 /* CategoryTests.swift */; };
 		179F7FBB8300D88DE3E7D012 /* TagPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B6EC2656A566D153E1A1354 /* TagPillView.swift */; };
 		1B7655C870AC4B0F0E85CE4D /* ItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC825B7AE914E2904DE087A4 /* ItemTests.swift */; };
@@ -98,6 +99,7 @@
 		D0910031253ECD576C94B713 /* PhotoStorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A15C0B70CD701EFD6FA301B /* PhotoStorageProtocol.swift */; };
 		D112EA34E943D35C9FBFCAFB /* BackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104338325C6EBFA88F1F61D2 /* BackupServiceTests.swift */; };
 		D538159B8017E9F5C051C7A3 /* PhotoStorageServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0326F2AE5DF60E470ECEDA /* PhotoStorageServiceTests.swift */; };
+		D547475470D1DCE5F653CD3A /* ReminderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DF882D656EAE2F4D1B60EF /* ReminderService.swift */; };
 		D6E39EDC3250849D373F608C /* PerformanceLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C66DC9AD1CD0976A3C594E /* PerformanceLogger.swift */; };
 		D7BDE7D44F9657C8317CDC45 /* QuickAddItemSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C0E92B15B924E981EEDF31 /* QuickAddItemSheet.swift */; };
 		DAD1C8D5280D2B1F009816E9 /* AccessibilityIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C37771B2E2B900F207DF71B /* AccessibilityIdentifiers.swift */; };
@@ -177,6 +179,7 @@
 		3F42C1ECE2829875FE6D4D69 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
 		40E1ABDC597F6FEBE2CB09CD /* CaptureTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTabViewModel.swift; sourceTree = "<group>"; };
 		44576D95DAB0D942C571C717 /* Nestory-Pro.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Nestory-Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		44DF882D656EAE2F4D1B60EF /* ReminderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderService.swift; sourceTree = "<group>"; };
 		458162818F335C6F11752D76 /* Fastfile */ = {isa = PBXFileReference; path = Fastfile; sourceTree = "<group>"; };
 		47AB78AD95F128A203338E07 /* AuthKey_ACR4LF383U.p8 */ = {isa = PBXFileReference; path = AuthKey_ACR4LF383U.p8; sourceTree = "<group>"; };
 		4802D86F8F58FE717007B060 /* copilot-instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "copilot-instructions.md"; sourceTree = "<group>"; };
@@ -223,13 +226,16 @@
 		8F61902426241554FEA3C5DC /* ReportsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsUITests.swift; sourceTree = "<group>"; };
 		8FC7CDB7FDABB7E02B759A23 /* ViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSnapshotTests.swift; sourceTree = "<group>"; };
 		92EF52A27F13FE4C18093684 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		933B87BF5433A8897D3132D5 /* MCP-SETUP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "MCP-SETUP.md"; sourceTree = "<group>"; };
 		94C0E92B15B924E981EEDF31 /* QuickAddItemSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAddItemSheet.swift; sourceTree = "<group>"; };
 		94E45CAC8181A071E6346B31 /* InventoryTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryTab.swift; sourceTree = "<group>"; };
 		9B141A02FDB6FA90E0FE6A75 /* SettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTab.swift; sourceTree = "<group>"; };
 		9B6EC2656A566D153E1A1354 /* TagPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagPillView.swift; sourceTree = "<group>"; };
 		9CC10429D21E097B1F8F39C0 /* FeedbackSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackSheet.swift; sourceTree = "<group>"; };
+		9DA5035EDC850CE1E0BD7A20 /* RemindersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersView.swift; sourceTree = "<group>"; };
 		A25898B3BFA374CC51B54ED3 /* Pluginfile */ = {isa = PBXFileReference; path = Pluginfile; sourceTree = "<group>"; };
 		A315716C91A758138ED01B18 /* MockPhotoStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPhotoStorageService.swift; sourceTree = "<group>"; };
+		A49505D8D487CCAC16DF4A31 /* MCP-QUICK-REFERENCE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "MCP-QUICK-REFERENCE.md"; sourceTree = "<group>"; };
 		A8446007D2DF5B2C60EDD3D7 /* LossListSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossListSelectionView.swift; sourceTree = "<group>"; };
 		AA681E831835FF923C8E2D74 /* name.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = name.txt; sourceTree = "<group>"; };
 		AB8EBDE3D962AB372DC0F37C /* PreviewFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewFixtures.swift; sourceTree = "<group>"; };
@@ -239,6 +245,7 @@
 		B70ED62187FF9B9C3473A8FB /* AppLockService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLockService.swift; sourceTree = "<group>"; };
 		B9D5E578A47CD4A35C71CAB2 /* Nestory_ProTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nestory_ProTests.swift; sourceTree = "<group>"; };
 		BBEE9B595317B02E6B936475 /* promotional_text.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = promotional_text.txt; sourceTree = "<group>"; };
+		BC833A07C64B1F8C08111540 /* MCP-HTTP-MIGRATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "MCP-HTTP-MIGRATION.md"; sourceTree = "<group>"; };
 		BD2570E3498A23B43BD087E6 /* BackgroundTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskManager.swift; sourceTree = "<group>"; };
 		BD980A2E4CF367EA3C4F7E4A /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
 		C650A1FCF9E29A6427FDAAAC /* subtitle.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = subtitle.txt; sourceTree = "<group>"; };
@@ -269,6 +276,7 @@
 		F32D998CDFF91C748AF302B3 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		F4040210298D4D4BC9D8C6EF /* viewmodels.instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = viewmodels.instructions.md; sourceTree = "<group>"; };
 		F5D3E2EDF43713BD8FF3A90E /* keywords.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = keywords.txt; sourceTree = "<group>"; };
+		F75C77BD0420624ADADBFB42 /* MCP-FIX-SUMMARY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "MCP-FIX-SUMMARY.md"; sourceTree = "<group>"; };
 		F7C66DC9AD1CD0976A3C594E /* PerformanceLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceLogger.swift; sourceTree = "<group>"; };
 		FA0326F2AE5DF60E470ECEDA /* PhotoStorageServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStorageServiceTests.swift; sourceTree = "<group>"; };
 		FA57A0647D57B571ECBDE50B /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
@@ -343,6 +351,7 @@
 				BD5E230537C445CA928093CE /* Capture */,
 				9D9C1E96045315E34869480B /* Inventory */,
 				0F2123CF5870F9998D6BA215 /* Onboarding */,
+				312C8F92649A7D6B0FDABEF3 /* Reminders */,
 				8BFB32D6CCACBD08C87C7236 /* Reports */,
 				7185F077088F66018C8B6D50 /* Settings */,
 				224C0ACD487F78DFB4924E71 /* SharedUI */,
@@ -371,6 +380,14 @@
 			path = test_output;
 			sourceTree = "<group>";
 		};
+		312C8F92649A7D6B0FDABEF3 /* Reminders */ = {
+			isa = PBXGroup;
+			children = (
+				9DA5035EDC850CE1E0BD7A20 /* RemindersView.swift */,
+			);
+			path = Reminders;
+			sourceTree = "<group>";
+		};
 		325401D725A2E18581FF8831 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -388,6 +405,7 @@
 				E102EDA1ABEC20655B9A5317 /* PaginatedFetch.swift */,
 				F7C66DC9AD1CD0976A3C594E /* PerformanceLogger.swift */,
 				D6CC446CDBCB13C683821808 /* PhotoStorageService.swift */,
+				44DF882D656EAE2F4D1B60EF /* ReminderService.swift */,
 				327267283BFF718A45EC5CE6 /* ReportGeneratorService.swift */,
 				04C6B16988046C01A73A1A3B /* SettingsManager.swift */,
 			);
@@ -435,6 +453,10 @@
 				A6794483D3F2AD4F3267908C /* instructions */,
 				C1A59A2C4484E3064FDEE5CF /* workflows */,
 				4802D86F8F58FE717007B060 /* copilot-instructions.md */,
+				F75C77BD0420624ADADBFB42 /* MCP-FIX-SUMMARY.md */,
+				BC833A07C64B1F8C08111540 /* MCP-HTTP-MIGRATION.md */,
+				A49505D8D487CCAC16DF4A31 /* MCP-QUICK-REFERENCE.md */,
+				933B87BF5433A8897D3132D5 /* MCP-SETUP.md */,
 				116C8438DDF205D311DA33B3 /* README.md */,
 			);
 			path = .github;
@@ -1012,6 +1034,8 @@
 				C4C814A3F5188CCA77707FB5 /* Receipt.swift in Sources */,
 				4D7ED3AC3FBEF74132186D17 /* ReceiptCaptureView.swift in Sources */,
 				37704B0401FFB9841FB69224 /* ReceiptReviewSheet.swift in Sources */,
+				D547475470D1DCE5F653CD3A /* ReminderService.swift in Sources */,
+				109282CF10AF56F6539622B1 /* RemindersView.swift in Sources */,
 				2FE2BEDF749B94EFEFC52319 /* ReportGeneratorService.swift in Sources */,
 				FC9B3190695CC342CDF520B1 /* ReportsTab.swift in Sources */,
 				71E9AC46174610213ABD226D /* ReportsTabViewModel.swift in Sources */,
