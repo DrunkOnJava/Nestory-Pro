@@ -130,3 +130,7 @@ fastlane/*.p8
 
 # Personal experiments folder (local SwiftUI preview playground)
 Experiments/
+
+# Temporary files
+Nestory-Pro-IconSourceImage.png
+gemini-chat*.md
