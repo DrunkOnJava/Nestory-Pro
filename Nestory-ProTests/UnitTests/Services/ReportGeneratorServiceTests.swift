@@ -44,9 +44,10 @@ final class ReportGeneratorServiceTests: XCTestCase {
 
     // MARK: - Helper Methods
 
-    nonisolated private func createTestItems(count: Int = 3) -> [Item] {
+    @MainActor
+    private func createTestItems(count: Int = 3) -> [Item] {
         (0..<count).map { index in
-            let item = Item(
+            Item(
                 name: "Test Item \(index + 1)",
                 brand: "Brand \(index + 1)",
                 modelNumber: nil,
@@ -55,202 +56,123 @@ final class ReportGeneratorServiceTests: XCTestCase {
                 purchaseDate: Date(),
                 condition: .good
             )
-            return item
         }
     }
 
     // MARK: - ReportOptions Tests
 
-    func testReportOptions_DefaultValues() async {
-        await MainActor.run {
-            // Act
-            let options = ReportOptions()
-
-            // Assert
-            XCTAssertEqual(options.grouping, .byRoom)
-            XCTAssertFalse(options.includePhotos)
-            XCTAssertFalse(options.includeReceipts)
-        }
+    @MainActor
+    func testReportOptions_DefaultValues() {
+        let options = ReportOptions()
+        XCTAssertEqual(options.grouping, .byRoom)
+        XCTAssertFalse(options.includePhotos)
+        XCTAssertFalse(options.includeReceipts)
     }
 
-    func testReportOptions_CustomConfiguration() async {
-        await MainActor.run {
-            // Act
-            let options = ReportOptions(
-                grouping: .byCategory,
-                includePhotos: true,
-                includeReceipts: true
-            )
-
-            // Assert
-            XCTAssertEqual(options.grouping, .byCategory)
-            XCTAssertTrue(options.includePhotos)
-            XCTAssertTrue(options.includeReceipts)
-        }
+    @MainActor
+    func testReportOptions_CustomConfiguration() {
+        let options = ReportOptions(
+            grouping: .byCategory,
+            includePhotos: true,
+            includeReceipts: true
+        )
+        XCTAssertEqual(options.grouping, .byCategory)
+        XCTAssertTrue(options.includePhotos)
+        XCTAssertTrue(options.includeReceipts)
     }
 
     // MARK: - ReportGrouping Tests
 
-    func testReportGrouping_RawValues() async {
-        await MainActor.run {
-            // Assert
-            XCTAssertEqual(ReportGrouping.byRoom.rawValue, "room")
-            XCTAssertEqual(ReportGrouping.byCategory.rawValue, "category")
-            XCTAssertEqual(ReportGrouping.alphabetical.rawValue, "alphabetical")
-        }
+    @MainActor
+    func testReportGrouping_RawValues() {
+        XCTAssertEqual(ReportGrouping.byRoom.rawValue, "room")
+        XCTAssertEqual(ReportGrouping.byCategory.rawValue, "category")
+        XCTAssertEqual(ReportGrouping.alphabetical.rawValue, "alphabetical")
     }
 
-    func testReportGrouping_DisplayNames() async {
-        await MainActor.run {
-            // Assert
-            XCTAssertEqual(ReportGrouping.byRoom.displayName, "By Room")
-            XCTAssertEqual(ReportGrouping.byCategory.displayName, "By Category")
-            XCTAssertEqual(ReportGrouping.alphabetical.displayName, "Alphabetical")
-        }
+    @MainActor
+    func testReportGrouping_DisplayNames() {
+        XCTAssertEqual(ReportGrouping.byRoom.displayName, "By Room")
+        XCTAssertEqual(ReportGrouping.byCategory.displayName, "By Category")
+        XCTAssertEqual(ReportGrouping.alphabetical.displayName, "Alphabetical")
     }
 
     // MARK: - PDF Generation Tests
 
+    @MainActor
     func testGenerateFullInventoryPDF_WithItems_CreatesPDFFile() async throws {
-        // Arrange
-        let items = await MainActor.run {
-            createTestItems(count: 5)
-        }
-
-        let options = await MainActor.run {
-            ReportOptions()
-        }
-
-        // Act
+        let items = createTestItems(count: 5)
+        let options = ReportOptions()
         let fileURL = try await sut.generateFullInventoryPDF(items: items, options: options)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         XCTAssertEqual(fileURL.pathExtension, "pdf")
     }
 
+    @MainActor
     func testGenerateFullInventoryPDF_EmptyItems_CreatesPDFFile() async throws {
-        // Arrange
         let items: [Item] = []
-        let options = await MainActor.run {
-            ReportOptions()
-        }
-
-        // Act
+        let options = ReportOptions()
         let fileURL = try await sut.generateFullInventoryPDF(items: items, options: options)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
     }
 
+    @MainActor
     func testGenerateFullInventoryPDF_PDFIsValid() async throws {
-        // Arrange
-        let items = await MainActor.run {
-            createTestItems(count: 3)
-        }
-
-        let options = await MainActor.run {
-            ReportOptions()
-        }
-
-        // Act
+        let items = createTestItems(count: 3)
+        let options = ReportOptions()
         let fileURL = try await sut.generateFullInventoryPDF(items: items, options: options)
         exportedFileURLs.append(fileURL)
-
-        // Assert - PDF should be loadable by PDFKit
         let pdfDocument = PDFDocument(url: fileURL)
         XCTAssertNotNil(pdfDocument)
         XCTAssertGreaterThan(pdfDocument?.pageCount ?? 0, 0)
     }
 
+    @MainActor
     func testGenerateFullInventoryPDF_AlphabeticalGrouping_Works() async throws {
-        // Arrange
-        let items = await MainActor.run {
-            createTestItems(count: 3)
-        }
-
-        let options = await MainActor.run {
-            ReportOptions(grouping: .alphabetical)
-        }
-
-        // Act
+        let items = createTestItems(count: 3)
+        let options = ReportOptions(grouping: .alphabetical)
         let fileURL = try await sut.generateFullInventoryPDF(items: items, options: options)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
     }
 
+    @MainActor
     func testGenerateFullInventoryPDF_ByCategoryGrouping_Works() async throws {
-        // Arrange
-        let items = await MainActor.run {
-            createTestItems(count: 3)
-        }
-
-        let options = await MainActor.run {
-            ReportOptions(grouping: .byCategory)
-        }
-
-        // Act
+        let items = createTestItems(count: 3)
+        let options = ReportOptions(grouping: .byCategory)
         let fileURL = try await sut.generateFullInventoryPDF(items: items, options: options)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
     }
 
     // MARK: - Loss List PDF Tests
 
+    @MainActor
     func testGenerateLossListPDF_WithItems_CreatesPDFFile() async throws {
-        // Arrange
-        let items = await MainActor.run {
-            createTestItems(count: 3)
-        }
-
-        let incidentDetails = await MainActor.run {
-            IncidentDetails(
-                incidentDate: Date(),
-                incidentType: .theft,
-                description: "Items stolen from property"
-            )
-        }
-
-        // Act
-        let fileURL = try await sut.generateLossListPDF(
-            items: items,
-            incident: incidentDetails
+        let items = createTestItems(count: 3)
+        let incidentDetails = IncidentDetails(
+            incidentDate: Date(),
+            incidentType: .theft,
+            description: "Items stolen from property"
         )
+        let fileURL = try await sut.generateLossListPDF(items: items, incident: incidentDetails)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         XCTAssertEqual(fileURL.pathExtension, "pdf")
     }
 
+    @MainActor
     func testGenerateLossListPDF_PDFIsValid() async throws {
-        // Arrange
-        let items = await MainActor.run {
-            createTestItems(count: 2)
-        }
-
-        let incidentDetails = await MainActor.run {
-            IncidentDetails(
-                incidentDate: Date(),
-                incidentType: .fire,
-                description: "Fire damage"
-            )
-        }
-
-        // Act
-        let fileURL = try await sut.generateLossListPDF(
-            items: items,
-            incident: incidentDetails
+        let items = createTestItems(count: 2)
+        let incidentDetails = IncidentDetails(
+            incidentDate: Date(),
+            incidentType: .fire,
+            description: "Fire damage"
         )
+        let fileURL = try await sut.generateLossListPDF(items: items, incident: incidentDetails)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         let pdfDocument = PDFDocument(url: fileURL)
         XCTAssertNotNil(pdfDocument)
         XCTAssertGreaterThan(pdfDocument?.pageCount ?? 0, 0)
@@ -258,77 +180,51 @@ final class ReportGeneratorServiceTests: XCTestCase {
 
     // MARK: - IncidentDetails Tests
 
-    func testIncidentDetails_AllTypes() async {
-        await MainActor.run {
-            // Assert - All incident types can be instantiated
-            let types: [IncidentType] = [.fire, .theft, .flood, .waterDamage, .other]
-
-            for type in types {
-                let details = IncidentDetails(
-                    incidentDate: Date(),
-                    incidentType: type,
-                    description: "Test description"
-                )
-                XCTAssertEqual(details.incidentType, type)
-            }
+    @MainActor
+    func testIncidentDetails_AllTypes() {
+        let types: [IncidentType] = [.fire, .theft, .flood, .waterDamage, .other]
+        for type in types {
+            let details = IncidentDetails(
+                incidentDate: Date(),
+                incidentType: type,
+                description: "Test description"
+            )
+            XCTAssertEqual(details.incidentType, type)
         }
     }
 
-    func testIncidentType_DisplayNames() async {
-        await MainActor.run {
-            // Assert
-            XCTAssertFalse(IncidentType.fire.displayName.isEmpty)
-            XCTAssertFalse(IncidentType.theft.displayName.isEmpty)
-            XCTAssertFalse(IncidentType.flood.displayName.isEmpty)
-            XCTAssertFalse(IncidentType.waterDamage.displayName.isEmpty)
-            XCTAssertFalse(IncidentType.other.displayName.isEmpty)
-        }
+    @MainActor
+    func testIncidentType_DisplayNames() {
+        XCTAssertFalse(IncidentType.fire.displayName.isEmpty)
+        XCTAssertFalse(IncidentType.theft.displayName.isEmpty)
+        XCTAssertFalse(IncidentType.flood.displayName.isEmpty)
+        XCTAssertFalse(IncidentType.waterDamage.displayName.isEmpty)
+        XCTAssertFalse(IncidentType.other.displayName.isEmpty)
     }
 
     // MARK: - File Naming Tests
 
+    @MainActor
     func testGenerateFullInventoryPDF_FilenameFormat() async throws {
-        // Arrange
-        let items = await MainActor.run {
-            createTestItems(count: 1)
-        }
-
-        let options = await MainActor.run {
-            ReportOptions()
-        }
-
-        // Act
+        let items = createTestItems(count: 1)
+        let options = ReportOptions()
         let fileURL = try await sut.generateFullInventoryPDF(items: items, options: options)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         let filename = fileURL.lastPathComponent
         XCTAssertTrue(filename.hasPrefix("inventory-"))
         XCTAssertTrue(filename.hasSuffix(".pdf"))
     }
 
+    @MainActor
     func testGenerateLossListPDF_FilenameFormat() async throws {
-        // Arrange
-        let items = await MainActor.run {
-            createTestItems(count: 1)
-        }
-
-        let incidentDetails = await MainActor.run {
-            IncidentDetails(
-                incidentDate: Date(),
-                incidentType: .other,
-                description: "Description"
-            )
-        }
-
-        // Act
-        let fileURL = try await sut.generateLossListPDF(
-            items: items,
-            incident: incidentDetails
+        let items = createTestItems(count: 1)
+        let incidentDetails = IncidentDetails(
+            incidentDate: Date(),
+            incidentType: .other,
+            description: "Description"
         )
+        let fileURL = try await sut.generateLossListPDF(items: items, incident: incidentDetails)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         let filename = fileURL.lastPathComponent
         XCTAssertTrue(filename.hasPrefix("loss-list-"))
         XCTAssertTrue(filename.hasSuffix(".pdf"))
@@ -336,24 +232,13 @@ final class ReportGeneratorServiceTests: XCTestCase {
 
     // MARK: - Large Dataset Tests
 
+    @MainActor
     func testGenerateFullInventoryPDF_LargeDataset_Works() async throws {
-        // Arrange - Create 100 items
-        let items = await MainActor.run {
-            createTestItems(count: 100)
-        }
-
-        let options = await MainActor.run {
-            ReportOptions()
-        }
-
-        // Act
+        let items = createTestItems(count: 100)
+        let options = ReportOptions()
         let fileURL = try await sut.generateFullInventoryPDF(items: items, options: options)
         exportedFileURLs.append(fileURL)
-
-        // Assert
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
-
-        // Should have multiple pages
         let pdfDocument = PDFDocument(url: fileURL)
         XCTAssertNotNil(pdfDocument)
         XCTAssertGreaterThan(pdfDocument?.pageCount ?? 0, 1)
