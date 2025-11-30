@@ -6,12 +6,14 @@
 // because XCTestCase methods (setUp, tearDown) are nonisolated
 // and conflict with MainActor default isolation
 
-// MARK: - Swift Settings (No MainActor default)
+// MARK: - Swift Settings (No MainActor default for tests)
 SWIFT_VERSION = 6.0
 SWIFT_STRICT_CONCURRENCY = complete
 SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full
 SWIFT_APPROACHABLE_CONCURRENCY = YES
-// Intentionally NOT setting SWIFT_DEFAULT_ACTOR_ISOLATION for test targets
+// CRITICAL: Explicitly set nonisolated to override project-level MainActor default
+// XCTestCase lifecycle methods (init, setUp, tearDown) are nonisolated and conflict with MainActor
+SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated
 
 // MARK: - Thread Safety (enabled for tests)
 ENABLE_THREAD_SANITIZER = YES

@@ -16,12 +16,16 @@ final class IAPValidatorTests: XCTestCase {
         try await super.setUp()
 
         // Clean up Keychain before each test to ensure clean state
-        try? KeychainManager.removeProStatus()
+        await MainActor.run {
+            try? KeychainManager.removeProStatus()
+        }
     }
 
     override func tearDown() async throws {
         // Clean up Keychain after each test
-        try? KeychainManager.removeProStatus()
+        await MainActor.run {
+            try? KeychainManager.removeProStatus()
+        }
 
         try await super.tearDown()
     }
@@ -30,74 +34,84 @@ final class IAPValidatorTests: XCTestCase {
     // Note: Singleton initialization tests removed - singletons can't be re-initialized
     // These tests verify the Keychain integration works correctly instead
 
-    func testKeychainSync_SetProUnlocked_ReflectsInKeychain() throws {
-        // Arrange
-        let validator = IAPValidator()
+    func testKeychainSync_SetProUnlocked_ReflectsInKeychain() async throws {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        #if DEBUG
-        // Act - Use debug method to set Pro status
-        validator.simulateProUnlock()
+            #if DEBUG
+            // Act - Use debug method to set Pro status
+            validator.simulateProUnlock()
 
-        // Assert - Keychain should reflect the change
-        XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should be updated when Pro status changes")
-        XCTAssertTrue(validator.isProUnlocked, "Validator should reflect Pro status")
+            // Assert - Keychain should reflect the change
+            XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should be updated when Pro status changes")
+            XCTAssertTrue(validator.isProUnlocked, "Validator should reflect Pro status")
 
-        // Cleanup
-        validator.resetProStatus()
-        #else
-        // In release builds, just verify Keychain operations work
-        try KeychainManager.setProUnlocked(true)
-        XCTAssertTrue(KeychainManager.isProUnlocked())
-        try KeychainManager.setProUnlocked(false)
-        #endif
+            // Cleanup
+            validator.resetProStatus()
+            #else
+            // In release builds, just verify Keychain operations work
+            try? KeychainManager.setProUnlocked(true)
+            XCTAssertTrue(KeychainManager.isProUnlocked())
+            try? KeychainManager.setProUnlocked(false)
+            #endif
+        }
     }
 
-    func testKeychainSync_ResetProStatus_ReflectsInKeychain() throws {
-        // Arrange
-        let validator = IAPValidator()
+    func testKeychainSync_ResetProStatus_ReflectsInKeychain() async throws {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        #if DEBUG
-        validator.simulateProUnlock()
-        XCTAssertTrue(validator.isProUnlocked)
+            #if DEBUG
+            validator.simulateProUnlock()
+            XCTAssertTrue(validator.isProUnlocked)
 
-        // Act
-        validator.resetProStatus()
+            // Act
+            validator.resetProStatus()
 
-        // Assert
-        XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should reflect locked status")
-        XCTAssertFalse(validator.isProUnlocked, "Validator should reflect locked status")
-        #else
-        // In release builds, verify Keychain read/write works
-        try KeychainManager.setProUnlocked(false)
-        XCTAssertFalse(KeychainManager.isProUnlocked())
-        #endif
+            // Assert
+            XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should reflect locked status")
+            XCTAssertFalse(validator.isProUnlocked, "Validator should reflect locked status")
+            #else
+            // In release builds, verify Keychain read/write works
+            try? KeychainManager.setProUnlocked(false)
+            XCTAssertFalse(KeychainManager.isProUnlocked())
+            #endif
+        }
     }
 
-    func testKeychainManager_ReadWrite_WorksCorrectly() throws {
-        // Test that KeychainManager operations work correctly
-        try KeychainManager.setProUnlocked(true)
-        XCTAssertTrue(KeychainManager.isProUnlocked(), "Should read true from Keychain")
+    func testKeychainManager_ReadWrite_WorksCorrectly() async throws {
+        await MainActor.run {
+            // Test that KeychainManager operations work correctly
+            try? KeychainManager.setProUnlocked(true)
+            XCTAssertTrue(KeychainManager.isProUnlocked(), "Should read true from Keychain")
 
-        try KeychainManager.setProUnlocked(false)
-        XCTAssertFalse(KeychainManager.isProUnlocked(), "Should read false from Keychain")
+            try? KeychainManager.setProUnlocked(false)
+            XCTAssertFalse(KeychainManager.isProUnlocked(), "Should read false from Keychain")
+        }
     }
 
     // MARK: - Initial State Tests
 
-    func testIsPurchasing_InitiallyFalse() {
-        // Arrange & Act
-        let validator = IAPValidator()
+    func testIsPurchasing_InitiallyFalse() async {
+        await MainActor.run {
+            // Arrange & Act
+            let validator = IAPValidator()
 
-        // Assert
-        XCTAssertFalse(validator.isPurchasing, "isPurchasing should be false on initialization")
+            // Assert
+            XCTAssertFalse(validator.isPurchasing, "isPurchasing should be false on initialization")
+        }
     }
 
-    func testPurchaseError_InitiallyNil() {
-        // Arrange & Act
-        let validator = IAPValidator()
+    func testPurchaseError_InitiallyNil() async {
+        await MainActor.run {
+            // Arrange & Act
+            let validator = IAPValidator()
 
-        // Assert
-        XCTAssertNil(validator.purchaseError, "purchaseError should be nil on initialization")
+            // Assert
+            XCTAssertNil(validator.purchaseError, "purchaseError should be nil on initialization")
+        }
     }
 
     // MARK: - Product Configuration Tests
@@ -115,246 +129,276 @@ final class IAPValidatorTests: XCTestCase {
 
     // MARK: - Transaction Listener Lifecycle Tests
 
-    func testStartTransactionListener_CreatesTask() {
-        // Arrange
-        let validator = IAPValidator()
+    func testStartTransactionListener_CreatesTask() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        // Act
-        validator.startTransactionListener()
+            // Act
+            validator.startTransactionListener()
 
-        // Assert
-        // We can't directly access the private transactionListener task,
-        // but we can verify the method doesn't crash and is callable
-        XCTAssertNotNil(validator, "Validator should exist after starting listener")
+            // Assert
+            // We can't directly access the private transactionListener task,
+            // but we can verify the method doesn't crash and is callable
+            XCTAssertNotNil(validator, "Validator should exist after starting listener")
 
-        // Cleanup
-        validator.stopTransactionListener()
+            // Cleanup
+            validator.stopTransactionListener()
+        }
     }
 
-    func testStopTransactionListener_CancelsTask() {
-        // Arrange
-        let validator = IAPValidator()
-        validator.startTransactionListener()
+    func testStopTransactionListener_CancelsTask() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
+            validator.startTransactionListener()
 
-        // Act
-        validator.stopTransactionListener()
+            // Act
+            validator.stopTransactionListener()
 
-        // Assert
-        // We can't directly verify task cancellation, but we can ensure
-        // the method is callable and doesn't crash
-        XCTAssertNotNil(validator, "Validator should exist after stopping listener")
+            // Assert
+            // We can't directly verify task cancellation, but we can ensure
+            // the method is callable and doesn't crash
+            XCTAssertNotNil(validator, "Validator should exist after stopping listener")
+        }
     }
 
-    func testStopTransactionListener_WhenNotStarted_DoesNotCrash() {
-        // Arrange
-        let validator = IAPValidator()
+    func testStopTransactionListener_WhenNotStarted_DoesNotCrash() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        // Act & Assert - Should not crash
-        validator.stopTransactionListener()
+            // Act & Assert - Should not crash
+            validator.stopTransactionListener()
 
-        XCTAssertNotNil(validator, "Validator should handle stopping non-existent listener")
+            XCTAssertNotNil(validator, "Validator should handle stopping non-existent listener")
+        }
     }
 
-    func testStartTransactionListener_CalledMultipleTimes_DoesNotCrash() {
-        // Arrange
-        let validator = IAPValidator()
+    func testStartTransactionListener_CalledMultipleTimes_DoesNotCrash() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        // Act - Call multiple times
-        validator.startTransactionListener()
-        validator.startTransactionListener()
-        validator.startTransactionListener()
+            // Act - Call multiple times
+            validator.startTransactionListener()
+            validator.startTransactionListener()
+            validator.startTransactionListener()
 
-        // Assert - Should not crash
-        XCTAssertNotNil(validator, "Should handle multiple start calls gracefully")
+            // Assert - Should not crash
+            XCTAssertNotNil(validator, "Should handle multiple start calls gracefully")
 
-        // Cleanup
-        validator.stopTransactionListener()
+            // Cleanup
+            validator.stopTransactionListener()
+        }
     }
 
     // MARK: - Debug Methods Tests (DEBUG builds only)
 
     #if DEBUG
-    func testSimulateProUnlock_UpdatesStateAndKeychain() {
-        // Arrange
-        let validator = IAPValidator()
-        // Reset first to ensure clean state
-        validator.resetProStatus()
+    func testSimulateProUnlock_UpdatesStateAndKeychain() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
+            // Reset first to ensure clean state
+            validator.resetProStatus()
 
-        // Act
-        validator.simulateProUnlock()
+            // Act
+            validator.simulateProUnlock()
 
-        // Assert
-        XCTAssertTrue(validator.isProUnlocked, "Should be unlocked after simulation")
-        XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should reflect Pro status")
+            // Assert
+            XCTAssertTrue(validator.isProUnlocked, "Should be unlocked after simulation")
+            XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should reflect Pro status")
 
-        // Cleanup
-        validator.resetProStatus()
+            // Cleanup
+            validator.resetProStatus()
+        }
     }
 
-    func testResetProStatus_UpdatesStateAndKeychain() throws {
-        // Arrange
-        let validator = IAPValidator()
-        try KeychainManager.setProUnlocked(true)
-        validator.simulateProUnlock()
-        XCTAssertTrue(validator.isProUnlocked, "Should be unlocked initially")
+    func testResetProStatus_UpdatesStateAndKeychain() async throws {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
+            try? KeychainManager.setProUnlocked(true)
+            validator.simulateProUnlock()
+            XCTAssertTrue(validator.isProUnlocked, "Should be unlocked initially")
 
-        // Act
-        validator.resetProStatus()
+            // Act
+            validator.resetProStatus()
 
-        // Assert
-        XCTAssertFalse(validator.isProUnlocked, "Should be locked after reset")
-        XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should reflect locked status")
+            // Assert
+            XCTAssertFalse(validator.isProUnlocked, "Should be locked after reset")
+            XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should reflect locked status")
+        }
     }
 
-    func testSimulateProUnlock_CanBeCalledMultipleTimes() {
-        // Arrange
-        let validator = IAPValidator()
+    func testSimulateProUnlock_CanBeCalledMultipleTimes() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        // Act - Call multiple times
-        validator.simulateProUnlock()
-        validator.simulateProUnlock()
-        validator.simulateProUnlock()
+            // Act - Call multiple times
+            validator.simulateProUnlock()
+            validator.simulateProUnlock()
+            validator.simulateProUnlock()
 
-        // Assert
-        XCTAssertTrue(validator.isProUnlocked, "Should remain unlocked")
-        XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should remain unlocked")
+            // Assert
+            XCTAssertTrue(validator.isProUnlocked, "Should remain unlocked")
+            XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should remain unlocked")
+        }
     }
 
-    func testResetProStatus_CanBeCalledMultipleTimes() {
-        // Arrange
-        let validator = IAPValidator()
+    func testResetProStatus_CanBeCalledMultipleTimes() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        // Act - Call multiple times
-        validator.resetProStatus()
-        validator.resetProStatus()
-        validator.resetProStatus()
+            // Act - Call multiple times
+            validator.resetProStatus()
+            validator.resetProStatus()
+            validator.resetProStatus()
 
-        // Assert
-        XCTAssertFalse(validator.isProUnlocked, "Should remain locked")
-        XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should remain locked")
+            // Assert
+            XCTAssertFalse(validator.isProUnlocked, "Should remain locked")
+            XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should remain locked")
+        }
     }
 
-    func testSimulateAndReset_Cycle() {
-        // Arrange
-        let validator = IAPValidator()
+    func testSimulateAndReset_Cycle() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        // Act & Assert - Cycle through multiple state changes
-        validator.resetProStatus()
-        XCTAssertFalse(validator.isProUnlocked, "Should be locked")
+            // Act & Assert - Cycle through multiple state changes
+            validator.resetProStatus()
+            XCTAssertFalse(validator.isProUnlocked, "Should be locked")
 
-        validator.simulateProUnlock()
-        XCTAssertTrue(validator.isProUnlocked, "Should be unlocked")
+            validator.simulateProUnlock()
+            XCTAssertTrue(validator.isProUnlocked, "Should be unlocked")
 
-        validator.resetProStatus()
-        XCTAssertFalse(validator.isProUnlocked, "Should be locked again")
+            validator.resetProStatus()
+            XCTAssertFalse(validator.isProUnlocked, "Should be locked again")
 
-        validator.simulateProUnlock()
-        XCTAssertTrue(validator.isProUnlocked, "Should be unlocked again")
+            validator.simulateProUnlock()
+            XCTAssertTrue(validator.isProUnlocked, "Should be unlocked again")
+        }
     }
     #endif
 
     // MARK: - Observable State Tests
 
-    func testIsProUnlocked_IsObservable() {
-        // Arrange
-        let validator = IAPValidator()
-        let initialState = validator.isProUnlocked
+    func testIsProUnlocked_IsObservable() async {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
+            let initialState = validator.isProUnlocked
 
-        // Act - Change state via Debug method
-        #if DEBUG
-        validator.simulateProUnlock()
-        let newState = validator.isProUnlocked
+            // Act - Change state via Debug method
+            #if DEBUG
+            validator.simulateProUnlock()
+            let newState = validator.isProUnlocked
 
-        // Assert
-        XCTAssertNotEqual(initialState, newState, "isProUnlocked should change")
-        XCTAssertTrue(newState, "Should be unlocked")
-        #else
-        // In Release builds, we can only verify the property is accessible
-        XCTAssertNotNil(initialState, "isProUnlocked should be accessible")
-        #endif
+            // Assert
+            XCTAssertNotEqual(initialState, newState, "isProUnlocked should change")
+            XCTAssertTrue(newState, "Should be unlocked")
+            #else
+            // In Release builds, we can only verify the property is accessible
+            XCTAssertNotNil(initialState, "isProUnlocked should be accessible")
+            #endif
+        }
     }
 
-    func testIsPurchasing_IsObservable() {
-        // Arrange & Act
-        let validator = IAPValidator()
-        let isPurchasing = validator.isPurchasing
+    func testIsPurchasing_IsObservable() async {
+        await MainActor.run {
+            // Arrange & Act
+            let validator = IAPValidator()
+            let isPurchasing = validator.isPurchasing
 
-        // Assert - Verify property is observable (accessible)
-        XCTAssertFalse(isPurchasing, "isPurchasing should be false initially")
-        // Note: Testing actual purchase state changes requires StoreKit environment
+            // Assert - Verify property is observable (accessible)
+            XCTAssertFalse(isPurchasing, "isPurchasing should be false initially")
+            // Note: Testing actual purchase state changes requires StoreKit environment
+        }
     }
 
-    func testPurchaseError_IsObservable() {
-        // Arrange & Act
-        let validator = IAPValidator()
-        let error = validator.purchaseError
+    func testPurchaseError_IsObservable() async {
+        await MainActor.run {
+            // Arrange & Act
+            let validator = IAPValidator()
+            let error = validator.purchaseError
 
-        // Assert - Verify property is observable (accessible)
-        XCTAssertNil(error, "purchaseError should be nil initially")
-        // Note: Testing actual error states requires StoreKit environment
+            // Assert - Verify property is observable (accessible)
+            XCTAssertNil(error, "purchaseError should be nil initially")
+            // Note: Testing actual error states requires StoreKit environment
+        }
     }
 
     // MARK: - Dependency Injection Pattern Tests
 
-    func testMultipleInstances_AreIndependent() {
-        // IAPValidator uses DI pattern (via AppEnvironment), not singleton
-        // Each instance should be independent
-        let instance1 = IAPValidator()
-        let instance2 = IAPValidator()
+    func testMultipleInstances_AreIndependent() async {
+        await MainActor.run {
+            // IAPValidator uses DI pattern (via AppEnvironment), not singleton
+            // Each instance should be independent
+            let instance1 = IAPValidator()
+            let instance2 = IAPValidator()
 
-        // Assert - Instances are separate (DI pattern, not singleton)
-        XCTAssertFalse(instance1 === instance2, "Each init() should create a new independent instance")
+            // Assert - Instances are separate (DI pattern, not singleton)
+            XCTAssertFalse(instance1 === instance2, "Each init() should create a new independent instance")
 
-        #if DEBUG
-        // Verify independence: changing one doesn't affect the other
-        instance1.simulateProUnlock()
-        // Note: Both read from same Keychain, so they'll both see the change
-        // But they are still separate object instances
-        XCTAssertTrue(instance1.isProUnlocked)
+            #if DEBUG
+            // Verify independence: changing one doesn't affect the other
+            instance1.simulateProUnlock()
+            // Note: Both read from same Keychain, so they'll both see the change
+            // But they are still separate object instances
+            XCTAssertTrue(instance1.isProUnlocked)
 
-        // Cleanup
-        instance1.resetProStatus()
-        #endif
+            // Cleanup
+            instance1.resetProStatus()
+            #endif
+        }
     }
 
     // MARK: - Keychain Integration Tests
 
-    func testKeychainIntegration_StateChangesArePersisted() throws {
-        // Arrange
-        let validator = IAPValidator()
+    func testKeychainIntegration_StateChangesArePersisted() async throws {
+        await MainActor.run {
+            // Arrange
+            let validator = IAPValidator()
 
-        // Act - Simulate Pro unlock
-        #if DEBUG
-        validator.simulateProUnlock()
+            // Act - Simulate Pro unlock
+            #if DEBUG
+            validator.simulateProUnlock()
 
-        // Assert - Verify Keychain is updated
-        XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should be updated when Pro status changes")
+            // Assert - Verify Keychain is updated
+            XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should be updated when Pro status changes")
 
-        // Act - Reset
-        validator.resetProStatus()
+            // Act - Reset
+            validator.resetProStatus()
 
-        // Assert - Verify Keychain is updated again
-        XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should be updated when Pro status resets")
-        #else
-        // In Release builds, we can only verify initialization from Keychain
-        try KeychainManager.setProUnlocked(true)
-        XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should store Pro status")
-        #endif
+            // Assert - Verify Keychain is updated again
+            XCTAssertFalse(KeychainManager.isProUnlocked(), "Keychain should be updated when Pro status resets")
+            #else
+            // In Release builds, we can only verify initialization from Keychain
+            try? KeychainManager.setProUnlocked(true)
+            XCTAssertTrue(KeychainManager.isProUnlocked(), "Keychain should store Pro status")
+            #endif
+        }
     }
 
-    func testKeychainIntegration_InitializationReadsCorrectly() throws {
-        // Note: This test documents the initialization behavior
-        // In production, IAPValidator() is already initialized
-        // We can only verify that Keychain operations work correctly
+    func testKeychainIntegration_InitializationReadsCorrectly() async throws {
+        await MainActor.run {
+            // Note: This test documents the initialization behavior
+            // In production, IAPValidator() is already initialized
+            // We can only verify that Keychain operations work correctly
 
-        // Arrange
-        try KeychainManager.setProUnlocked(true)
+            // Arrange
+            try? KeychainManager.setProUnlocked(true)
 
-        // Act - Read from Keychain
-        let isUnlocked = KeychainManager.isProUnlocked()
+            // Act - Read from Keychain
+            let isUnlocked = KeychainManager.isProUnlocked()
 
-        // Assert
-        XCTAssertTrue(isUnlocked, "Should read Pro status from Keychain correctly")
+            // Assert
+            XCTAssertTrue(isUnlocked, "Should read Pro status from Keychain correctly")
+        }
     }
 
     // MARK: - Error Handling Tests

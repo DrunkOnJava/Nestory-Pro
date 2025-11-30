@@ -474,114 +474,128 @@ final class BackupServiceTests: XCTestCase {
     // MARK: - Restore Result Tests
 
     func testRestoreResult_SummaryText_NoData() async {
-        // Arrange
-        let result = RestoreResult(
-            itemsRestored: 0,
-            categoriesRestored: 0,
-            roomsRestored: 0,
-            receiptsRestored: 0,
-            errors: []
-        )
+        await MainActor.run {
+            // Arrange
+            let result = RestoreResult(
+                itemsRestored: 0,
+                categoriesRestored: 0,
+                roomsRestored: 0,
+                receiptsRestored: 0,
+                errors: []
+            )
 
-        // Assert
-        XCTAssertEqual(result.summaryText, "No data was restored.")
+            // Assert
+            XCTAssertEqual(result.summaryText, "No data was restored.")
+        }
     }
 
     func testRestoreResult_SummaryText_SingleItems() async {
-        // Arrange
-        let result = RestoreResult(
-            itemsRestored: 1,
-            categoriesRestored: 1,
-            roomsRestored: 1,
-            receiptsRestored: 1,
-            errors: []
-        )
+        await MainActor.run {
+            // Arrange
+            let result = RestoreResult(
+                itemsRestored: 1,
+                categoriesRestored: 1,
+                roomsRestored: 1,
+                receiptsRestored: 1,
+                errors: []
+            )
 
-        // Assert
-        XCTAssertTrue(result.summaryText.contains("1 item"))
-        XCTAssertTrue(result.summaryText.contains("1 category"))
-        XCTAssertTrue(result.summaryText.contains("1 room"))
-        XCTAssertTrue(result.summaryText.contains("1 receipt"))
-        XCTAssertFalse(result.summaryText.contains("error"))
+            // Assert
+            XCTAssertTrue(result.summaryText.contains("1 item"))
+            XCTAssertTrue(result.summaryText.contains("1 category"))
+            XCTAssertTrue(result.summaryText.contains("1 room"))
+            XCTAssertTrue(result.summaryText.contains("1 receipt"))
+            XCTAssertFalse(result.summaryText.contains("error"))
+        }
     }
 
     func testRestoreResult_SummaryText_MultipleItems() async {
-        // Arrange
-        let result = RestoreResult(
-            itemsRestored: 5,
-            categoriesRestored: 3,
-            roomsRestored: 2,
-            receiptsRestored: 4,
-            errors: []
-        )
+        await MainActor.run {
+            // Arrange
+            let result = RestoreResult(
+                itemsRestored: 5,
+                categoriesRestored: 3,
+                roomsRestored: 2,
+                receiptsRestored: 4,
+                errors: []
+            )
 
-        // Assert
-        XCTAssertTrue(result.summaryText.contains("5 items"))
-        XCTAssertTrue(result.summaryText.contains("3 categories"))
-        XCTAssertTrue(result.summaryText.contains("2 rooms"))
-        XCTAssertTrue(result.summaryText.contains("4 receipts"))
+            // Assert
+            XCTAssertTrue(result.summaryText.contains("5 items"))
+            XCTAssertTrue(result.summaryText.contains("3 categories"))
+            XCTAssertTrue(result.summaryText.contains("2 rooms"))
+            XCTAssertTrue(result.summaryText.contains("4 receipts"))
+        }
     }
 
     func testRestoreResult_SummaryText_WithErrors() async {
-        // Arrange
-        let result = RestoreResult(
-            itemsRestored: 5,
-            categoriesRestored: 0,
-            roomsRestored: 0,
-            receiptsRestored: 0,
-            errors: [
-                ImportError(type: .validationFailed, description: "Error 1"),
-                ImportError(type: .validationFailed, description: "Error 2")
-            ]
-        )
+        await MainActor.run {
+            // Arrange
+            let result = RestoreResult(
+                itemsRestored: 5,
+                categoriesRestored: 0,
+                roomsRestored: 0,
+                receiptsRestored: 0,
+                errors: [
+                    ImportError(type: .validationFailed, description: "Error 1"),
+                    ImportError(type: .validationFailed, description: "Error 2")
+                ]
+            )
 
-        // Assert
-        XCTAssertTrue(result.summaryText.contains("5 items"))
-        XCTAssertTrue(result.summaryText.contains("2 errors"))
+            // Assert
+            XCTAssertTrue(result.summaryText.contains("5 items"))
+            XCTAssertTrue(result.summaryText.contains("2 errors"))
+        }
     }
 
     // MARK: - Restore Strategy Tests
 
     func testRestoreStrategy_HasCorrectDescriptions() async {
-        // Assert
-        XCTAssertFalse(RestoreStrategy.merge.description.isEmpty)
-        XCTAssertFalse(RestoreStrategy.replace.description.isEmpty)
-        XCTAssertNotEqual(RestoreStrategy.merge.description, RestoreStrategy.replace.description)
+        await MainActor.run {
+            // Assert
+            XCTAssertFalse(RestoreStrategy.merge.description.isEmpty)
+            XCTAssertFalse(RestoreStrategy.replace.description.isEmpty)
+            XCTAssertNotEqual(RestoreStrategy.merge.description, RestoreStrategy.replace.description)
+        }
     }
 
     // MARK: - ImportResult Tests
 
     func testImportResult_SuccessCount_CalculatesCorrectly() async {
-        // Arrange
-        let result = ImportResult(
-            itemsImported: 10,
-            categoriesImported: 5,
-            roomsImported: 3,
-            errors: []
-        )
+        await MainActor.run {
+            // Arrange
+            let result = ImportResult(
+                itemsImported: 10,
+                categoriesImported: 5,
+                roomsImported: 3,
+                errors: []
+            )
 
-        // Assert
-        XCTAssertEqual(result.successCount, 18)
+            // Assert
+            XCTAssertEqual(result.successCount, 18)
+        }
     }
 
     func testImportResult_HasErrors_TrueWhenErrorsExist() async {
-        // Arrange
-        let resultWithErrors = ImportResult(
-            itemsImported: 5,
-            categoriesImported: 2,
-            roomsImported: 1,
-            errors: [ImportError(type: .validationFailed, description: "Test error")]
-        )
+        await MainActor.run {
+            // Arrange
+            let resultWithErrors = ImportResult(
+                itemsImported: 5,
+                categoriesImported: 2,
+                roomsImported: 1,
+                errors: [ImportError(type: .validationFailed, description: "Test error")]
+            )
 
-        let resultNoErrors = ImportResult(
-            itemsImported: 5,
-            categoriesImported: 2,
-            roomsImported: 1,
-            errors: []
-        )
+            let resultNoErrors = ImportResult(
+                itemsImported: 5,
+                categoriesImported: 2,
+                roomsImported: 1,
+                errors: []
+            )
 
-        // Assert
-        XCTAssertTrue(resultWithErrors.hasErrors)
-        XCTAssertFalse(resultNoErrors.hasErrors)
+            // Assert
+            XCTAssertTrue(resultWithErrors.hasErrors)
+            XCTAssertFalse(resultNoErrors.hasErrors)
+        }
     }
 }

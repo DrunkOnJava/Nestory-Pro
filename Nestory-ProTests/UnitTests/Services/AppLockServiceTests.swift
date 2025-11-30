@@ -59,31 +59,41 @@ final class AppLockServiceTests: XCTestCase {
 
     // MARK: - BiometricType Enum Tests
 
-    func testBiometricType_DisplayName_FaceID() {
-        // Assert
-        XCTAssertEqual(BiometricType.faceID.displayName, "Face ID")
+    func testBiometricType_DisplayName_FaceID() async {
+        await MainActor.run {
+            // Assert
+            XCTAssertEqual(BiometricType.faceID.displayName, "Face ID")
+        }
     }
 
-    func testBiometricType_DisplayName_TouchID() {
-        // Assert
-        XCTAssertEqual(BiometricType.touchID.displayName, "Touch ID")
+    func testBiometricType_DisplayName_TouchID() async {
+        await MainActor.run {
+            // Assert
+            XCTAssertEqual(BiometricType.touchID.displayName, "Touch ID")
+        }
     }
 
-    func testBiometricType_DisplayName_OpticID() {
-        // Assert
-        XCTAssertEqual(BiometricType.opticID.displayName, "Optic ID")
+    func testBiometricType_DisplayName_OpticID() async {
+        await MainActor.run {
+            // Assert
+            XCTAssertEqual(BiometricType.opticID.displayName, "Optic ID")
+        }
     }
 
-    func testBiometricType_DisplayName_None() {
-        // Assert - None displays as "None" not "Passcode"
-        XCTAssertEqual(BiometricType.none.displayName, "None")
+    func testBiometricType_DisplayName_None() async {
+        await MainActor.run {
+            // Assert - None displays as "None" not "Passcode"
+            XCTAssertEqual(BiometricType.none.displayName, "None")
+        }
     }
 
     // MARK: - Mock AppLockProviding Tests
 
     func testMockAppLockService_CanBeUsedForTesting() async {
         // Arrange
-        let mockService = MockAppLockService()
+        let mockService = await MainActor.run {
+            MockAppLockService()
+        }
 
         // Act & Assert - Default state
         let isAvailable = await mockService.isBiometricAvailable
@@ -95,10 +105,15 @@ final class AppLockServiceTests: XCTestCase {
 
     func testMockAppLockService_CanConfigureState() async {
         // Arrange
-        let mockService = MockAppLockService()
-        mockService.mockBiometricAvailable = false
-        mockService.mockBiometricType = .touchID
-        mockService.mockAuthenticateResult = true
+        let mockService = await MainActor.run {
+            MockAppLockService()
+        }
+
+        await MainActor.run {
+            mockService.mockBiometricAvailable = false
+            mockService.mockBiometricType = .touchID
+            mockService.mockAuthenticateResult = true
+        }
 
         // Act
         let isAvailable = await mockService.isBiometricAvailable
@@ -113,8 +128,13 @@ final class AppLockServiceTests: XCTestCase {
 
     func testMockAppLockService_AuthenticateFailure() async {
         // Arrange
-        let mockService = MockAppLockService()
-        mockService.mockAuthenticateResult = false
+        let mockService = await MainActor.run {
+            MockAppLockService()
+        }
+
+        await MainActor.run {
+            mockService.mockAuthenticateResult = false
+        }
 
         // Act
         let result = await mockService.authenticate(reason: "Test authentication")
@@ -125,8 +145,13 @@ final class AppLockServiceTests: XCTestCase {
 
     func testMockAppLockService_AuthenticateSuccess() async {
         // Arrange
-        let mockService = MockAppLockService()
-        mockService.mockAuthenticateResult = true
+        let mockService = await MainActor.run {
+            MockAppLockService()
+        }
+
+        await MainActor.run {
+            mockService.mockAuthenticateResult = true
+        }
 
         // Act
         let result = await mockService.authenticate(reason: "Test authentication")
@@ -134,25 +159,30 @@ final class AppLockServiceTests: XCTestCase {
         // Assert
         XCTAssertTrue(result)
     }
-    
+
     func testMockAppLockService_TracksCallCount() async {
         // Arrange
-        let mockService = MockAppLockService()
-        
+        let mockService = await MainActor.run {
+            MockAppLockService()
+        }
+
         // Act
         _ = await mockService.authenticate(reason: "First")
         _ = await mockService.authenticate(reason: "Second")
         _ = await mockService.authenticate(reason: "Third")
-        
+
         // Assert
-        XCTAssertEqual(mockService.authenticateCallCount, 3)
-        XCTAssertEqual(mockService.lastAuthenticateReason, "Third")
+        await MainActor.run {
+            XCTAssertEqual(mockService.authenticateCallCount, 3)
+            XCTAssertEqual(mockService.lastAuthenticateReason, "Third")
+        }
     }
 }
 
 // MARK: - Mock App Lock Service
 
 /// Mock implementation for testing
+@MainActor
 final class MockAppLockService: AppLockProviding {
     var mockBiometricAvailable: Bool = true
     var mockBiometricType: BiometricType = .faceID

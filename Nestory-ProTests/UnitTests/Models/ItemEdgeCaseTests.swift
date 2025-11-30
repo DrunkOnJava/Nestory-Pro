@@ -65,43 +65,51 @@ final class ItemEdgeCaseTests: XCTestCase {
     // MARK: - Decimal Edge Cases
 
     func testItem_ZeroPrice_IsValid() async {
-        // Arrange & Act
-        let item = TestFixtures.testItem(purchasePrice: Decimal(0))
+        await MainActor.run {
+            // Arrange & Act
+            let item = TestFixtures.testItem(purchasePrice: Decimal(0))
 
-        // Assert
-        XCTAssertEqual(item.purchasePrice, Decimal(0))
-        XCTAssertTrue(item.hasValue) // 0 is still a value
+            // Assert
+            XCTAssertEqual(item.purchasePrice, Decimal(0))
+            XCTAssertTrue(item.hasValue) // 0 is still a value
+        }
     }
 
     func testItem_NegativePrice_IsAllowed() async {
-        // Arrange & Act (refunds, credits, etc.)
-        let item = TestFixtures.testItem(purchasePrice: Decimal(-50.00))
+        await MainActor.run {
+            // Arrange & Act (refunds, credits, etc.)
+            let item = TestFixtures.testItem(purchasePrice: Decimal(-50.00))
 
-        // Assert
-        XCTAssertEqual(item.purchasePrice, Decimal(-50.00))
-        XCTAssertTrue(item.hasValue)
+            // Assert
+            XCTAssertEqual(item.purchasePrice, Decimal(-50.00))
+            XCTAssertTrue(item.hasValue)
+        }
     }
 
     func testItem_VeryLargePrice_IsAccepted() async {
-        // Arrange
-        let largePrice = Decimal(999_999_999.99)
+        await MainActor.run {
+            // Arrange
+            let largePrice = Decimal(999_999_999.99)
 
-        // Act
-        let item = TestFixtures.testItem(purchasePrice: largePrice)
+            // Act
+            let item = TestFixtures.testItem(purchasePrice: largePrice)
 
-        // Assert
-        XCTAssertEqual(item.purchasePrice, largePrice)
+            // Assert
+            XCTAssertEqual(item.purchasePrice, largePrice)
+        }
     }
 
     func testItem_ManyDecimalPlaces_IsPreserved() async {
-        // Arrange
-        let precisePrice = Decimal(string: "123.456789")!
+        await MainActor.run {
+            // Arrange
+            let precisePrice = Decimal(string: "123.456789")!
 
-        // Act
-        let item = TestFixtures.testItem(purchasePrice: precisePrice)
+            // Act
+            let item = TestFixtures.testItem(purchasePrice: precisePrice)
 
-        // Assert
-        XCTAssertEqual(item.purchasePrice, precisePrice)
+            // Assert
+            XCTAssertEqual(item.purchasePrice, precisePrice)
+        }
     }
 
     // MARK: - Date Edge Cases
@@ -224,22 +232,24 @@ final class ItemEdgeCaseTests: XCTestCase {
     // MARK: - Documentation Score Edge Cases
 
     func testDocumentationScore_WithOnlyPhoto_Returns0Point30() async throws {
-        // Arrange
-        let container = TestContainer.empty()
-        let context = container.mainContext
+        await MainActor.run {
+            // Arrange
+            let container = TestContainer.empty()
+            let context = container.mainContext
 
-        let item = Item(name: "Photo Only", condition: .good)
-        context.insert(item)
+            let item = Item(name: "Photo Only", condition: .good)
+            context.insert(item)
 
-        let photo = TestFixtures.testItemPhoto()
-        photo.item = item
-        context.insert(photo)
+            let photo = TestFixtures.testItemPhoto()
+            photo.item = item
+            context.insert(photo)
 
-        // Act
-        let score = item.documentationScore
+            // Act
+            let score = item.documentationScore
 
-        // Assert - 6-field weighted scoring: Photo = 30%
-        XCTAssertEqual(score, 0.30, accuracy: 0.001)
+            // Assert - 6-field weighted scoring: Photo = 30%
+            XCTAssertEqual(score, 0.30, accuracy: 0.001)
+        }
     }
 
     func testDocumentationScore_WithOnlyValue_Returns0Point25() async {
@@ -258,47 +268,51 @@ final class ItemEdgeCaseTests: XCTestCase {
     }
 
     func testDocumentationScore_WithOnlyCategory_Returns0Point10() async throws {
-        // Arrange
-        let container = TestContainer.empty()
-        let context = container.mainContext
+        await MainActor.run {
+            // Arrange
+            let container = TestContainer.empty()
+            let context = container.mainContext
 
-        let category = TestFixtures.testCategory()
-        context.insert(category)
+            let category = TestFixtures.testCategory()
+            context.insert(category)
 
-        let item = Item(
-            name: "Category Only",
-            category: category,
-            condition: .good
-        )
-        context.insert(item)
+            let item = Item(
+                name: "Category Only",
+                category: category,
+                condition: .good
+            )
+            context.insert(item)
 
-        // Act
-        let score = item.documentationScore
+            // Act
+            let score = item.documentationScore
 
-        // Assert - 6-field weighted scoring: Category = 10%
-        XCTAssertEqual(score, 0.10, accuracy: 0.001)
+            // Assert - 6-field weighted scoring: Category = 10%
+            XCTAssertEqual(score, 0.10, accuracy: 0.001)
+        }
     }
 
     func testDocumentationScore_WithOnlyRoom_Returns0Point15() async throws {
-        // Arrange
-        let container = TestContainer.empty()
-        let context = container.mainContext
+        await MainActor.run {
+            // Arrange
+            let container = TestContainer.empty()
+            let context = container.mainContext
 
-        let room = TestFixtures.testRoom()
-        context.insert(room)
+            let room = TestFixtures.testRoom()
+            context.insert(room)
 
-        let item = Item(
-            name: "Room Only",
-            room: room,
-            condition: .good
-        )
-        context.insert(item)
+            let item = Item(
+                name: "Room Only",
+                room: room,
+                condition: .good
+            )
+            context.insert(item)
 
-        // Act
-        let score = item.documentationScore
+            // Act
+            let score = item.documentationScore
 
-        // Assert - 6-field weighted scoring: Room = 15%
-        XCTAssertEqual(score, 0.15, accuracy: 0.001)
+            // Assert - 6-field weighted scoring: Room = 15%
+            XCTAssertEqual(score, 0.15, accuracy: 0.001)
+        }
     }
 
     // MARK: - Missing Documentation Edge Cases

@@ -5,12 +5,14 @@
 // Note: UITests intentionally do NOT include Common.xcconfig
 // because XCTestCase methods are nonisolated and conflict with MainActor default isolation
 
-// MARK: - Swift Settings (No MainActor default)
+// MARK: - Swift Settings (No MainActor default for UI tests)
 SWIFT_VERSION = 6.0
 SWIFT_STRICT_CONCURRENCY = complete
 SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full
-// Intentionally NOT setting SWIFT_DEFAULT_ACTOR_ISOLATION for UITests
+SWIFT_APPROACHABLE_CONCURRENCY = YES
+// CRITICAL: Explicitly set nonisolated to override project-level MainActor default
 // XCTestCase lifecycle methods (setUpWithError, tearDownWithError) are nonisolated
+SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated
 
 // MARK: - Warnings (Strict)
 GCC_WARN_64_TO_32_BIT_CONVERSION = YES

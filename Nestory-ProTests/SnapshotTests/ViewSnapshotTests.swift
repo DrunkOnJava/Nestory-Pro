@@ -38,54 +38,42 @@ final class InventorySnapshotTests: XCTestCase {
     }
 
     /// 9.3.1a - Empty inventory state
-    func testInventoryList_Empty() async {
-        await MainActor.run {
-            let container = PreviewContainer.emptyInventory()
+    @MainActor func testInventoryList_Empty() {            let container = PreviewContainer.emptyInventory()
 
             assertViewSnapshot(
                 matching: InventoryTab(),
                 container: container,
                 named: "empty"
             )
-        }
     }
 
     /// 9.3.1b - Inventory with sample items
-    func testInventoryList_WithItems() async {
-        await MainActor.run {
-            let container = PreviewContainer.withSampleData()
+    @MainActor func testInventoryList_WithItems() {            let container = PreviewContainer.withSampleData()
 
             assertViewSnapshot(
                 matching: InventoryTab(),
                 container: container,
                 named: "with_items"
             )
-        }
     }
 
     /// 9.3.1c - Inventory with many items (stress test)
-    func testInventoryList_ManyItems() async {
-        await MainActor.run {
-            let container = PreviewContainer.withManyItems(count: 20)
+    @MainActor func testInventoryList_ManyItems() {            let container = PreviewContainer.withManyItems(count: 20)
 
             assertViewSnapshot(
                 matching: InventoryTab(),
                 container: container,
                 named: "many_items"
             )
-        }
     }
 
     /// 9.3.1d - Multiple device sizes
-    func testInventoryList_MultiDevice() async {
-        await MainActor.run {
-            let container = PreviewContainer.withSampleData()
+    @MainActor func testInventoryList_MultiDevice() {            let container = PreviewContainer.withSampleData()
 
             assertMultiDeviceSnapshot(
                 matching: InventoryTab(),
                 container: container
             )
-        }
     }
 }
 
@@ -94,9 +82,7 @@ final class InventorySnapshotTests: XCTestCase {
 final class ItemDetailSnapshotTests: XCTestCase {
 
     /// 9.3.2a - Item with full details
-    func testItemDetail_FullyDocumented() async {
-        await MainActor.run {
-            let container = PreviewContainer.withSampleData()
+    @MainActor func testItemDetail_FullyDocumented() {            let container = PreviewContainer.withSampleData()
             let context = container.mainContext
 
             // Get first item from sample data
@@ -111,13 +97,10 @@ final class ItemDetailSnapshotTests: XCTestCase {
                 container: container,
                 named: "fully_documented"
             )
-        }
     }
 
     /// 9.3.2b - Item with minimal data
-    func testItemDetail_MinimalData() async {
-        await MainActor.run {
-            let container = PreviewContainer.withBasicData()
+    @MainActor func testItemDetail_MinimalData() {            let container = PreviewContainer.withBasicData()
             let context = container.mainContext
 
             // Create minimal item
@@ -133,13 +116,10 @@ final class ItemDetailSnapshotTests: XCTestCase {
                 container: container,
                 named: "minimal_data"
             )
-        }
     }
 
     /// 9.3.2c - Multiple device sizes
-    func testItemDetail_MultiDevice() async {
-        await MainActor.run {
-            let container = PreviewContainer.withSampleData()
+    @MainActor func testItemDetail_MultiDevice() {            let container = PreviewContainer.withSampleData()
             let context = container.mainContext
 
             let descriptor = FetchDescriptor<Item>()
@@ -152,7 +132,6 @@ final class ItemDetailSnapshotTests: XCTestCase {
                 matching: ItemDetailView(item: item),
                 container: container
             )
-        }
     }
 }
 
@@ -161,9 +140,7 @@ final class ItemDetailSnapshotTests: XCTestCase {
 final class PaywallSnapshotTests: XCTestCase {
 
     /// 9.3.3a - Item limit paywall (Free user)
-    func testPaywall_ItemLimit_Free() async {
-        await MainActor.run {
-            let container = PreviewContainer.empty()
+    @MainActor func testPaywall_ItemLimit_Free() {            let container = PreviewContainer.empty()
 
             assertViewSnapshot(
                 matching: ContextualPaywallSheet(context: .itemLimit),
@@ -171,13 +148,10 @@ final class PaywallSnapshotTests: XCTestCase {
                 named: "item_limit_free",
                 isProUnlocked: false
             )
-        }
     }
 
     /// 9.3.3b - Loss list limit paywall
-    func testPaywall_LossListLimit() async {
-        await MainActor.run {
-            let container = PreviewContainer.empty()
+    @MainActor func testPaywall_LossListLimit() {            let container = PreviewContainer.empty()
 
             assertViewSnapshot(
                 matching: ContextualPaywallSheet(context: .lossListLimit),
@@ -185,13 +159,10 @@ final class PaywallSnapshotTests: XCTestCase {
                 named: "loss_list_limit",
                 isProUnlocked: false
             )
-        }
     }
 
     /// 9.3.3c - Photos in PDF paywall
-    func testPaywall_PhotosInPDF() async {
-        await MainActor.run {
-            let container = PreviewContainer.empty()
+    @MainActor func testPaywall_PhotosInPDF() {            let container = PreviewContainer.empty()
 
             assertViewSnapshot(
                 matching: ContextualPaywallSheet(context: .photosInPDF),
@@ -199,13 +170,10 @@ final class PaywallSnapshotTests: XCTestCase {
                 named: "photos_in_pdf",
                 isProUnlocked: false
             )
-        }
     }
 
     /// 9.3.3d - CSV export paywall
-    func testPaywall_CSVExport() async {
-        await MainActor.run {
-            let container = PreviewContainer.empty()
+    @MainActor func testPaywall_CSVExport() {            let container = PreviewContainer.empty()
 
             assertViewSnapshot(
                 matching: ContextualPaywallSheet(context: .csvExport),
@@ -213,13 +181,10 @@ final class PaywallSnapshotTests: XCTestCase {
                 named: "csv_export",
                 isProUnlocked: false
             )
-        }
     }
 
     /// 9.3.3e - Already Pro state
-    func testPaywall_AlreadyPro() async {
-        await MainActor.run {
-            let container = PreviewContainer.empty()
+    @MainActor func testPaywall_AlreadyPro() {            let container = PreviewContainer.empty()
 
             assertViewSnapshot(
                 matching: ContextualPaywallSheet(context: .itemLimit),
@@ -227,20 +192,16 @@ final class PaywallSnapshotTests: XCTestCase {
                 named: "already_pro",
                 isProUnlocked: true
             )
-        }
     }
 
     /// 9.3.3f - Multiple device sizes
-    func testPaywall_MultiDevice() async {
-        await MainActor.run {
-            let container = PreviewContainer.empty()
+    @MainActor func testPaywall_MultiDevice() {            let container = PreviewContainer.empty()
 
             assertMultiDeviceSnapshot(
                 matching: ContextualPaywallSheet(context: .itemLimit),
                 container: container,
                 isProUnlocked: false
             )
-        }
     }
 }
 
@@ -249,40 +210,31 @@ final class PaywallSnapshotTests: XCTestCase {
 final class ReportsSnapshotTests: XCTestCase {
 
     /// 9.3.4a - Reports with items
-    func testReportsTab_WithItems() async {
-        await MainActor.run {
-            let container = PreviewContainer.withSampleData()
+    @MainActor func testReportsTab_WithItems() {            let container = PreviewContainer.withSampleData()
 
             assertViewSnapshot(
                 matching: ReportsTab(),
                 container: container,
                 named: "with_items"
             )
-        }
     }
 
     /// 9.3.4b - Reports empty inventory
-    func testReportsTab_Empty() async {
-        await MainActor.run {
-            let container = PreviewContainer.emptyInventory()
+    @MainActor func testReportsTab_Empty() {            let container = PreviewContainer.emptyInventory()
 
             assertViewSnapshot(
                 matching: ReportsTab(),
                 container: container,
                 named: "empty"
             )
-        }
     }
 
     /// 9.3.4c - Multiple device sizes
-    func testReportsTab_MultiDevice() async {
-        await MainActor.run {
-            let container = PreviewContainer.withSampleData()
+    @MainActor func testReportsTab_MultiDevice() {            let container = PreviewContainer.withSampleData()
 
             assertMultiDeviceSnapshot(
                 matching: ReportsTab(),
                 container: container
             )
-        }
     }
 }

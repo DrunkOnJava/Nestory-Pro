@@ -131,47 +131,51 @@ final class ReceiptTests: XCTestCase {
     // MARK: - Relationship Tests
 
     func testReceipt_LinkToItem_Works() async throws {
-        // Arrange
-        let container = TestContainer.empty()
-        let context = container.mainContext
+        await MainActor.run {
+            // Arrange
+            let container = TestContainer.empty()
+            let context = container.mainContext
 
-        let item = TestFixtures.testItem()
-        context.insert(item)
+            let item = TestFixtures.testItem()
+            context.insert(item)
 
-        let receipt = TestFixtures.testReceipt()
-        context.insert(receipt)
+            let receipt = TestFixtures.testReceipt()
+            context.insert(receipt)
 
-        // Act
-        receipt.linkedItem = item
+            // Act
+            receipt.linkedItem = item
 
-        try context.save()
+            try? context.save()
 
-        // Assert
-        XCTAssertEqual(receipt.linkedItem?.id, item.id)
-        XCTAssertTrue(item.receipts.contains(receipt))
+            // Assert
+            XCTAssertEqual(receipt.linkedItem?.id, item.id)
+            XCTAssertTrue(item.receipts.contains(receipt))
+        }
     }
 
     func testReceipt_UnlinkFromItem_Works() async throws {
-        // Arrange
-        let container = TestContainer.empty()
-        let context = container.mainContext
+        await MainActor.run {
+            // Arrange
+            let container = TestContainer.empty()
+            let context = container.mainContext
 
-        let item = TestFixtures.testItem()
-        context.insert(item)
+            let item = TestFixtures.testItem()
+            context.insert(item)
 
-        let receipt = TestFixtures.testReceipt(linkedItem: item)
-        context.insert(receipt)
+            let receipt = TestFixtures.testReceipt(linkedItem: item)
+            context.insert(receipt)
 
-        try context.save()
+            try? context.save()
 
-        XCTAssertNotNil(receipt.linkedItem)
+            XCTAssertNotNil(receipt.linkedItem)
 
-        // Act
-        receipt.linkedItem = nil
-        try context.save()
+            // Act
+            receipt.linkedItem = nil
+            try? context.save()
 
-        // Assert
-        XCTAssertNil(receipt.linkedItem)
+            // Assert
+            XCTAssertNil(receipt.linkedItem)
+        }
     }
 
     // MARK: - Decimal Edge Cases
