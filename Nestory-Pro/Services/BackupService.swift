@@ -602,7 +602,8 @@ actor BackupService {
 // MARK: - Export Data Structures
 
 /// Root backup data structure
-struct BackupData: Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct BackupData: Codable, Sendable {
     let exportDate: String
     let appVersion: String
     let items: [ItemExport]
@@ -611,35 +612,9 @@ struct BackupData: Sendable {
     let receipts: [ReceiptExport]
 }
 
-/// Explicit Codable implementation to avoid MainActor isolation issues in Swift 6
-extension BackupData: Codable {
-    enum CodingKeys: String, CodingKey {
-        case exportDate, appVersion, items, categories, rooms, receipts
-    }
-    
-    nonisolated init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        exportDate = try container.decode(String.self, forKey: .exportDate)
-        appVersion = try container.decode(String.self, forKey: .appVersion)
-        items = try container.decode([ItemExport].self, forKey: .items)
-        categories = try container.decode([CategoryExport].self, forKey: .categories)
-        rooms = try container.decode([RoomExport].self, forKey: .rooms)
-        receipts = try container.decode([ReceiptExport].self, forKey: .receipts)
-    }
-    
-    nonisolated func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(exportDate, forKey: .exportDate)
-        try container.encode(appVersion, forKey: .appVersion)
-        try container.encode(items, forKey: .items)
-        try container.encode(categories, forKey: .categories)
-        try container.encode(rooms, forKey: .rooms)
-        try container.encode(receipts, forKey: .receipts)
-    }
-}
-
 /// Flattened item export with relationship names
-struct ItemExport: Codable, Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct ItemExport: Codable, Sendable {
     let id: UUID
     let name: String
     let brand: String?
@@ -692,7 +667,8 @@ extension ItemExport {
 }
 
 /// Category export
-struct CategoryExport: Codable, Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct CategoryExport: Codable, Sendable {
     let id: UUID
     let name: String
     let iconName: String
@@ -717,7 +693,8 @@ extension CategoryExport {
 }
 
 /// Room export
-struct RoomExport: Codable, Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct RoomExport: Codable, Sendable {
     let id: UUID
     let name: String
     let iconName: String
@@ -740,7 +717,8 @@ extension RoomExport {
 }
 
 /// Receipt export
-struct ReceiptExport: Codable, Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct ReceiptExport: Codable, Sendable {
     let id: UUID
     let vendor: String?
     let total: Decimal?
@@ -775,7 +753,8 @@ extension ReceiptExport {
 // MARK: - Import Result
 
 /// Result of import operation with counts and errors
-struct ImportResult: Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct ImportResult: Sendable {
     let itemsImported: Int
     let categoriesImported: Int
     let roomsImported: Int
@@ -786,7 +765,8 @@ struct ImportResult: Sendable {
 }
 
 /// Result of restore operation with counts and errors
-struct RestoreResult: Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct RestoreResult: Sendable {
     let itemsRestored: Int
     let categoriesRestored: Int
     let roomsRestored: Int
@@ -841,7 +821,8 @@ enum RestoreStrategy: String, Sendable, CaseIterable {
 }
 
 /// Import error detail
-struct ImportError: Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct ImportError: Sendable {
     enum ErrorType {
         case validationFailed
         case duplicateId
@@ -1231,7 +1212,8 @@ extension BackupService {
 }
 
 /// Result of ZIP restore operation with counts including photos
-struct ZIPRestoreResult: Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct ZIPRestoreResult: Sendable {
     let itemsRestored: Int
     let categoriesRestored: Int
     let roomsRestored: Int
@@ -1297,15 +1279,15 @@ enum BackupError: LocalizedError {
 // MARK: - Codable Helper
 
 /// Nonisolated helper to perform JSON encoding/decoding outside of actor isolation
-private enum BackupCodableHelper: Sendable {
-    nonisolated static func encode(_ data: BackupData) throws -> Data {
+nonisolated private enum BackupCodableHelper: Sendable {
+    static func encode(_ data: BackupData) throws -> Data {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         encoder.dateEncodingStrategy = .iso8601
         return try encoder.encode(data)
     }
     
-    nonisolated static func decode(from jsonData: Data) throws -> BackupData {
+    static func decode(from jsonData: Data) throws -> BackupData {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         return try decoder.decode(BackupData.self, from: jsonData)
