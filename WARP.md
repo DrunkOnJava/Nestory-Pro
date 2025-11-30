@@ -165,6 +165,12 @@ Nestory-Pro/
 ├── Nestory-ProUITests/         # UI automation tests
 │   ├── Flows/
 │   └── TestUtilities/
+├── Config/                     # Build configuration (v1.1+)
+│   ├── Common.xcconfig        # Shared settings (team, versioning, Swift)
+│   ├── Debug.xcconfig         # Debug: sanitizers, testability
+│   ├── Beta.xcconfig          # TestFlight: optimized with debug symbols
+│   ├── Release.xcconfig       # App Store: full optimization
+│   └── Tests.xcconfig         # Test targets: sanitizers enabled
 ├── fastlane/                   # Deployment automation
 │   ├── Fastfile                # Lanes: test, beta, release, bump_version
 │   ├── Appfile                 # App ID, Apple ID, Team ID
@@ -209,6 +215,41 @@ An item is "documented" when it has the 4 core fields:
 - Category: 10%
 - Receipt: 10%
 - Serial Number: 10%
+
+## Build Configuration (v1.1+)
+
+### xcconfig Files
+
+Build settings are managed via `Config/*.xcconfig` files for maintainability:
+
+| Config | Purpose | Key Settings |
+|--------|---------|--------------|
+| `Common.xcconfig` | Shared across all | Team, versioning, Swift 6, strict concurrency |
+| `Debug.xcconfig` | Local development | Thread sanitizer, main thread checker, testability |
+| `Beta.xcconfig` | TestFlight | Optimized + debug symbols, main thread checker |
+| `Release.xcconfig` | App Store | Full optimization, no sanitizers |
+| `Tests.xcconfig` | Test targets | Sanitizers, strict concurrency |
+
+### Swift 6 Concurrency Settings
+
+```
+SWIFT_VERSION = 6.0
+SWIFT_STRICT_CONCURRENCY = complete
+SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full
+SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor
+```
+
+### Attaching xcconfig to Xcode Project
+
+1. Open Xcode project settings
+2. Select the project (not target)
+3. Info tab → Configurations
+4. Set base configuration for each:
+   - Debug → `Config/Debug.xcconfig`
+   - Release → `Config/Release.xcconfig`
+   - Beta → `Config/Beta.xcconfig` (when created)
+
+---
 
 ## Key Technical Decisions
 
@@ -344,6 +385,144 @@ Task { await env.myNewService.doSomething() }
 - Unlimited items and loss lists
 - Full PDF exports with photos
 - Advanced export formats (CSV, JSON)
+
+---
+
+## Warp AI-Specific Features
+
+> **Platform:** Warp Terminal (warp.dev) - Agentic Development Environment
+> **Unique Capabilities:** Full Terminal Use, Multi-Agent Management, Interactive Code Review
+
+### Activating Agent Mode
+
+**Keyboard Shortcuts:**
+```bash
+Ctrl-I               # Toggle Agent Mode (macOS/Linux/Windows)
+* SPACE              # Alternative activation
+ESC or Ctrl-C        # Exit Agent Mode
+```
+
+**Menu Option:**
+- Click AI sparkles icon in menu bar → Opens new terminal pane in Agent Mode
+
+### Full Terminal Use
+
+Warp agents can interact with **REPLs, debuggers, and interactive tools**:
+
+```bash
+# Agent can step through debuggers
+* Debug this Swift test failure and step through the breakpoints
+
+# Agent can interact with REPL
+* Open Swift REPL and test this Item model initialization
+
+# Agent can use interactive tools
+* Use lldb to inspect the crash at PhotoStorageService line 145
+```
+
+**Unique to Warp:** Only platform with full terminal interaction (not just command execution).
+
+### Multi-Agent Management
+
+Run and monitor **multiple agents simultaneously**:
+
+```bash
+# Start first agent on TestFlight deployment
+Agent 1> Deploy to TestFlight and monitor upload status
+
+# Start second agent on test fixes (separate pane)
+Agent 2> Fix failing unit tests in ItemTests.swift
+
+# Monitor both agents from main view
+# Each agent works in isolated context
+```
+
+### Plan Mode (`/plan`)
+
+Spec-driven development with saved, versionable plans:
+
+```bash
+# Create implementation plan
+/plan Implement multi-property support (Task P4-02)
+
+# Warp will:
+# 1. Analyze task dependencies
+# 2. Create step-by-step implementation plan
+# 3. Save plan for versioning
+# 4. Attach to PR for team review
+
+# Review saved plans
+/plan list
+
+# Resume existing plan
+/plan resume P4-02-multi-property
+```
+
+**Use case:** Attach plans to PRs so teammates see implementation strategy.
+
+### Interactive Code Review
+
+Review agent code like a teammate's work:
+
+```bash
+# After agent makes changes
+/review
+
+# Warp shows:
+# - Diff of all changes
+# - Add inline comments
+# - Ask agent to address comments
+# - Approve or request changes
+
+# Agent responds to review comments
+Agent> I've addressed your comments about error handling
+```
+
+### Multi-Model Support
+
+Warp provides access to multiple AI models:
+
+```bash
+# Switch models mid-session
+/model claude-3.5-sonnet    # Default, best for iOS/Swift
+/model gpt-4o               # Alternative
+/model claude-3.5-haiku     # Faster responses
+
+# Check current model
+/model
+```
+
+### Natural Language Commands
+
+Agent Mode interprets plain English seamlessly:
+
+```bash
+* Delete all my fully merged branches
+* Fix all import errors in this Xcode project
+* Find all implementations of PhotoStorageProtocol
+* Help me find which commit introduced this SwiftData bug
+* Why can't I build for iOS 17?
+* Run tests and fix any failures you find
+```
+
+### Warp-Optimized Workflows
+
+**For This Project:**
+```bash
+# Quick test-fix cycle
+* Run unit tests, identify failures, and fix them one by one
+
+# Deployment workflow
+* Bump version to 1.0.1, commit, and deploy to TestFlight
+
+# Code exploration
+* Show me all ViewModels and their dependencies
+
+# Git workflows
+* Create a PR for the current branch with a summary of changes
+```
+
+**Performance:** Warp ranked #1 on Terminal-Bench (52%) and top-5 on SWE-bench Verified (71%).
 
 ## CI/CD & GitHub Actions
 
@@ -711,11 +890,174 @@ See `AccessibilityIdentifiers.swift` for all identifiers.
 6. **No shared state** - Each test is independent
 7. **Use TestFixtures** - Consistent, predictable test data
 
+### Performance Test Optimization
+
+**Target:** Full test suite < 10 minutes
+
+**Key Optimizations:**
+1. **Reduce iteration count** for performance tests:
+   ```swift
+   let options = XCTMeasureOptions()
+   options.iterationCount = 3  // Default is 10
+   measure(options: options) { /* test code */ }
+   ```
+
+2. **Skip tests early** in setup phase:
+   ```swift
+   override func setUpWithError() throws {
+       guard featureImplemented else {
+           throw XCTSkip("Feature not implemented")  // Skip before app launch
+       }
+       app.launch()
+   }
+   ```
+
+3. **Use baselines** for regression detection:
+   ```swift
+   measure(metrics: [XCTOSSignpostMetric.applicationLaunch]) {
+       app.launch()
+   }
+   ```
+
+4. **Parallelize tests** for faster CI:
+   ```bash
+   xcodebuild test -parallel-testing-enabled YES \
+     -parallel-testing-worker-count 4
+   ```
+
+**Test Tiers:**
+- **Smoke** (<2 min): Critical path, every commit
+- **Acceptance** (<10 min): Full unit + integration, PR merge
+- **Full Regression** (<15 min): All tests + performance, nightly
+
 See [TestingStrategy.md](TestingStrategy.md) for complete testing documentation.
 
 ## References
 
 - [Product Specification](PRODUCT-SPEC.md) - Detailed product and technical specs
-- [Fastlane README](FASTLANE_README.md) - Deployment automation details
+- [CLAUDE.md](CLAUDE.md) - Agent behavior and collaboration rules (READ FIRST)
+- [TODO.md](TODO.md) - Task management and version roadmap
+- [TODO-COMPLETE.md](TODO-COMPLETE.md) - Completed v1.0 tasks archive
+- [Fastlane README](fastlane/README.md) - Deployment automation details
+
+---
+
+## Agent Collaboration Model
+
+> **Important:** This section defines how AI agents (Claude Code, etc.) should collaborate with the product owner on this project. All agents MUST read and follow these rules.
+
+### Core Philosophy: Proactive Within Guardrails
+
+**You are encouraged to:**
+- Be proactive and opinionated
+- Propose concrete improvements
+- Pre-draft files/sections and ask if wanted
+- Suggest better structure, naming, workflows
+
+**Critical constraint:** For strategic or high-impact changes:
+1. Propose the change with concise rationale
+2. Use `AskUserQuestion` tool for explicit approval
+3. Only then edit strategic docs/configuration
+
+Think: **"Autonomous within guardrails, ask before touching the constitution."**
+
+### Strategic Changes Requiring Approval
+
+Use `AskUserQuestion` before editing these categories:
+
+#### 1. Pricing & Monetization
+**Scope:**
+- Tier names, prices, feature mappings
+- Adding/removing pricing tiers
+- Reassigning features between tiers
+
+**Allowed without asking:** Typo/formatting fixes that don't change meaning
+
+#### 2. Release Schedule & Roadmap Structure
+**Scope:**
+- Version numbers, target dates
+- Moving tasks between versions
+- Adding new roadmap versions
+
+#### 3. Product Behavior Mismatches
+**When:** PRODUCT-SPEC.md ≠ Tests ≠ Implementation
+
+**Required workflow:**
+- Identify mismatch clearly
+- Propose options (A/B/C)
+- Get approval via `AskUserQuestion`
+- Apply aligned fix
+
+#### 4. Constitution-Level Documents
+**Files:** `PRODUCT-SPEC.md`, `TODO.md`, `CLAUDE.md`, `WARP.md`
+
+**Requires approval:**
+- Changing meaning of rules
+- Reordering governance precedence
+- Rewriting sections that change agent expectations
+
+#### 5. Destructive/Structural Changes
+**Scope:**
+- Deleting/merging/rewriting planning files
+- Major task structure/ID reshuffles
+
+#### 6. Compliance/Security/Data Constraints
+**Scope:**
+- GDPR, data retention, audit logs
+- Multi-tenant behavior
+- User data handling/exposure changes
+
+### Orphaned Code Integration
+
+**Definition:** Code existing in repo but not in build targets, unreferenced, or experimental leftovers.
+
+**Process:**
+1. **Detect** → Summarize findings (don't auto-delete)
+2. **Propose** → Integration strategies (A/B/C options)
+3. **Approve** → Use `AskUserQuestion`
+4. **Execute** → Wire cleanly + update TODO.md
+
+### Autonomous Operation Allowed
+
+**No approval needed for:**
+- Refactoring internals (behavior unchanged)
+- Bug fixes (correct behavior clear from tests/spec)
+- Adding/expanding tests (no semantic change)
+- Small UX polish (matches spec, no pricing changes)
+- Clarifying comments, better naming
+- Adjusting stale snapshots to match spec
+
+**When unsure:** Treat as strategic → use `AskUserQuestion`
+
+### Effective Use of AskUserQuestion
+
+**Pattern:**
+1. Think & draft first (prepare proposal)
+2. Clear decision prompt with options
+3. After answer: apply + summarize
+
+**Example:**
+- "Drafted Pricing Tier update: shifts Feature X to Pro. Approve, edit, or reject?"
+- "Found orphaned FooBarFormatter. (A) Wire to Reports, (B) Move to VM, (C) Archive?"
+
+---
+
+## Version Roadmap Reference
+
+Current release plan (see TODO.md for details):
+
+| Version | Theme | Target | Tier |
+|---------|-------|--------|------|
+| v1.0 | Launch | ✅ Shipped | Free/Pro |
+| v1.1 | Stability & Swift 6 | Q1 2026 | Pro |
+| v1.2 | UX & Onboarding | Q1 2026 | Pro |
+| v1.3 | Pro Features v2 | Q2 2026 | Pro |
+| v1.4 | Automation | Q2 2026 | Pro |
+| v1.5 | Platform Expansion | Q3 2026 | Pro |
+| v2.0 | Data Intelligence | Q4 2026 | Pro+ ($4.99/mo) |
+| v2.1 | Professional | Q1 2027 | Business ($9.99/mo) |
+| v3.0 | Enterprise | Q2 2027 | Enterprise |
+
+**Total roadmap:** 52 pending tasks across 8 versions
 - [Preview Examples](PreviewExamples.md) - Fixtures and preview strategy guide
 - [Testing Strategy](TestingStrategy.md) - Comprehensive testing documentation

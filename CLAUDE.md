@@ -56,6 +56,54 @@ bundle exec fastlane bump_version type:major   # Major: 1.0.0 -> 2.0.0
 
 Push to `main` branch triggers automatic TestFlight upload via GitHub Actions.
 
+## Project Configuration (XcodeGen)
+
+**IMPORTANT:** The Xcode project is generated from `project.yml`. DO NOT hand-edit `.xcodeproj`.
+
+```bash
+# Regenerate project after modifying project.yml
+xcodegen generate
+
+# Or use the helper script
+./Scripts/regenerate_project.sh           # Regenerate only
+./Scripts/regenerate_project.sh --validate # Regenerate + validation build
+```
+
+### Build Configurations
+
+| Config | Type | xcconfig | Use Case |
+|--------|------|----------|----------|
+| Debug | debug | Config/Debug.xcconfig | Development (Thread Sanitizer, Main Thread Checker) |
+| Beta | release | Config/Beta.xcconfig | TestFlight (optimized with debug symbols) |
+| Release | release | Config/Release.xcconfig | App Store (full optimization) |
+
+### Schemes
+
+| Scheme | Config | Purpose |
+|--------|--------|---------|
+| Nestory-Pro | Debug | Development & testing |
+| Nestory-Pro-Beta | Beta | TestFlight builds |
+| Nestory-Pro-Release | Release | App Store builds |
+
+### Adding Dependencies
+
+Add SwiftPM packages via `project.yml`, not Xcode UI:
+
+```yaml
+# In project.yml
+packages:
+  NewPackage:
+    url: https://github.com/owner/repo
+    from: 1.0.0
+
+targets:
+  Nestory-ProTests:
+    dependencies:
+      - package: NewPackage
+```
+
+Then regenerate: `xcodegen generate`
+
 ## Architecture
 
 **MVVM with Clean Layers:**
@@ -155,10 +203,368 @@ GitHub Actions workflow (`.github/workflows/beta.yml`) requires secrets:
 - **Free**: Up to 100 items, basic PDF exports, loss list up to 20 items
 - **Pro** ($19.99-$24.99 one-time): Unlimited items, PDF with photos, CSV/JSON export
 
+---
+
+## Claude Code-Specific Features
+
+> **Platform:** Claude Code CLI (terminal-based agentic coding)
+> **Unique Capabilities:** Checkpoints, Skills, Hooks, Plan Mode
+
+### Checkpoints & Rollback
+
+Claude Code supports **checkpoints** for saving progress and rolling back:
+
+```bash
+# Checkpoints are automatic during sessions
+# Use rewind to rollback to previous state
+/rewind
+
+# View checkpoint history
+/checkpoints
+```
+
+**Note:** Checkpoints track Claude's direct file edits but NOT bash commands like `rm`, `mv`, `cp`.
+
+### Skills System
+
+**Skills** are folders containing instructions, scripts, and resources that Claude loads dynamically:
+
+```bash
+# List available skills
+/skills
+
+# Create a custom skill
+mkdir -p .claude/skills/nestory-test-runner
+cat > .claude/skills/nestory-test-runner/SKILL.md << 'EOF'
+---
+name: Nestory Test Runner
+description: Runs Nestory Pro tests with proper configuration
+tools: [Bash, Read]
+---
+
+# Instructions
+Always use iPhone 17 Pro Max simulator for tests.
+Run unit tests before UI tests.
+Check for Swift concurrency warnings.
+EOF
+
+# Use the skill
+/nestory-test-runner
+```
+
+**Skill Locations:**
+- **Personal:** `~/.claude/skills/` (global)
+- **Project:** `.claude/skills/` (committed to git)
+
+### Hooks for Customization
+
+Hooks let you customize Claude's behavior at specific points:
+
+```bash
+# Example: Validate bash commands before execution
+mkdir -p .claude/hooks
+cat > .claude/hooks/bash-pre-call.py << 'EOF'
+#!/usr/bin/env python3
+import json, sys
+
+data = json.load(sys.stdin)
+command = data.get("tool_input", {}).get("command", "")
+
+# Block dangerous commands
+if "rm -rf /" in command:
+    print("Blocked: Dangerous command", file=sys.stderr)
+    sys.exit(2)  # Exit code 2 blocks the call
+EOF
+
+chmod +x .claude/hooks/bash-pre-call.py
+```
+
+**Hook Types:**
+- `session-start` - Run when session begins
+- `bash-pre-call` - Before bash commands
+- `user-prompt-submit` - After user submits prompt
+
+### Plan Mode
+
+Use **Plan Mode** to preview implementation strategy before execution:
+
+```bash
+# Enter plan mode
+/plan
+
+# Claude will:
+# 1. Analyze the task
+# 2. Create step-by-step plan
+# 3. Wait for your approval
+# 4. Execute after approval
+```
+
+### Custom Commands
+
+Create slash commands for repeated tasks:
+
+```bash
+# Create command
+mkdir -p .claude/commands
+echo "Run all tests with fastlane and report results" > .claude/commands/test-all.md
+
+# Use command
+/test-all
+```
+
+### Brave Mode
+
+For autonomous operation without approval prompts:
+
+```bash
+# Enable brave mode (use with caution)
+/brave
+
+# Disable
+/brave off
+```
+
+**Warning:** Only use in controlled environments. Claude will edit files and run commands without asking.
+
 ## Additional Documentation
 
 - [PRODUCT-SPEC.md](PRODUCT-SPEC.md) - Complete product specs and UI layouts
 - [TestingStrategy.md](TestingStrategy.md) - Comprehensive testing guide
 - [WARP.md](WARP.md) - Extended development guide
 - [PreviewExamples.md](PreviewExamples.md) - Preview and fixtures documentation
-- we use iphone 17 pro max always as the simulator
+- [TODO.md](TODO.md) - Task management and version roadmap (agents MUST follow)
+- [TODO-COMPLETE.md](TODO-COMPLETE.md) - Completed v1.0 tasks archive
+
+**Note:** Always use iPhone 17 Pro Max as the simulator target.
+
+---
+
+## Snapshot Testing (v1.1+)
+
+> **Package:** [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing)
+> **Location:** `Nestory-ProTests/SnapshotTests/`
+
+### Setup (One-Time)
+
+1. Add package in Xcode: File → Add Package Dependencies
+2. URL: `https://github.com/pointfreeco/swift-snapshot-testing`
+3. Add `SnapshotTesting` framework to `Nestory-ProTests` target
+
+### Writing Snapshot Tests
+
+```swift
+import SnapshotTesting
+import XCTest
+@testable import Nestory_Pro
+
+final class InventorySnapshotTests: XCTestCase {
+    @MainActor
+    func testInventoryList_Empty() {
+        let view = InventoryTab()
+            .modelContainer(PreviewContainer.empty())
+
+        assertSnapshot(
+            matching: snapshotController(for: view),
+            as: .image(on: .iPhone13ProMax),
+            named: "empty"
+        )
+    }
+}
+```
+
+### Standard Devices
+
+Use `SnapshotDevice` enum from `SnapshotHelpers.swift`:
+- `iPhone17ProMax` - Primary test device
+- `iPhone17Pro` - Standard size
+- `iPhoneSE3` - Small screen edge cases
+- `iPadPro12_9` - Tablet layout
+
+### Recording Baselines
+
+```bash
+# Set record mode in test file
+isRecording = true
+
+# Run tests once to generate baselines
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -only-testing:Nestory-ProTests/SnapshotTests
+
+# Set back to false for CI
+isRecording = false
+```
+
+### Baselines Location
+
+- Stored in `__Snapshots__/` directories next to test files
+- Committed to git for CI comparison
+- Review carefully when approving snapshot changes
+
+---
+
+## Agent Collaboration Rules
+
+> **Authority:** These rules govern how Claude Code agents interact with this project.
+> **Scope:** Applies to all strategic decisions, code changes, and documentation updates.
+
+### Philosophy: Proactive Within Guardrails
+
+You are **encouraged** to be proactive and opinionated:
+- Propose concrete improvements
+- Pre-draft files/sections and ask if wanted
+- Suggest better structure, naming, workflows
+
+**Critical Rule:** For strategic or high-impact changes, you MUST:
+1. Propose the change in chat with concise rationale
+2. Use `AskUserQuestion` tool to get explicit decision
+3. Only then edit strategic docs/configuration
+
+### Strategic Changes Requiring Approval
+
+The following categories require `AskUserQuestion` before editing:
+
+#### 1. Pricing & Monetization
+- Tier names, prices, feature mappings
+- Adding/removing pricing tiers
+- Reassigning features between tiers
+
+**Workflow:**
+- Notice inconsistencies → propose fixes
+- Draft updated Pricing Tier table
+- Show diff → use `AskUserQuestion`: "Approve or revise?"
+- Apply only after confirmation
+
+**Exception:** Typo/formatting fixes that don't change meaning are OK.
+
+#### 2. Release Schedule & Roadmap
+- Version numbers (v1.1, v2.0, etc.)
+- Target dates
+- Moving tasks between versions
+- Adding new roadmap versions
+
+**Workflow:**
+- Suggest: "Move task X from v1.3 → v1.4 because dependency Y"
+- Draft updated version table + affected tasks
+- Use `AskUserQuestion` before committing
+
+#### 3. Product Behavior Mismatches
+When PRODUCT-SPEC.md ≠ Tests ≠ Implementation:
+
+**Workflow:**
+- Identify mismatch: "Spec says X, tests expect Y, code does Z"
+- Propose options:
+  - A: Change spec to match tests
+  - B: Change tests to match spec
+  - C: Change implementation to match spec
+- Use `AskUserQuestion` to choose
+- Implement aligned fix across all three
+
+#### 4. Constitution-Level Documents
+Files: `PRODUCT-SPEC.md`, `TODO.md`, `CLAUDE.md`, `WARP.md`
+
+**Allowed without asking:**
+- Fix typos, grammar, formatting
+- Improve clarity without changing intent
+- Add clarifying comments/pointers
+
+**Requires approval:**
+- Change meaning of a rule
+- Reorder governance precedence
+- Rewrite sections that change agent/dev expectations
+
+**Workflow:**
+- Draft new wording
+- Show before/after diff
+- Use `AskUserQuestion` before applying
+
+#### 5. Destructive/Structural Changes
+- Deleting, merging, or rewriting planning files
+- Major task structure/ID/phase reshuffles
+
+**Workflow:**
+- Discover → report: "Found TODO-OLD.md, here's contents"
+- Propose migration plan
+- Use `AskUserQuestion` before:
+  - Deleting files
+  - Merging them
+  - Renumbering tasks/IDs in bulk
+
+#### 6. Compliance/Security/Data Constraints
+- GDPR flows, data retention, audit logs
+- Multi-tenant behavior
+- Any change affecting user data handling/exposure
+
+**Workflow:**
+- Propose changes
+- Use `AskUserQuestion` before altering spec/behavior
+
+### Orphaned Code Integration Protocol
+
+**Definition:** Code that exists but isn't in build targets, unreferenced by production, or experimental/preview leftovers.
+
+**Detection:**
+- When you find orphaned code, summarize:
+  - "Found OrphanedView.swift not in target, candidate for Settings"
+  - "Found InventoryMigrationHelper in dead code path"
+- **Do not auto-delete or auto-integrate**
+
+**Proposal:**
+- Suggest integration strategies:
+  - A: Wire into Settings tab as advanced section
+  - B: Move logic into existing ItemDetailViewModel
+  - C: Archive into Legacy/ and note in TODO-COMPLETE.md
+
+**Decision:**
+- Use `AskUserQuestion` when you want to:
+  - Integrate orphaned code into production
+  - Delete/archive it
+- Include: code description, recommended option, files to edit
+
+**Execution:**
+- After approval: wire in cleanly (UI, ViewModels, tests)
+- Update TODO.md if needed
+- Mention in session summary
+
+### Autonomous Operation (No Approval Needed)
+
+You can act independently for:
+- Refactoring internals (public behavior unchanged)
+- Bug fixes where correct behavior is clear from tests/spec/patterns
+- Adding/expanding tests (coverage increase, no semantic change)
+- Small design/UX polish within screens (matches spec, doesn't change pricing/paywall)
+- Clarifying comments, better naming, small doc improvements
+- Adjusting stale snapshots/layouts to match current spec
+
+**Process:**
+- Fix the thing
+- Update tests
+- Summarize in session summary
+
+**When unsure:** Treat as strategic → use `AskUserQuestion`
+
+### How to Use AskUserQuestion Effectively
+
+**Pattern:**
+1. **Think & draft first**
+   - Draft updated section (TODO.md/PRODUCT-SPEC.md/pricing/code)
+   - Prepare concise explanation
+
+2. **Clear decision prompt**
+   - Example: "Drafted Pricing Tier update: keeps Free as-is, shifts Feature X to Pro. Approve, request edits, or reject?"
+   - Or: "Found orphaned FooBarFormatter. (A) Wire into Reports, (B) Move to ReportViewModel, (C) Archive?"
+
+3. **After answer:**
+   - Apply change
+   - Summarize: "Applied user-approved change: [label]"
+
+---
+
+## Task Management
+
+See [TODO.md](TODO.md) for complete task list and version roadmap.
+
+**Agent Requirements:**
+- Read TODO.md before starting work
+- Follow checkout procedure for all tasks
+- Respect `Blocked-by:` dependencies
+- Never modify pricing or roadmap structure without approval (see Agent Collaboration Rules above)
