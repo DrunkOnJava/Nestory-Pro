@@ -255,6 +255,7 @@ private struct ShareSheet: UIViewControllerRepresentable {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Empty State") {
     IncidentDetailsSheet(selectedItems: [])
         .modelContainer(PreviewContainer.withSampleData())
@@ -292,3 +293,4 @@ private func makePreviewContainerWithItems() -> ModelContainer {
 
     return container
 }
+#endif

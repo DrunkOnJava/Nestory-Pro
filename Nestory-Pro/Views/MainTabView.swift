@@ -123,6 +123,7 @@ struct MainTabView: View {
     }
 }
 
+#if DEBUG
 #Preview("Default - Light") {
     MainTabView()
         .modelContainer(PreviewContainer.withSampleData())
@@ -161,3 +162,4 @@ struct MainTabView: View {
         .environment(AppEnvironment())
         .environment(\.dynamicTypeSize, .xSmall)
 }
+#endif
