@@ -134,3 +134,7 @@ Experiments/
 # Temporary files
 Nestory-Pro-IconSourceImage.png
 gemini-chat*.md
+
+# AI Assistant Configuration (contains API keys)
+.gemini/settings.json
+copilot-session-*.md
