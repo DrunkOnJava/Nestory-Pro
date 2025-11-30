@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bundle exec fastlane:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(git:*)",
+      "Bash(swiftc:*)",
+      "Bash(swift:*)",
+      "Read(**/*.swift)",
+      "Read(**/*.md)",
+      "Read(fastlane/**)",
+      "Read(.github/**)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(fastlane/.env)",
+      "Read(fastlane/*.p8)",
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)"
+    ]
+  },
+  "companyAnnouncements": [
+    "Nestory Pro v1.0 shipped! Focus on v1.1 stability (Swift 6, snapshot tests)",
+    "Always use iPhone 17 Pro Max simulator for testing",
+    "Read TODO.md before starting any task - follow checkout procedure"
+  ]
+}
