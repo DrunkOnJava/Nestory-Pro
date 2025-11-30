@@ -221,11 +221,14 @@ final class ItemEdgeCaseTests: XCTestCase {
     // MARK: - Condition Edge Cases
 
     func testItem_AllConditionValues_AreValid() async {
-        // Arrange & Act & Assert
-        for condition in ItemCondition.allCases {
-            let item = Item(name: "Condition \(condition.rawValue)", condition: condition)
-            XCTAssertEqual(item.condition, condition)
-            XCTAssertFalse(item.condition.displayName.isEmpty)
+        await MainActor.run {
+            // Arrange & Act & Assert
+            for condition in ItemCondition.allCases {
+                let item = Item(name: "Condition \(condition.rawValue)", condition: condition)
+                XCTAssertEqual(item.condition, condition)
+                let displayName = item.condition.displayName
+                XCTAssertFalse(displayName.isEmpty)
+            }
         }
     }
 

@@ -42,11 +42,14 @@ final class DataModelHarnessTests: XCTestCase {
     }
 
     func testItem_AllConditions_CanBeSet() async throws {
-        // Test all ItemCondition cases work correctly
-        for condition in ItemCondition.allCases {
-            let item = Item(name: "Item-\(condition.rawValue)", condition: condition)
-            XCTAssertEqual(item.condition, condition)
-            XCTAssertFalse(item.condition.displayName.isEmpty)
+        await MainActor.run {
+            // Test all ItemCondition cases work correctly
+            for condition in ItemCondition.allCases {
+                let item = Item(name: "Item-\(condition.rawValue)", condition: condition)
+                XCTAssertEqual(item.condition, condition)
+                let displayName = item.condition.displayName
+                XCTAssertFalse(displayName.isEmpty)
+            }
         }
     }
 

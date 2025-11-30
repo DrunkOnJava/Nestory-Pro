@@ -114,8 +114,11 @@ final class KeychainManagerTests: XCTestCase {
         await MainActor.run {
             // When: Removing Pro status that was never set
             // Then: Should not throw an error
-            XCTAssertNoThrow(try KeychainManager.removeProStatus(),
-                            "Removing non-existent Pro status should not throw")
+            do {
+                try KeychainManager.removeProStatus()
+            } catch {
+                XCTFail("Removing non-existent Pro status should not throw: \(error)")
+            }
         }
     }
 
@@ -197,8 +200,11 @@ final class KeychainManagerTests: XCTestCase {
         await MainActor.run {
             // When: Removing a value that was never set
             // Then: Should not throw an error
-            XCTAssertNoThrow(try KeychainManager.removeValue(forKey: "nonExistentKey"),
-                            "Removing non-existent value should not throw")
+            do {
+                try KeychainManager.removeValue(forKey: "nonExistentKey")
+            } catch {
+                XCTFail("Removing non-existent value should not throw: \(error)")
+            }
         }
     }
 
