@@ -24,7 +24,8 @@ protocol OCRServiceProtocol: Sendable {
 }
 
 /// Structured receipt data extracted from OCR
-struct ReceiptData: Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated struct ReceiptData: Sendable {
     let vendor: String?
     let total: Decimal?
     let taxAmount: Decimal?

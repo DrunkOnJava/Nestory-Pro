@@ -24,7 +24,8 @@ protocol AppLockProviding: Sendable {
 }
 
 /// Types of biometric authentication available
-enum BiometricType: Sendable {
+/// Note: nonisolated required to prevent MainActor inference in Swift 6
+nonisolated enum BiometricType: Sendable {
     case none
     case faceID
     case touchID
