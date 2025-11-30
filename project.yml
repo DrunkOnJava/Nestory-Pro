@@ -1,0 +1,224 @@
+# project.yml - XcodeGen manifest for Nestory Pro
+# Regenerate with: xcodegen generate
+#
+# This is the single source of truth for project configuration.
+# DO NOT hand-edit .xcodeproj - all changes go through this file.
+
+name: Nestory-Pro
+
+options:
+  minimumXcodeGenVersion: 2.38.0
+  xcodeVersion: "16.0"
+  deploymentTarget:
+    iOS: "17.0"
+  defaultConfig: Debug
+  groupSortPosition: top
+  generateEmptyDirectories: true
+  bundleIdPrefix: com.drunkonjava
+
+# Build Configurations linked to xcconfig files
+configFiles:
+  Debug: Config/Debug.xcconfig
+  Release: Config/Release.xcconfig
+  Beta: Config/Beta.xcconfig
+
+configs:
+  Debug: debug
+  Release: release
+  Beta: release
+
+# SwiftPM Package Dependencies
+packages:
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    from: 1.17.0
+
+# File Groups (organize project navigator)
+fileGroups:
+  - Config
+  - fastlane
+  - .github
+
+# Targets
+targets:
+  # Main App Target
+  Nestory-Pro:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: Nestory-Pro
+        excludes:
+          - "**/.DS_Store"
+
+    resources:
+      - path: Nestory-Pro/Assets.xcassets
+      - path: Nestory-Pro/PrivacyInfo.xcprivacy
+      - path: Nestory-Pro.xctestplan
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.drunkonjava.Nestory-Pro
+        DEVELOPMENT_TEAM: 2VXBQV4XC9
+        INFOPLIST_FILE: Nestory-Pro/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Nestory-Pro/Nestory_Pro.entitlements
+        CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        # Swift 6 strict concurrency (from Common.xcconfig)
+        SWIFT_VERSION: 6.0
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_ENFORCE_EXCLUSIVE_ACCESS: full
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+      configs:
+        Debug:
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          ENABLE_TESTABILITY: YES
+        Release:
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          ENABLE_TESTABILITY: NO
+        Beta:
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          ENABLE_TESTABILITY: YES
+
+    entitlements:
+      path: Nestory-Pro/Nestory_Pro.entitlements
+      properties:
+        com.apple.developer.icloud-container-environment: Production
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.drunkonjava.nestory
+        com.apple.developer.icloud-services:
+          - CloudKit
+
+  # Unit & Integration Tests Target
+  Nestory-ProTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: Nestory-ProTests
+        excludes:
+          - "**/.DS_Store"
+
+    resources:
+      - path: Nestory-Pro.xctestplan
+
+    dependencies:
+      - target: Nestory-Pro
+      - package: SnapshotTesting
+
+    configFiles:
+      Debug: Config/Tests.xcconfig
+      Release: Config/Tests.xcconfig
+      Beta: Config/Tests.xcconfig
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.drunkonjava.Nestory-ProTests
+        DEVELOPMENT_TEAM: 2VXBQV4XC9
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+
+  # UI Tests Target
+  Nestory-ProUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: Nestory-ProUITests
+        excludes:
+          - "**/.DS_Store"
+
+    dependencies:
+      - target: Nestory-Pro
+
+    configFiles:
+      Debug: Config/UITests.xcconfig
+      Release: Config/UITests.xcconfig
+      Beta: Config/UITests.xcconfig
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.drunkonjava.Nestory-ProUITests
+        DEVELOPMENT_TEAM: 2VXBQV4XC9
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Nestory-Pro
+
+# Schemes
+schemes:
+  # Debug scheme - for development
+  Nestory-Pro:
+    build:
+      targets:
+        Nestory-Pro: all
+        Nestory-ProTests: [test]
+        Nestory-ProUITests: [test]
+    run:
+      config: Debug
+      commandLineArguments:
+        "-com.apple.CoreData.ConcurrencyDebug": true
+    test:
+      config: Debug
+      gatherCoverageData: true
+      coverageTargets:
+        - Nestory-Pro
+      targets:
+        - name: Nestory-ProTests
+          parallelizable: true
+          randomExecutionOrder: true
+        - name: Nestory-ProUITests
+          parallelizable: false
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
+  # Beta scheme - for TestFlight
+  Nestory-Pro-Beta:
+    build:
+      targets:
+        Nestory-Pro: all
+        Nestory-ProTests: [test]
+    run:
+      config: Beta
+    test:
+      config: Beta
+      gatherCoverageData: true
+      coverageTargets:
+        - Nestory-Pro
+      targets:
+        - name: Nestory-ProTests
+          parallelizable: true
+    profile:
+      config: Beta
+    analyze:
+      config: Beta
+    archive:
+      config: Beta
+
+  # Release scheme - for App Store
+  Nestory-Pro-Release:
+    build:
+      targets:
+        Nestory-Pro: all
+    run:
+      config: Release
+    test:
+      config: Release
+      targets:
+        - name: Nestory-ProTests
+    profile:
+      config: Release
+    analyze:
+      config: Release
+    archive:
+      config: Release

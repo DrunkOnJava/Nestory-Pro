@@ -1,0 +1,21 @@
+// Tests.xcconfig
+// Test target-specific build settings
+// Created for v1.1 - P1-01
+
+// Note: Tests intentionally do NOT set SWIFT_DEFAULT_ACTOR_ISOLATION
+// because XCTestCase methods (setUp, tearDown) are nonisolated
+// and conflict with MainActor default isolation
+
+// MARK: - Swift Settings (No MainActor default)
+SWIFT_VERSION = 6.0
+SWIFT_STRICT_CONCURRENCY = complete
+SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full
+SWIFT_APPROACHABLE_CONCURRENCY = YES
+// Intentionally NOT setting SWIFT_DEFAULT_ACTOR_ISOLATION for test targets
+
+// MARK: - Thread Safety (enabled for tests)
+ENABLE_THREAD_SANITIZER = YES
+ENABLE_MAIN_THREAD_CHECKER = YES
+
+// MARK: - String Catalogs
+STRING_CATALOG_GENERATE_SYMBOLS = NO

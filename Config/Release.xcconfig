@@ -1,0 +1,26 @@
+// Release.xcconfig
+// App Store Release-specific build settings
+// Created for v1.1 - P1-01
+
+#include "Common.xcconfig"
+
+// MARK: - Release Optimizations
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+SWIFT_COMPILATION_MODE = wholemodule
+SWIFT_OPTIMIZATION_LEVEL = -O
+COPY_PHASE_STRIP = NO
+ENABLE_TESTABILITY = NO
+
+// MARK: - Release Assertions (disabled for production)
+ENABLE_NS_ASSERTIONS = NO
+
+// MARK: - Thread Safety (disabled for performance)
+ENABLE_THREAD_SANITIZER = NO
+ENABLE_MAIN_THREAD_CHECKER = NO
+
+// MARK: - Metal
+MTL_ENABLE_DEBUG_INFO = NO
+MTL_FAST_MATH = YES
+
+// MARK: - App Store Validation
+VALIDATE_PRODUCT = YES

@@ -1,0 +1,24 @@
+// UITests.xcconfig
+// UI Test specific build settings
+// Created for v1.1 - Swift 6 migration
+
+// Note: UITests intentionally do NOT include Common.xcconfig
+// because XCTestCase methods are nonisolated and conflict with MainActor default isolation
+
+// MARK: - Swift Settings (No MainActor default)
+SWIFT_VERSION = 6.0
+SWIFT_STRICT_CONCURRENCY = complete
+SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full
+// Intentionally NOT setting SWIFT_DEFAULT_ACTOR_ISOLATION for UITests
+// XCTestCase lifecycle methods (setUpWithError, tearDownWithError) are nonisolated
+
+// MARK: - Warnings (Strict)
+GCC_WARN_64_TO_32_BIT_CONVERSION = YES
+GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR
+GCC_WARN_UNDECLARED_SELECTOR = YES
+GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE
+GCC_WARN_UNUSED_FUNCTION = YES
+GCC_WARN_UNUSED_VARIABLE = YES
+CLANG_WARN_DOCUMENTATION_COMMENTS = YES
+CLANG_WARN_EMPTY_BODY = YES
+CLANG_WARN_STRICT_PROTOTYPES = YES
