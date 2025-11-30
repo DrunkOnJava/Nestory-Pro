@@ -248,42 +248,68 @@ final class ReportGeneratorService {
     // MARK: - Drawing Methods - Header & Layout
 
     private func drawHeader(context: CGContext, title: String, subtitle: String) {
-        let titleAttributes: [NSAttributedString.Key: Any] = [
+        // Draw header background band
+        let headerBandRect = CGRect(
+            x: 0,
+            y: 0,
+            width: pageSize.width,
+            height: 100
+        )
+        context.setFillColor(UIColor.systemBlue.withAlphaComponent(0.1).cgColor)
+        context.fill(headerBandRect)
+        
+        // Draw accent stripe
+        let stripeRect = CGRect(x: 0, y: 95, width: pageSize.width, height: 5)
+        context.setFillColor(UIColor.systemBlue.cgColor)
+        context.fill(stripeRect)
+        
+        // Draw app icon placeholder (house symbol)
+        let iconSize: CGFloat = 40
+        let iconRect = CGRect(
+            x: pageMargins.left,
+            y: 30,
+            width: iconSize,
+            height: iconSize
+        )
+        
+        // Draw icon background circle
+        context.setFillColor(UIColor.systemBlue.cgColor)
+        context.fillEllipse(in: iconRect)
+        
+        // Draw "N" for Nestory
+        let iconTextAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 24, weight: .bold),
+            .foregroundColor: UIColor.white
+        ]
+        let iconText = NSAttributedString(string: "N", attributes: iconTextAttributes)
+        iconText.draw(at: CGPoint(x: pageMargins.left + 12, y: 37))
+        
+        // Title with better positioning
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 28, weight: .bold),
             .foregroundColor: UIColor.label
         ]
 
         let subtitleAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 12, weight: .regular),
+            .font: UIFont.systemFont(ofSize: 13, weight: .regular),
             .foregroundColor: UIColor.secondaryLabel
         ]
 
         let titleText = NSAttributedString(string: title, attributes: titleAttributes)
         let subtitleText = NSAttributedString(string: subtitle, attributes: subtitleAttributes)
 
-        let titleRect = CGRect(
-            x: pageMargins.left,
-            y: pageMargins.top,
-            width: pageSize.width - pageMargins.left - pageMargins.right,
-            height: 30
-        )
-
-        let subtitleRect = CGRect(
-            x: pageMargins.left,
-            y: pageMargins.top + 32,
-            width: pageSize.width - pageMargins.left - pageMargins.right,
-            height: 15
-        )
-
-        titleText.draw(in: titleRect)
-        subtitleText.draw(in: subtitleRect)
-
-        // Draw separator line
-        context.setStrokeColor(UIColor.separator.cgColor)
-        context.setLineWidth(1)
-        context.move(to: CGPoint(x: pageMargins.left, y: pageMargins.top + 60))
-        context.addLine(to: CGPoint(x: pageSize.width - pageMargins.right, y: pageMargins.top + 60))
-        context.strokePath()
+        // Position title next to icon
+        titleText.draw(at: CGPoint(x: pageMargins.left + iconSize + 16, y: 30))
+        subtitleText.draw(at: CGPoint(x: pageMargins.left + iconSize + 16, y: 62))
+        
+        // Draw "Nestory" branding on right
+        let brandingAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 12, weight: .medium),
+            .foregroundColor: UIColor.systemBlue
+        ]
+        let brandingText = NSAttributedString(string: "Nestory Pro", attributes: brandingAttributes)
+        let brandingWidth = brandingText.size().width
+        brandingText.draw(at: CGPoint(x: pageSize.width - pageMargins.right - brandingWidth, y: 45))
     }
 
     private func drawSummarySection(
@@ -292,33 +318,67 @@ final class ReportGeneratorService {
         totalValue: Decimal,
         yPosition: CGFloat
     ) -> CGFloat {
+        // Draw summary card background
+        let cardRect = CGRect(
+            x: pageMargins.left,
+            y: yPosition,
+            width: pageSize.width - pageMargins.left - pageMargins.right,
+            height: 70
+        )
+        
+        // Card background with subtle shadow effect
+        context.setFillColor(UIColor.systemBackground.cgColor)
+        context.setShadow(offset: CGSize(width: 0, height: 2), blur: 4, color: UIColor.black.withAlphaComponent(0.1).cgColor)
+        let cardPath = UIBezierPath(roundedRect: cardRect, cornerRadius: 12)
+        context.addPath(cardPath.cgPath)
+        context.fillPath()
+        context.setShadow(offset: .zero, blur: 0)
+        
+        // Draw border
+        context.setStrokeColor(UIColor.separator.cgColor)
+        context.setLineWidth(0.5)
+        context.addPath(cardPath.cgPath)
+        context.strokePath()
+        
         let labelAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 12, weight: .semibold),
+            .font: UIFont.systemFont(ofSize: 11, weight: .medium),
             .foregroundColor: UIColor.secondaryLabel
         ]
 
         let valueAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 18, weight: .bold),
+            .font: UIFont.systemFont(ofSize: 26, weight: .bold),
             .foregroundColor: UIColor.label
         ]
+        
+        let moneyAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 26, weight: .bold),
+            .foregroundColor: UIColor.systemGreen
+        ]
 
-        // Total items
-        let itemsLabel = NSAttributedString(string: "Total Items", attributes: labelAttributes)
+        // Total items - left side
+        let itemsLabel = NSAttributedString(string: "TOTAL ITEMS", attributes: labelAttributes)
         let itemsValue = NSAttributedString(string: "\(itemCount)", attributes: valueAttributes)
 
-        itemsLabel.draw(at: CGPoint(x: pageMargins.left, y: yPosition))
-        itemsValue.draw(at: CGPoint(x: pageMargins.left, y: yPosition + 15))
+        itemsLabel.draw(at: CGPoint(x: pageMargins.left + 20, y: yPosition + 12))
+        itemsValue.draw(at: CGPoint(x: pageMargins.left + 20, y: yPosition + 30))
 
-        // Total value
-        let valueLabel = NSAttributedString(string: "Total Value", attributes: labelAttributes)
+        // Vertical divider
+        context.setStrokeColor(UIColor.separator.cgColor)
+        context.setLineWidth(1)
+        let dividerX = pageSize.width / 2
+        context.move(to: CGPoint(x: dividerX, y: yPosition + 15))
+        context.addLine(to: CGPoint(x: dividerX, y: yPosition + 55))
+        context.strokePath()
+
+        // Total value - right side
+        let valueLabel = NSAttributedString(string: "TOTAL VALUE", attributes: labelAttributes)
         let formattedValue = currencyFormatter.string(from: totalValue as NSDecimalNumber) ?? "$0.00"
-        let totalValueText = NSAttributedString(string: formattedValue, attributes: valueAttributes)
+        let totalValueText = NSAttributedString(string: formattedValue, attributes: moneyAttributes)
 
-        let midPoint = pageMargins.left + 200
-        valueLabel.draw(at: CGPoint(x: midPoint, y: yPosition))
-        totalValueText.draw(at: CGPoint(x: midPoint, y: yPosition + 15))
+        valueLabel.draw(at: CGPoint(x: dividerX + 20, y: yPosition + 12))
+        totalValueText.draw(at: CGPoint(x: dividerX + 20, y: yPosition + 30))
 
-        return yPosition + 40
+        return yPosition + 85
     }
 
     private func drawGroupHeader(
@@ -327,31 +387,46 @@ final class ReportGeneratorService {
         itemCount: Int,
         yPosition: CGFloat
     ) -> CGFloat {
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 16, weight: .semibold),
-            .foregroundColor: UIColor.label
-        ]
-
-        let text = NSAttributedString(
-            string: "\(groupName) (\(itemCount))",
-            attributes: attributes
-        )
-
-        let rect = CGRect(
+        // Draw group header with accent color
+        let headerRect = CGRect(
             x: pageMargins.left,
             y: yPosition,
             width: pageSize.width - pageMargins.left - pageMargins.right,
-            height: 20
+            height: 28
         )
+        
+        // Background with rounded corners
+        let headerPath = UIBezierPath(roundedRect: headerRect, cornerRadius: 6)
+        context.setFillColor(UIColor.systemBlue.withAlphaComponent(0.1).cgColor)
+        context.addPath(headerPath.cgPath)
+        context.fillPath()
+        
+        // Left accent bar
+        let accentRect = CGRect(x: pageMargins.left, y: yPosition, width: 4, height: 28)
+        context.setFillColor(UIColor.systemBlue.cgColor)
+        context.fill(accentRect)
+        
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 14, weight: .bold),
+            .foregroundColor: UIColor.label
+        ]
+        
+        let countAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 12, weight: .medium),
+            .foregroundColor: UIColor.secondaryLabel
+        ]
 
-        // Draw background
-        context.setFillColor(UIColor.systemGray6.cgColor)
-        context.fill(rect)
+        let text = NSAttributedString(string: groupName, attributes: attributes)
+        let countText = NSAttributedString(string: "\(itemCount) items", attributes: countAttributes)
 
-        // Draw text
-        text.draw(at: CGPoint(x: pageMargins.left + 10, y: yPosition + 2))
+        // Draw group name
+        text.draw(at: CGPoint(x: pageMargins.left + 12, y: yPosition + 6))
+        
+        // Draw count on right side
+        let countWidth = countText.size().width
+        countText.draw(at: CGPoint(x: pageSize.width - pageMargins.right - countWidth - 12, y: yPosition + 7))
 
-        return yPosition + 25
+        return yPosition + 35
     }
 
     // MARK: - Drawing Methods - Items
@@ -365,9 +440,29 @@ final class ReportGeneratorService {
         photoCache: [String: UIImage]
     ) -> CGFloat {
         var currentY = yPosition
+        
+        // Draw item card background
+        let cardHeight: CGFloat = includePhotos && !item.photos.isEmpty ? 110 : 75
+        let cardRect = CGRect(
+            x: pageMargins.left,
+            y: currentY,
+            width: pageSize.width - pageMargins.left - pageMargins.right,
+            height: cardHeight
+        )
+        
+        // Card with border
+        let cardPath = UIBezierPath(roundedRect: cardRect, cornerRadius: 8)
+        context.setFillColor(UIColor.systemBackground.cgColor)
+        context.addPath(cardPath.cgPath)
+        context.fillPath()
+        
+        context.setStrokeColor(UIColor.separator.cgColor)
+        context.setLineWidth(0.5)
+        context.addPath(cardPath.cgPath)
+        context.strokePath()
 
         let nameAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 14, weight: .semibold),
+            .font: UIFont.systemFont(ofSize: 15, weight: .semibold),
             .foregroundColor: UIColor.label
         ]
 
@@ -377,34 +472,37 @@ final class ReportGeneratorService {
         ]
 
         let valueAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 14, weight: .bold),
-            .foregroundColor: UIColor.systemBlue
+            .font: UIFont.systemFont(ofSize: 16, weight: .bold),
+            .foregroundColor: UIColor.systemGreen
         ]
+        
+        currentY += 10  // Padding inside card
 
         // Item name
         let nameText = NSAttributedString(string: item.name, attributes: nameAttributes)
-        nameText.draw(at: CGPoint(x: pageMargins.left, y: currentY))
-        currentY += 18
+        nameText.draw(at: CGPoint(x: pageMargins.left + 12, y: currentY))
+        
+        // Value on the right
+        if let price = item.purchasePrice {
+            let formattedValue = currencyFormatter.string(from: price as NSDecimalNumber) ?? "$0.00"
+            let valueText = NSAttributedString(string: formattedValue, attributes: valueAttributes)
+            let valueWidth = valueText.size().width
+            valueText.draw(at: CGPoint(x: pageSize.width - pageMargins.right - valueWidth - 12, y: currentY))
+        }
+        
+        currentY += 20
 
         // Details line
         var details: [String] = []
         if let brand = item.brand { details.append(brand) }
         if let model = item.modelNumber { details.append("Model: \(model)") }
-        details.append("Condition: \(item.condition.rawValue)")
-        if let room = item.room { details.append("Room: \(room.name)") }
-        if let category = item.category { details.append("Category: \(category.name)") }
+        details.append(item.condition.rawValue)
+        if let room = item.room { details.append("📍 \(room.name)") }
+        if let category = item.category { details.append("🏷 \(category.name)") }
 
-        let detailText = NSAttributedString(string: details.joined(separator: " • "), attributes: detailAttributes)
-        detailText.draw(at: CGPoint(x: pageMargins.left, y: currentY))
-        currentY += 15
-
-        // Value
-        if let price = item.purchasePrice {
-            let formattedValue = currencyFormatter.string(from: price as NSDecimalNumber) ?? "$0.00"
-            let valueText = NSAttributedString(string: "Value: \(formattedValue)", attributes: valueAttributes)
-            valueText.draw(at: CGPoint(x: pageMargins.left, y: currentY))
-        }
-        currentY += 20
+        let detailText = NSAttributedString(string: details.joined(separator: "  •  "), attributes: detailAttributes)
+        detailText.draw(at: CGPoint(x: pageMargins.left + 12, y: currentY))
+        currentY += 18
 
         // Photo thumbnail (if Pro and photos available)
         if includePhotos, let firstPhoto = item.photos.first,
@@ -412,14 +510,18 @@ final class ReportGeneratorService {
             let thumbnail = resizeImage(image, to: photoThumbnailSize)
 
             let imageRect = CGRect(
-                x: pageMargins.left,
+                x: pageMargins.left + 12,
                 y: currentY,
                 width: photoThumbnailSize.width,
                 height: photoThumbnailSize.height
             )
 
+            // Draw image with rounded corners
             if let cgImage = thumbnail.cgImage {
                 context.saveGState()
+                let clipPath = UIBezierPath(roundedRect: imageRect, cornerRadius: 6)
+                context.addPath(clipPath.cgPath)
+                context.clip()
                 context.translateBy(x: 0, y: imageRect.origin.y + imageRect.height)
                 context.scaleBy(x: 1.0, y: -1.0)
                 context.draw(cgImage, in: CGRect(
@@ -430,21 +532,19 @@ final class ReportGeneratorService {
                 ))
                 context.restoreGState()
             }
-
-            currentY += photoThumbnailSize.height + 5
         }
 
-        // Documentation status
-        let docStatus = item.isDocumented ? "✓ Documented" : "⚠ Incomplete"
+        // Documentation status badge
+        let docStatus = item.isDocumented ? "✓ Documented" : "⚠ Needs Info"
         let docColor = item.isDocumented ? UIColor.systemGreen : UIColor.systemOrange
         let docAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 10, weight: .medium),
+            .font: UIFont.systemFont(ofSize: 10, weight: .semibold),
             .foregroundColor: docColor
         ]
         let docText = NSAttributedString(string: docStatus, attributes: docAttributes)
-        docText.draw(at: CGPoint(x: pageMargins.left, y: currentY))
+        docText.draw(at: CGPoint(x: pageMargins.left + 12, y: currentY))
 
-        return currentY + 15
+        return yPosition + cardHeight + 8  // Return full card height plus spacing
     }
 
     // MARK: - Drawing Methods - Loss List
@@ -661,11 +761,9 @@ final class ReportGeneratorService {
     }
 
     private func estimateItemHeight(item: Item, includePhotos: Bool) -> CGFloat {
-        var height: CGFloat = 70 // Base: name + details + value
-        if includePhotos && !item.photos.isEmpty {
-            height += photoThumbnailSize.height + 5
-        }
-        return height
+        // Card-based layout: 75 base, 110 with photos
+        let baseHeight: CGFloat = includePhotos && !item.photos.isEmpty ? 118 : 83
+        return baseHeight
     }
 
     private func resizeImage(_ image: UIImage, to size: CGSize) -> UIImage {
