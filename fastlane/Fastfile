@@ -3,6 +3,11 @@ default_platform(:ios)
 # Load environment variables from .env file
 Dotenv.load("fastlane/.env") if File.exist?("fastlane/.env")
 
+# App configuration
+APP_IDENTIFIER = "com.drunkonjava.Nestory-Pro"
+APP_NAME = "Nestory Pro"
+APP_SKU = "nestory-pro-v1"
+
 platform :ios do
   # Load API key for App Store Connect operations
   def api_key
@@ -11,6 +16,36 @@ platform :ios do
       issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
       key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"]
     )
+  end
+
+  desc "Ensure app exists in App Store Connect (creates if missing)"
+  lane :ensure_app_exists do
+    # NOTE: produce action requires Apple ID + 2FA, not just API key
+    # For first-time setup, create the app manually in App Store Connect:
+    # 1. Go to appstoreconnect.apple.com
+    # 2. My Apps -> + -> New App
+    # 3. Use bundle ID: com.drunkonjava.Nestory-Pro, SKU: nestory-pro-v1
+    #
+    # After the app exists, this lane can verify it via API key
+    key = api_key
+
+    begin
+      # Try to fetch build number - this confirms app exists
+      latest_testflight_build_number(api_key: key)
+      UI.success("App '#{APP_NAME}' verified in App Store Connect")
+    rescue => e
+      if e.message.include?("Could not find an app") || e.message.include?("not found")
+        UI.error("App '#{APP_NAME}' does not exist in App Store Connect!")
+        UI.error("Please create it manually at appstoreconnect.apple.com:")
+        UI.error("  Bundle ID: #{APP_IDENTIFIER}")
+        UI.error("  SKU: #{APP_SKU}")
+        UI.error("  Name: #{APP_NAME}")
+        UI.user_error!("App must be created in App Store Connect before first deploy")
+      else
+        # Some other error (like no builds yet), which is fine
+        UI.success("App '#{APP_NAME}' appears to exist (first build pending)")
+      end
+    end
   end
 
   desc "Run all tests (unit + UI) on simulator"
@@ -35,21 +70,45 @@ platform :ios do
 
   desc "Build and upload to TestFlight"
   lane :beta do
-    # Increment build number from TestFlight
+    # Ensure app exists in App Store Connect (creates if missing)
+    ensure_app_exists
+
+    key = api_key
+
+    # Increment build number from TestFlight (or start at 1 for first deploy)
+    begin
+      latest_build = latest_testflight_build_number(api_key: key)
+      new_build = latest_build + 1
+    rescue => e
+      UI.important("Could not fetch latest build number (first deploy?). Starting at 1.")
+      new_build = 1
+    end
+
     increment_build_number(
-      build_number: latest_testflight_build_number(api_key: api_key) + 1,
+      build_number: new_build,
       xcodeproj: "Nestory-Pro.xcodeproj"
     )
 
-    # Build with Xcode automatic signing
+    # Download or create App Store distribution provisioning profile
+    # force: true regenerates profile with all valid certificates included
+    sigh(
+      api_key: key,
+      app_identifier: APP_IDENTIFIER,
+      force: true,
+      include_all_certificates: true  # Include ALL valid distribution certificates
+    )
+
+    # Build and export with Xcode automatic signing
+    # The profile downloaded by sigh is installed, Xcode will find it
     build_app(
       scheme: "Nestory-Pro",
-      export_method: "app-store"
+      export_method: "app-store",
+      export_xcargs: "-allowProvisioningUpdates"
     )
 
     # Upload to TestFlight
     upload_to_testflight(
-      api_key: api_key,
+      api_key: key,
       skip_waiting_for_build_processing: true
     )
   end
@@ -99,11 +158,49 @@ platform :ios do
     push_to_git_remote(tags: true)
   end
 
+  desc "Upload existing archive to TestFlight"
+  lane :upload_archive do |options|
+    archive_path = options[:archive] || ENV["ARCHIVE_PATH"]
+
+    UI.user_error!("No archive path specified. Use archive: parameter") unless archive_path
+    UI.user_error!("Archive not found at #{archive_path}") unless File.exist?(archive_path)
+
+    key = api_key
+
+    # Export IPA from archive
+    build_app(
+      scheme: "Nestory-Pro",
+      export_method: "app-store",
+      archive_path: archive_path,
+      skip_build_archive: true,
+      export_xcargs: "-allowProvisioningUpdates"
+    )
+
+    # Upload to TestFlight
+    upload_to_testflight(
+      api_key: key,
+      skip_waiting_for_build_processing: true
+    )
+  end
+
   desc "Bump version (patch/minor/major)"
   lane :bump_version do |options|
     increment_version_number(
       bump_type: options[:type] || "patch",
       xcodeproj: "Nestory-Pro.xcodeproj"
     )
+  end
+
+  desc "Generate app icons from source image"
+  lane :icons do |options|
+    source_path = options[:source] || File.expand_path("~/Downloads/image98.png")
+
+    appicon(
+      appicon_image_file: source_path,
+      appicon_devices: [:iphone, :ipad, :ios_marketing],
+      appicon_path: "Nestory-Pro/Assets.xcassets"
+    )
+
+    UI.success("App icons generated from #{source_path}")
   end
 end

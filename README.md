@@ -107,10 +107,10 @@ open Nestory-Pro.xcodeproj
 # Build from command line (Debug)
 xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro -configuration Debug
 
-# Build for simulator
+# Build for simulator (always use iPhone 17 Pro Max)
 xcodebuild -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
   -sdk iphonesimulator \
-  -destination 'platform=iOS Simulator,name=iPhone 15'
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 ```
 
 ### Testing
@@ -121,7 +121,7 @@ bundle exec fastlane test
 
 # Run tests directly with xcodebuild
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
-  -destination 'platform=iOS Simulator,name=iPhone 15'
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 
 # Run specific test target
 xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
@@ -242,31 +242,48 @@ Required GitHub Secrets:
 
 ## Roadmap
 
-### v1.1 - Quality & Depth
+> **Complete roadmap:** See [TODO.md](TODO.md) for detailed task breakdown and dependencies.
+
+| Version | Theme | Target | Tier | Status |
+|---------|-------|--------|------|--------|
+| **v1.0** | Launch | ✅ Nov 2025 | Free/Pro | ✅ Shipped |
+| **v1.1** | Stability & Swift 6 | Q1 2026 | Pro | 🔄 Planning |
+| **v1.2** | UX & Onboarding | Q1 2026 | Pro | 📋 Planned |
+| **v1.3** | Pro Features v2 | Q2 2026 | Pro | 📋 Planned |
+| **v1.4** | Automation | Q2 2026 | Pro | 📋 Planned |
+| **v1.5** | Platform Expansion | Q3 2026 | Pro | 📋 Planned |
+| **v2.0** | Data Intelligence | Q4 2026 | Pro+ | 💡 Future |
+| **v2.1** | Professional | Q1 2027 | Business | 💡 Future |
+| **v3.0** | Enterprise | Q2 2027 | Enterprise | 💡 Future |
+
+### Key Upcoming Features
+
+**v1.1 - Stability** (Q1 2026)
 - Swift 6 strict concurrency migration
-- CloudKit sync (currently disabled)
-- Warranty dashboard
-- Enhanced analytics
-- Advanced search syntax
+- Snapshot testing suite
+- CloudKit sync enablement
 
-### v1.2 - Claims Workflows
-- Incident mode for specific events
-- Claim pack generation
-- Incident notes and documentation
+**v1.2 - UX** (Q1 2026)
+- First-time onboarding flow
+- Tags system
+- Reminders
 
-### v2 - Professional & AI
-- Household sharing
-- White-label exports for professionals
-- Video walkthrough analysis
-- AI-assisted item identification
+**v2.0+ - Advanced** (2026-2027)
+- Depreciation tracking
+- Claims workflow
+- Core ML categorization
+- REST API & webhooks
 
 ## Documentation
 
 Comprehensive project documentation:
 
-- **[WARP.md](WARP.md)** — Development guide for Warp AI agent
+- **[CLAUDE.md](CLAUDE.md)** — Agent behavior and collaboration rules (AI agents read this first)
+- **[TODO.md](TODO.md)** — Task management and version roadmap (52 pending tasks)
+- **[TODO-COMPLETE.md](TODO-COMPLETE.md)** — Completed v1.0 tasks archive (105 tasks)
 - **[PRODUCT-SPEC.md](PRODUCT-SPEC.md)** — Complete product and technical specifications
-- **[FASTLANE_README.md](FASTLANE_README.md)** — Deployment automation setup and usage
+- **[WARP.md](WARP.md)** — Extended development guide
+- **[fastlane/README.md](fastlane/README.md)** — Deployment automation setup and usage
 
 ### Additional Resources
 

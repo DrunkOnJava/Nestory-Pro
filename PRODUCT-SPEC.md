@@ -1,4 +1,6 @@
-Here’s a full-blown tech/product spec for **Nestory v1** with a sane MVP scope, clear roadmap, and enough detail that you could hand this to “Future Griffin + AI co-pilot” and actually ship something.
+Here's a full-blown tech/product spec for **Nestory v1** with a sane MVP scope, clear roadmap, and enough detail that you could hand this to "Future Griffin + AI co-pilot" and actually ship something.
+
+> **For AI Agents:** This document is PRODUCT-OWNER CONTROLLED. Before changing product behavior, pricing, or strategic direction, see [CLAUDE.md](CLAUDE.md) Agent Collaboration Rules. Use `AskUserQuestion` for approval.
 
 ---
 
@@ -826,41 +828,138 @@ Examples:
 
 ---
 
-# 13. Roadmap (Post-v1)
+# 13. Roadmap (Post-v1.0)
 
-### v1.1 – Quality & Depth
+> **Note:** Detailed task breakdown and dependencies in [TODO.md](TODO.md). This section provides feature-level overview.
 
-* Warranty dashboard:
+### Version Mapping
 
-  * List of items with warranty expiry dates.
-  * Simple “expiring soon” view.
-* More detailed analytics:
+| Version | Theme | Target | Pricing Tier | Key Features |
+|---------|-------|--------|--------------|--------------|
+| **v1.0** | Launch | ✅ Shipped | Free/Pro | Core inventory, capture, reports, Pro IAP |
+| **v1.1** | Stability & Swift 6 | Q1 2026 | Pro | Swift 6 concurrency, snapshot tests, xcconfig |
+| **v1.2** | UX & Onboarding | Q1 2026 | Pro | First-run experience, tags, reminders |
+| **v1.3** | Pro Features v2 | Q2 2026 | Pro | Multi-property, feature flags, analytics |
+| **v1.4** | Automation | Q2 2026 | Pro | Widgets, Siri Shortcuts, App Clips |
+| **v1.5** | Platform Expansion | Q3 2026 | Pro | Mac Catalyst, Spanish localization, sharing |
+| **v2.0** | Data Intelligence | Q4 2026 | Pro+ ($4.99/mo) | Depreciation, custom fields, bulk ops |
+| **v2.1** | Professional | Q1 2027 | Business ($9.99/mo) | Claims workflow, Core ML, value lookup |
+| **v3.0** | Enterprise | Q2 2027 | Enterprise | REST API, teams, compliance, white-label |
 
-  * Time-based graphs (items added per month).
-* Improved search syntax (filters like `missing:photo` directly in search bar).
+### v1.1 – Stability & Infrastructure (Q1 2026)
 
-### v1.2 – Claims & Disaster Workflows
+**Focus:** Technical foundation before feature expansion
 
-* “Incident mode”:
+* **Swift 6 strict concurrency** - Eliminate data races, actor isolation
+* **Snapshot testing** - Visual regression suite with swift-snapshot-testing
+* **Build configuration** - xcconfig-based settings, Beta scheme
+* **CloudKit sync** - Enable opt-in sync (disabled in v1.0)
+* **Entitlements audit** - Remove unused capabilities
 
-  * Create an incident (e.g., “Kitchen fire”).
-  * Attach items + photos + receipts to that incident.
-  * Auto-generate claim pack for that incident.
-* Basic “incident notes” field for narrative.
+**Tasks:** 9 (see TODO.md P1-00 to P1-04, 9.3.x)
 
-### v2 – Pro/Professional & AI
+### v1.2 – UX Polish & Onboarding (Q1 2026)
 
-* Shared household access (family accounts).
-* White-label exports:
+**Focus:** First-run experience and user guidance
 
-  * Logos for public adjusters / professionals.
-* Video walkthrough support:
+* **Onboarding flow** - 2-3 screen wizard for first item
+* **Information architecture** - Spaces, rooms, containers hierarchy
+* **Tags system** - Flexible categorization without database feel
+* **In-app feedback** - Direct channel for user requests
+* **Reminders** - Warranty expiry, lease items, scheduled re-checks
 
-  * Store video, optionally run on-device analysis to propose items.
-* Smarter AI-assist:
+**Tasks:** 5 (see TODO.md P2-01, P2-02, P2-05, P4-07, P5-03)
 
-  * Suggest item names/categories from photo.
-  * Suggest values based on similar items (careful with disclaimers).
+### v1.3 – Pro Features v2 (Q2 2026)
+
+**Focus:** Monetization infrastructure and retention
+
+* **Multi-property support** - Manage multiple homes (Pro feature)
+* **Feature flag system** - Centralized Pro gating
+* **Value summary per property** - Insurance discussion tool
+* **Server-side IAP validation** - Anti-piracy security
+* **Privacy-respecting analytics** - Usage insights (opt-in)
+
+**Tasks:** 5 (see TODO.md P3-05, P4-01, P4-02, P4-08, P5-04)
+
+### v1.4 – Automation & Extensions (Q2 2026)
+
+**Focus:** Reduce friction for power users
+
+* **Widget extension** - Home screen quick capture
+* **Siri Shortcuts** - Voice-activated inventory management
+* **App Clips** - QR/NFC capture without full install
+* **Smart suggestions** - Heuristic-based category/tag recommendations
+* **Shareable summaries** - Multi-person context exports
+
+**Tasks:** 5 (see TODO.md P5-02, P5-05, P5-07, P5-08, P5-09)
+
+### v1.5 – Platform Expansion (Q3 2026)
+
+**Focus:** Addressable market expansion
+
+* **Mac Catalyst** - Native macOS app via Catalyst
+* **Spanish localization** - First non-English market
+* **CloudKit sharing** - Family inventory collaboration
+* **Template extraction** - Reusable iOS starter kit
+
+**Tasks:** 4 (see TODO.md P4-09, P5-06, P6-01, P6-02)
+
+### v2.0 – Data Intelligence · Pro+ Tier (Q4 2026)
+
+**Focus:** Transform to intelligent asset management
+
+* **Depreciation tracking** - Value lifecycle for accurate claims
+* **Audit trail** - Change history for compliance/accountability
+* **Custom fields** - Power user flexibility
+* **Bulk operations** - Efficient large inventory management
+* **CSV import** - Spreadsheet migration with field mapping
+* **Smart folders** - Saved searches, auto-updating views
+* **Document attachments** - Warranty, manual, appraisal storage
+* **Insurance readiness score** - Gamified completion guidance
+
+**Pricing:** $4.99/mo subscription unlocks Pro+ tier
+**Tasks:** 8 (see TODO.md P7-01 to P7-08)
+
+### v2.1 – Professional Features · Business Tier (Q1 2027)
+
+**Focus:** Premium differentiation for professionals
+
+* **Claims workflow** - End-to-end incident management
+* **Coverage gap analysis** - Insurance adequacy visualization
+* **Core ML image recognition** - Auto-categorization from photos
+* **Value lookup & market pricing** - API-based replacement cost
+* **Analytics dashboard** - Visual insights (charts, timelines)
+* **Advanced sharing** - Granular permissions, roles, activity feed
+* **Item templates** - Speed up common item types
+* **Photo quality guidance** - Real-time capture feedback
+
+**Pricing:** $9.99/mo subscription unlocks Business tier
+**Tasks:** 8 (see TODO.md P8-01 to P8-08)
+
+### v3.0 – Enterprise (Q2 2027)
+
+**Focus:** B2B features for property managers, adjusters, businesses
+
+* **REST API & webhooks** - Third-party integrations
+* **Team & organization management** - Multi-user orgs, seat licensing
+* **Compliance & governance** - GDPR, retention, legal hold
+* **Voice & natural language** - Enhanced Siri, in-app voice capture
+* **B2B / white-label** - Property manager dashboards, custom branding
+* **Performance at scale** - 10K+ item support, CDN, virtualization
+* **Observability** - Crash reporting, monitoring, A/B testing
+* **Premium integrations** - Insurance APIs, smart home, e-commerce
+
+**Pricing:** Enterprise tier with custom pricing
+**Tasks:** 8 (see TODO.md P9-01 to P9-08)
+
+### Future Considerations (Post-v3.0)
+
+* Video walkthrough processing with on-device analysis
+* Direct insurer integrations (partnerships required)
+* Estate planning beneficiary assignments
+* Moving company integrations
+* Professional appraisal service booking
 
 ---
 
