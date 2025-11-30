@@ -147,6 +147,20 @@ struct TestFixtures {
         )
     }
     
+    // MARK: - Test Tags (P2-05)
+    
+    static func testTag(
+        name: String = "Test Tag",
+        colorHex: String = "#007AFF",
+        isFavorite: Bool = false
+    ) -> Tag {
+        Tag(
+            name: name,
+            colorHex: colorHex,
+            isFavorite: isFavorite
+        )
+    }
+    
     // MARK: - Test Dates (Deterministic)
     // These date properties are nonisolated because they only use value types
     // and don't access any MainActor-isolated state
