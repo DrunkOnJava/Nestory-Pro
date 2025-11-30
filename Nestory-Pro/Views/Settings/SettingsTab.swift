@@ -276,6 +276,20 @@ struct SettingsTab: View {
                         }
                     }
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
+
+                    #if DEBUG
+                    // Reset Onboarding (Debug only - Task P2-01)
+                    Button {
+                        settings.hasCompletedOnboarding = false
+                    } label: {
+                        HStack {
+                            Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
+                                .foregroundStyle(.orange)
+                            Spacer()
+                        }
+                    }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.resetOnboardingButton)
+                    #endif
                 }
                 
                 // Support & Feedback (Task P4-07)

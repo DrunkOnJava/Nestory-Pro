@@ -128,6 +128,42 @@ struct QuickCaptureTip: Tip {
     }
 }
 
+// MARK: - First Item Capture Tip
+
+/// Tip shown after onboarding to guide first item creation
+struct FirstItemCaptureTip: Tip {
+    @Parameter
+    static var hasCompletedOnboarding: Bool = false
+
+    @Parameter
+    static var itemCount: Int = 0
+
+    var title: Text {
+        Text("Add Your First Item")
+    }
+
+    var message: Text? {
+        Text("Tap the '+' button to quickly add an item. You can snap a photo, enter details, or scan a receipt. Swipe left on any item for quick actions.")
+    }
+
+    var image: Image? {
+        Image(systemName: "plus.circle.fill")
+    }
+
+    var actions: [Action] {
+        Action(id: "add-item", title: "Add Item")
+    }
+
+    var rules: [Rule] {
+        #Rule(Self.$hasCompletedOnboarding) { completed in
+            completed == true
+        }
+        #Rule(Self.$itemCount) { count in
+            count == 0
+        }
+    }
+}
+
 // MARK: - TipKit Configuration
 
 /// Configure TipKit for the app

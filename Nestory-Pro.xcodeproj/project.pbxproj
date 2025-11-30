@@ -10,6 +10,7 @@
 		00E783936034C44FCF2391C8 /* DocumentationScorePerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF29DB96D23EF1905F5E315 /* DocumentationScorePerformanceTests.swift */; };
 		064FA7050328B0C1AD54195F /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EF52A27F13FE4C18093684 /* NetworkMonitor.swift */; };
 		074D103049D1A8433F1CC1F5 /* OCRServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D5FD0A7F0C9C019D3BF74B /* OCRServiceTests.swift */; };
+		084AA7A2C668230559203AAD /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A65815BB6516AFBA5F0191D /* OnboardingView.swift */; };
 		0DA4FEBA5265489F9F0E7BED /* WarrantyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE6F5FB0133F75B60744060 /* WarrantyListView.swift */; };
 		0FDB606A50ED3671FB4BB2CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67CB8EFEE8BB66D286013C4F /* Assets.xcassets */; };
 		10193AD6F5D84CD7DE0F8C91 /* ContextualPaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C05C4629B01E23E03DBDD1 /* ContextualPaywallSheet.swift */; };
@@ -172,6 +173,7 @@
 		458162818F335C6F11752D76 /* Fastfile */ = {isa = PBXFileReference; path = Fastfile; sourceTree = "<group>"; };
 		47AB78AD95F128A203338E07 /* AuthKey_ACR4LF383U.p8 */ = {isa = PBXFileReference; path = AuthKey_ACR4LF383U.p8; sourceTree = "<group>"; };
 		4802D86F8F58FE717007B060 /* copilot-instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "copilot-instructions.md"; sourceTree = "<group>"; };
+		4A65815BB6516AFBA5F0191D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		4DFE0E86371400D6B93FF163 /* Nestory-ProUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "Nestory-ProUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E621107DFD87AA78D6BB4F2 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		5043BD4B690B77275FCEE1D9 /* MockSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSettingsManager.swift; sourceTree = "<group>"; };
@@ -302,6 +304,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		0F2123CF5870F9998D6BA215 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				4A65815BB6516AFBA5F0191D /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		100C4B9EC175E01EC0DCADC7 /* TestUtilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -323,6 +333,7 @@
 			children = (
 				BD5E230537C445CA928093CE /* Capture */,
 				9D9C1E96045315E34869480B /* Inventory */,
+				0F2123CF5870F9998D6BA215 /* Onboarding */,
 				8BFB32D6CCACBD08C87C7236 /* Reports */,
 				7185F077088F66018C8B6D50 /* Settings */,
 				224C0ACD487F78DFB4924E71 /* SharedUI */,
@@ -966,6 +977,7 @@
 				064FA7050328B0C1AD54195F /* NetworkMonitor.swift in Sources */,
 				3F6957D8583B223DA84C0609 /* OCRService.swift in Sources */,
 				98169B5D8E9EAB39044F4757 /* OCRServiceProtocol.swift in Sources */,
+				084AA7A2C668230559203AAD /* OnboardingView.swift in Sources */,
 				474467D095B9472B06168279 /* PaginatedFetch.swift in Sources */,
 				D6E39EDC3250849D373F608C /* PerformanceLogger.swift in Sources */,
 				C1E1905D4BD7FB57BEE66D7E /* PhotoCaptureView.swift in Sources */,

@@ -69,6 +69,15 @@ enum AccessibilityIdentifiers {
         static let jsonFormatButton = "reports.jsonFormatButton"
     }
 
+    // MARK: - Onboarding
+    enum Onboarding {
+        static let view = "onboarding.view"
+        static let skipButton = "onboarding.skipButton"
+        static let nextButton = "onboarding.nextButton"
+        static let backButton = "onboarding.backButton"
+        static let getStartedButton = "onboarding.getStartedButton"
+    }
+
     // MARK: - Settings Tab
     enum Settings {
         static let themeSelector = "settings.themeSelector"
@@ -77,6 +86,7 @@ enum AccessibilityIdentifiers {
         static let appLockToggle = "settings.appLockToggle"
         static let exportDataButton = "settings.exportDataButton"
         static let importDataButton = "settings.importDataButton"
+        static let resetOnboardingButton = "settings.resetOnboardingButton"
         static let proUpgradeCell = "settings.proUpgradeCell"
         static let aboutCell = "settings.aboutCell"
         static let notificationsToggle = "settings.notificationsToggle"

@@ -70,6 +70,14 @@ struct Nestory_ProApp: App {
                 .onAppear {
                     seedDefaultDataIfNeeded()
                 }
+                .sheet(isPresented: .init(
+                    get: { !appEnv.settings.hasCompletedOnboarding },
+                    set: { _ in }
+                )) {
+                    OnboardingView()
+                        .environment(appEnv)
+                        .interactiveDismissDisabled()
+                }
         }
         .modelContainer(sharedModelContainer)
     }
