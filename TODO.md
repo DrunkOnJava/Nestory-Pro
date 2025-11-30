@@ -287,18 +287,36 @@ COMMIT RULES:
 
 ---
 
-#### [~] P4-07 – In-app feedback & support
+#### [x] P4-07 – In-app feedback & support ✓ 2025-11-30
 - Checked-out-by: Claude (v1.1 session)
 - Blocked-by: P2-06 ✓
-- Status: **In Progress**
+- Status: **Complete**
 
 **Goal:** Channel user feedback directly to you.
 
 **Subtasks:**
-- [ ] Add "Send feedback" and "Report a problem" in Settings
-- [ ] Pre-fill device/app info in message body
-- [ ] Optional email inbox or ticketing integration
-- [ ] Track feedback categories for roadmap
+- [x] Add "Send feedback" and "Report a problem" in Settings ✓ 2025-11-30
+  - Added FeedbackSheet with category selection
+  - Added "Report a Problem" button in Settings
+- [x] Pre-fill device/app info in message body ✓ 2025-11-30
+  - FeedbackService generates device model, iOS version, app version, storage info
+  - Email body includes formatted device info section
+- [x] Optional email inbox or ticketing integration ✓ 2025-11-30
+  - Uses mailto: URLs to open system email client
+  - Support email: support@nestory.app
+- [x] Track feedback categories for roadmap ✓ 2025-11-30
+  - FeedbackCategory enum with logging
+  - logFeedbackEvent() for future analytics integration
+
+**Files Created:**
+- `Nestory-Pro/Services/FeedbackService.swift` - Device info, email URL generation
+- `Nestory-Pro/Views/Settings/FeedbackSheet.swift` - Category selection UI
+
+**Support Site Deployed:**
+- URL: https://nestory-support.netlify.app
+- Source: `/Users/griffin/Projects/Nestory/nestory-support-site`
+- Pages: FAQ (index.html), Privacy Policy, Terms of Service
+- Netlify project: nestory-support
 
 ---
 

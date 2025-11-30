@@ -33,6 +33,13 @@ struct SettingsTab: View {
     @State private var restoreResult: RestoreResult?
     @State private var pendingImportURL: URL?
     @State private var restoreStrategy: RestoreStrategy = .merge
+    
+    // Feedback state (Task P4-07)
+    @State private var showingFeedbackSheet = false
+    private let feedbackService = FeedbackService()
+
+    @State private var showingEmailError = false
+    @State private var emailErrorMessage = ""
 
     // SwiftData queries for export
     @Query private var allItems: [Item]
@@ -248,7 +255,7 @@ struct SettingsTab: View {
                             .foregroundStyle(.secondary)
                     }
 
-                    Link(destination: URL(string: "https://nestory.app/terms")!) {
+                    Link(destination: URL(string: "https://nestory-support.netlify.app/terms")!) {
                         HStack {
                             Text("Terms of Service")
                             Spacer()
@@ -259,7 +266,7 @@ struct SettingsTab: View {
                     }
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
 
-                    Link(destination: URL(string: "https://nestory.app/privacy")!) {
+                    Link(destination: URL(string: "https://nestory-support.netlify.app/privacy")!) {
                         HStack {
                             Text("Privacy Policy")
                             Spacer()
@@ -269,17 +276,39 @@ struct SettingsTab: View {
                         }
                     }
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
-
-                    Link(destination: URL(string: "mailto:support@nestory.app")!) {
+                }
+                
+                // Support & Feedback (Task P4-07)
+                Section {
+                    Button {
+                        showingFeedbackSheet = true
+                    } label: {
                         HStack {
-                            Text("Contact Support")
+                            Label("Send Feedback", systemImage: "bubble.left.and.bubble.right")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.feedbackButton)
+                    
+                    Button {
+                        sendSupportEmail(category: .bug)
+                    } label: {
+                        HStack {
+                            Label("Report a Problem", systemImage: "ladybug")
                             Spacer()
                             Image(systemName: "arrow.up.right")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.reportProblemButton)
+                } header: {
+                    Text("Support & Feedback")
+                } footer: {
+                    Text("Your feedback helps us improve Nestory.")
                 }
             }
             .navigationTitle("Settings")
@@ -351,6 +380,29 @@ struct SettingsTab: View {
                 } else {
                     Text("An unknown error occurred during import.")
                 }
+            }
+            // Feedback sheet (Task P4-07)
+            .sheet(isPresented: $showingFeedbackSheet) {
+                FeedbackSheet(feedbackService: feedbackService)
+            }
+            .alert("Email Not Available", isPresented: $showingEmailError) {
+                Button("OK", role: .cancel) { }
+                Button("Copy Email Address") {
+                    UIPasteboard.general.string = FeedbackService.supportEmail
+                }
+            } message: {
+                Text(emailErrorMessage)
+            }
+        }
+    }
+    
+    // MARK: - Feedback Actions (Task P4-07)
+
+    private func sendSupportEmail(category: FeedbackCategory) {
+        feedbackService.openFeedbackEmail(category: category) { success, errorMessage in
+            if !success, let error = errorMessage {
+                emailErrorMessage = error
+                showingEmailError = true
             }
         }
     }

@@ -39,6 +39,7 @@
 		458CD34D3AE83E0A091E7C3E /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA57A0647D57B571ECBDE50B /* ImageCache.swift */; };
 		474467D095B9472B06168279 /* PaginatedFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E102EDA1ABEC20655B9A5317 /* PaginatedFetch.swift */; };
 		479A20D22C3134164F2390DE /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C6B16988046C01A73A1A3B /* SettingsManager.swift */; };
+		47D64458E0A568CFB907B78E /* FeedbackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE767C7ECDFF7FBB71841B2 /* FeedbackService.swift */; };
 		48327A6B597688B6209194F8 /* IncidentDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2040BB51987888A639D22BF9 /* IncidentDetailsSheet.swift */; };
 		4D7ED3AC3FBEF74132186D17 /* ReceiptCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D16FC9D5866A87B95F18894 /* ReceiptCaptureView.swift */; };
 		4FDEF31AE65AB5B81FB07C84 /* Nestory_ProTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D5E578A47CD4A35C71CAB2 /* Nestory_ProTests.swift */; };
@@ -64,6 +65,7 @@
 		810686AD1460C9488F538F13 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653C03A8A49A3114C442970 /* AppEnvironment.swift */; };
 		8446D9C8862A516E5DCABF07 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4DA8202AA05662427487DF /* PreviewHelpers.swift */; };
 		878196F14FFA9A1757D5BCA4 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 39DFC438BAE3AA57A51D9CCF /* SnapshotTesting */; };
+		8CD2511B902C0F6D94BF100C /* FeedbackSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CC10429D21E097B1F8F39C0 /* FeedbackSheet.swift */; };
 		8F90C2361A29A15A789253ED /* DataModelInvariantsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05E47D8CA046C70AB8C1764 /* DataModelInvariantsTests.swift */; };
 		90A3DA41F16613DC2880FD87 /* ReportGeneratorServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203A52CEA90D0D3F9A37121D /* ReportGeneratorServiceTests.swift */; };
 		95D374AB1FB671A966743444 /* IAPValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C15A5D6D3013C5AC746B6D /* IAPValidatorTests.swift */; };
@@ -189,6 +191,7 @@
 		67CB8EFEE8BB66D286013C4F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		691B8BDCB8AD6A8BA1E5953D /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
 		69C2085E3983CF6FE407471D /* services.instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = services.instructions.md; sourceTree = "<group>"; };
+		6CE767C7ECDFF7FBB71841B2 /* FeedbackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackService.swift; sourceTree = "<group>"; };
 		6D0424B0A34E9480B6795493 /* ReceiptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptTests.swift; sourceTree = "<group>"; };
 		6E2DB42D14141865CB8F9170 /* Nestory_ProUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nestory_ProUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		6F4DA8202AA05662427487DF /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
@@ -214,6 +217,7 @@
 		94C0E92B15B924E981EEDF31 /* QuickAddItemSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAddItemSheet.swift; sourceTree = "<group>"; };
 		94E45CAC8181A071E6346B31 /* InventoryTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryTab.swift; sourceTree = "<group>"; };
 		9B141A02FDB6FA90E0FE6A75 /* SettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTab.swift; sourceTree = "<group>"; };
+		9CC10429D21E097B1F8F39C0 /* FeedbackSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackSheet.swift; sourceTree = "<group>"; };
 		A25898B3BFA374CC51B54ED3 /* Pluginfile */ = {isa = PBXFileReference; path = Pluginfile; sourceTree = "<group>"; };
 		A315716C91A758138ED01B18 /* MockPhotoStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPhotoStorageService.swift; sourceTree = "<group>"; };
 		A8446007D2DF5B2C60EDD3D7 /* LossListSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossListSelectionView.swift; sourceTree = "<group>"; };
@@ -352,6 +356,7 @@
 				B70ED62187FF9B9C3473A8FB /* AppLockService.swift */,
 				BD980A2E4CF367EA3C4F7E4A /* BackupService.swift */,
 				210036BB6E4F74416FD97FD6 /* CloudKitSyncMonitor.swift */,
+				6CE767C7ECDFF7FBB71841B2 /* FeedbackService.swift */,
 				E5564D39A0C20442E873CAF5 /* HapticManager.swift */,
 				37A9140EE071B48193812C1B /* IAPValidator.swift */,
 				FA57A0647D57B571ECBDE50B /* ImageCache.swift */,
@@ -426,6 +431,7 @@
 			isa = PBXGroup;
 			children = (
 				13C05C4629B01E23E03DBDD1 /* ContextualPaywallSheet.swift */,
+				9CC10429D21E097B1F8F39C0 /* FeedbackSheet.swift */,
 				9B141A02FDB6FA90E0FE6A75 /* SettingsTab.swift */,
 			);
 			path = Settings;
@@ -934,6 +940,8 @@
 				51C564F74E72EC8323EB5F41 /* CloudKitSyncMonitor.swift in Sources */,
 				EE57C61A5517951A7F878014 /* ConcurrencyHelpers.swift in Sources */,
 				10193AD6F5D84CD7DE0F8C91 /* ContextualPaywallSheet.swift in Sources */,
+				47D64458E0A568CFB907B78E /* FeedbackService.swift in Sources */,
+				8CD2511B902C0F6D94BF100C /* FeedbackSheet.swift in Sources */,
 				B8767C75E3D9CCBCBDF06488 /* FullInventoryReportView.swift in Sources */,
 				6B76E11AE622BA0A32654562 /* HapticManager.swift in Sources */,
 				FC0C7935C77BD18E902B1EB8 /* IAPValidator.swift in Sources */,

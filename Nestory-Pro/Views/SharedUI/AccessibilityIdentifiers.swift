@@ -81,6 +81,8 @@ enum AccessibilityIdentifiers {
         static let aboutCell = "settings.aboutCell"
         static let notificationsToggle = "settings.notificationsToggle"
         static let weeklyReminderToggle = "settings.weeklyReminderToggle"
+        static let feedbackButton = "settings.feedbackButton"
+        static let reportProblemButton = "settings.reportProblemButton"
     }
 
     // MARK: - Alerts & Dialogs
