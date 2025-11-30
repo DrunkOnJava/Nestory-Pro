@@ -148,9 +148,11 @@ struct TestFixtures {
     }
     
     // MARK: - Test Dates (Deterministic)
+    // These date properties are nonisolated because they only use value types
+    // and don't access any MainActor-isolated state
 
     /// Fixed reference date for all tests: January 1, 2024 at noon UTC
-    static let referenceDate: Date = {
+    nonisolated static let referenceDate: Date = {
         var components = DateComponents()
         components.year = 2024
         components.month = 1
@@ -162,27 +164,27 @@ struct TestFixtures {
         return Calendar.current.date(from: components)!
     }()
 
-    static var testDateInPast: Date {
+    nonisolated static var testDateInPast: Date {
         Calendar.current.date(byAdding: .year, value: -1, to: referenceDate)!
     }
 
-    static var testDateInFuture: Date {
+    nonisolated static var testDateInFuture: Date {
         Calendar.current.date(byAdding: .year, value: 1, to: referenceDate)!
     }
 
-    static var testDateRecent: Date {
+    nonisolated static var testDateRecent: Date {
         Calendar.current.date(byAdding: .day, value: -7, to: referenceDate)!
     }
 
-    static var testWarrantyExpired: Date {
+    nonisolated static var testWarrantyExpired: Date {
         Calendar.current.date(byAdding: .day, value: -1, to: referenceDate)!
     }
 
-    static var testWarrantyExpiringToday: Date {
+    nonisolated static var testWarrantyExpiringToday: Date {
         referenceDate
     }
 
-    static var testWarrantyExpiringTomorrow: Date {
+    nonisolated static var testWarrantyExpiringTomorrow: Date {
         Calendar.current.date(byAdding: .day, value: 1, to: referenceDate)!
     }
 }
