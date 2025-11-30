@@ -14,8 +14,7 @@ final class DataModelInvariantsTests: XCTestCase {
     
     // MARK: - Item Default Values Tests
     
-    @MainActor
-    func testItem_DefaultValues_AreCorrect() {
+    func testItem_DefaultValues_AreCorrect() async {
         // Arrange & Act
         let item = Item(name: "Test Item", condition: .good)
         
@@ -45,8 +44,7 @@ final class DataModelInvariantsTests: XCTestCase {
         XCTAssertNotNil(item.updatedAt)
     }
     
-    @MainActor
-    func testCategory_DefaultValues_AreCorrect() {
+    func testCategory_DefaultValues_AreCorrect() async {
         // Arrange & Act
         let category = Category(name: "Electronics", iconName: "laptopcomputer")
         
@@ -57,8 +55,7 @@ final class DataModelInvariantsTests: XCTestCase {
         XCTAssertTrue(category.items.isEmpty)
     }
     
-    @MainActor
-    func testRoom_DefaultValues_AreCorrect() {
+    func testRoom_DefaultValues_AreCorrect() async {
         // Arrange & Act
         let room = Room(name: "Living Room", iconName: "sofa.fill")
         
@@ -69,8 +66,7 @@ final class DataModelInvariantsTests: XCTestCase {
         XCTAssertTrue(room.items.isEmpty)
     }
     
-    @MainActor
-    func testItemPhoto_DefaultValues_AreCorrect() {
+    func testItemPhoto_DefaultValues_AreCorrect() async {
         // Arrange & Act
         let photo = ItemPhoto(imageIdentifier: "photo-123")
         
@@ -82,8 +78,7 @@ final class DataModelInvariantsTests: XCTestCase {
         XCTAssertNotNil(photo.createdAt)
     }
     
-    @MainActor
-    func testReceipt_DefaultValues_AreCorrect() {
+    func testReceipt_DefaultValues_AreCorrect() async {
         // Arrange & Act
         let receipt = Receipt(imageIdentifier: "receipt-123")
         
@@ -101,8 +96,7 @@ final class DataModelInvariantsTests: XCTestCase {
     
     // MARK: - Model Invariants Tests
     
-    @MainActor
-    func testItem_CurrencyCode_MustBeValid() throws {
+    func testItem_CurrencyCode_MustBeValid() async throws {
         // Valid 3-letter uppercase codes should pass validation
         let validItem = Item(name: "Test", condition: .good)
         validItem.currencyCode = "EUR"
@@ -116,40 +110,35 @@ final class DataModelInvariantsTests: XCTestCase {
         }
     }
     
-    @MainActor
-    func testItem_Name_CannotBeEmpty() {
+    func testItem_Name_CannotBeEmpty() async {
         let item = Item(name: "", condition: .good)
         XCTAssertThrowsError(try item.validate()) { error in
             XCTAssertEqual(error as? Item.ValidationError, .emptyName)
         }
     }
     
-    @MainActor
-    func testItem_Name_CannotBeWhitespaceOnly() {
+    func testItem_Name_CannotBeWhitespaceOnly() async {
         let item = Item(name: "   ", condition: .good)
         XCTAssertThrowsError(try item.validate()) { error in
             XCTAssertEqual(error as? Item.ValidationError, .emptyName)
         }
     }
     
-    @MainActor
-    func testItem_PurchasePrice_CannotBeNegative() {
+    func testItem_PurchasePrice_CannotBeNegative() async {
         let item = Item(name: "Test", purchasePrice: Decimal(-100), condition: .good)
         XCTAssertThrowsError(try item.validate()) { error in
             XCTAssertEqual(error as? Item.ValidationError, .negativePurchasePrice)
         }
     }
     
-    @MainActor
-    func testItem_PurchasePrice_ZeroIsValid() throws {
+    func testItem_PurchasePrice_ZeroIsValid() async throws {
         let item = Item(name: "Free Item", purchasePrice: Decimal(0), condition: .good)
         XCTAssertNoThrow(try item.validate())
     }
     
     // MARK: - Bulk Relationship Tests (Hundreds of Items)
     
-    @MainActor
-    func testBulkItems_WithCategory_MaintainsRelationships() throws {
+    func testBulkItems_WithCategory_MaintainsRelationships() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -180,8 +169,7 @@ final class DataModelInvariantsTests: XCTestCase {
         }
     }
     
-    @MainActor
-    func testBulkItems_WithRoom_MaintainsRelationships() throws {
+    func testBulkItems_WithRoom_MaintainsRelationships() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -201,8 +189,7 @@ final class DataModelInvariantsTests: XCTestCase {
         XCTAssertEqual(room.items.count, itemCount)
     }
     
-    @MainActor
-    func testBulkItems_WithPhotos_MaintainsRelationships() throws {
+    func testBulkItems_WithPhotos_MaintainsRelationships() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -240,8 +227,7 @@ final class DataModelInvariantsTests: XCTestCase {
         }
     }
     
-    @MainActor
-    func testBulkItems_WithReceipts_MaintainsRelationships() throws {
+    func testBulkItems_WithReceipts_MaintainsRelationships() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -273,8 +259,7 @@ final class DataModelInvariantsTests: XCTestCase {
         }
     }
     
-    @MainActor
-    func testBulkItems_ComplexRelationships_AllMaintained() throws {
+    func testBulkItems_ComplexRelationships_AllMaintained() async throws {
         // Arrange - Create a complex scenario with all relationship types
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -344,8 +329,7 @@ final class DataModelInvariantsTests: XCTestCase {
     
     // MARK: - Cascade Delete Tests at Scale
     
-    @MainActor
-    func testBulkDelete_Category_NullifiesItemRelationships() throws {
+    func testBulkDelete_Category_NullifiesItemRelationships() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -376,8 +360,7 @@ final class DataModelInvariantsTests: XCTestCase {
         }
     }
     
-    @MainActor
-    func testBulkDelete_Room_NullifiesItemRelationships() throws {
+    func testBulkDelete_Room_NullifiesItemRelationships() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -406,8 +389,7 @@ final class DataModelInvariantsTests: XCTestCase {
         }
     }
     
-    @MainActor
-    func testBulkDelete_Items_CascadesPhotos() throws {
+    func testBulkDelete_Items_CascadesPhotos() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext

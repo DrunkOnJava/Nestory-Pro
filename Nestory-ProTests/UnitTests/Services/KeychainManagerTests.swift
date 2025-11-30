@@ -8,7 +8,6 @@
 import XCTest
 @testable import Nestory_Pro
 
-@MainActor
 final class KeychainManagerTests: XCTestCase {
 
     // MARK: - Test Keys
@@ -43,7 +42,7 @@ final class KeychainManagerTests: XCTestCase {
 
     // MARK: - Pro Status Tests
 
-    func testSetProUnlocked_True_StoresInKeychain() throws {
+    func testSetProUnlocked_True_StoresInKeychain() async throws {
         // When: Setting Pro unlocked to true
         try KeychainManager.setProUnlocked(true)
 
@@ -52,7 +51,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertTrue(result, "Pro status should be true after setting to true")
     }
 
-    func testSetProUnlocked_False_StoresInKeychain() throws {
+    func testSetProUnlocked_False_StoresInKeychain() async throws {
         // Given: Pro status is initially true
         try KeychainManager.setProUnlocked(true)
         XCTAssertTrue(KeychainManager.isProUnlocked())
@@ -65,7 +64,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertFalse(result, "Pro status should be false after setting to false")
     }
 
-    func testIsProUnlocked_WhenNotSet_ReturnsFalse() {
+    func testIsProUnlocked_WhenNotSet_ReturnsFalse() async {
         // When: No Pro status has been set
         let result = KeychainManager.isProUnlocked()
 
@@ -73,7 +72,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertFalse(result, "Pro status should default to false when not set")
     }
 
-    func testIsProUnlocked_AfterSettingTrue_ReturnsTrue() throws {
+    func testIsProUnlocked_AfterSettingTrue_ReturnsTrue() async throws {
         // Given: Pro status is set to true
         try KeychainManager.setProUnlocked(true)
 
@@ -84,7 +83,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertTrue(result, "Pro status should persist as true")
     }
 
-    func testRemoveProStatus_RemovesValue() throws {
+    func testRemoveProStatus_RemovesValue() async throws {
         // Given: Pro status is set to true
         try KeychainManager.setProUnlocked(true)
         XCTAssertTrue(KeychainManager.isProUnlocked())
@@ -97,14 +96,14 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertFalse(result, "Pro status should be false after removal")
     }
 
-    func testRemoveProStatus_WhenNotSet_DoesNotThrow() {
+    func testRemoveProStatus_WhenNotSet_DoesNotThrow() async {
         // When: Removing Pro status that was never set
         // Then: Should not throw an error
         XCTAssertNoThrow(try KeychainManager.removeProStatus(),
                         "Removing non-existent Pro status should not throw")
     }
 
-    func testSetProUnlocked_MultipleUpdates_UpdatesCorrectly() throws {
+    func testSetProUnlocked_MultipleUpdates_UpdatesCorrectly() async throws {
         // When: Setting Pro status multiple times
         try KeychainManager.setProUnlocked(true)
         XCTAssertTrue(KeychainManager.isProUnlocked())
@@ -122,7 +121,7 @@ final class KeychainManagerTests: XCTestCase {
 
     // MARK: - Generic String Storage Tests
 
-    func testSetString_StoresValue() throws {
+    func testSetString_StoresValue() async throws {
         // Given: A test string
         let testValue = "testValue123"
 
@@ -134,7 +133,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertEqual(result, testValue, "Retrieved value should match stored value")
     }
 
-    func testGetString_RetrievesStoredValue() throws {
+    func testGetString_RetrievesStoredValue() async throws {
         // Given: A stored string
         let testValue = "anotherTestValue"
         try KeychainManager.setString(testValue, forKey: testStringKey)
@@ -146,7 +145,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertEqual(result, testValue, "Should retrieve the exact stored value")
     }
 
-    func testGetString_WhenNotSet_ReturnsNil() {
+    func testGetString_WhenNotSet_ReturnsNil() async {
         // When: Getting a string that was never set
         let result = KeychainManager.getString(forKey: "nonExistentKey")
 
@@ -154,7 +153,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertNil(result, "Getting non-existent key should return nil")
     }
 
-    func testRemoveValue_RemovesStoredString() throws {
+    func testRemoveValue_RemovesStoredString() async throws {
         // Given: A stored string
         let testValue = "valueToRemove"
         try KeychainManager.setString(testValue, forKey: testStringKey)
@@ -168,14 +167,14 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertNil(result, "Value should be nil after removal")
     }
 
-    func testRemoveValue_WhenNotSet_DoesNotThrow() {
+    func testRemoveValue_WhenNotSet_DoesNotThrow() async {
         // When: Removing a value that was never set
         // Then: Should not throw an error
         XCTAssertNoThrow(try KeychainManager.removeValue(forKey: "nonExistentKey"),
                         "Removing non-existent value should not throw")
     }
 
-    func testSetString_UpdatesExistingValue() throws {
+    func testSetString_UpdatesExistingValue() async throws {
         // Given: An existing stored value
         try KeychainManager.setString("oldValue", forKey: testStringKey)
         XCTAssertEqual(KeychainManager.getString(forKey: testStringKey), "oldValue")
@@ -189,7 +188,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertEqual(result, newValue, "Should retrieve updated value, not old value")
     }
 
-    func testSetString_HandlesSpecialCharacters() throws {
+    func testSetString_HandlesSpecialCharacters() async throws {
         // Given: A string with special characters
         let testValue = "Test!@#$%^&*()_+-=[]{}|;':\",./<>?`~"
 
@@ -201,7 +200,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertEqual(result, testValue, "Should preserve special characters")
     }
 
-    func testSetString_HandlesUnicode() throws {
+    func testSetString_HandlesUnicode() async throws {
         // Given: A string with Unicode characters
         let testValue = "Hello 世界 🌍 مرحبا"
 
@@ -213,7 +212,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertEqual(result, testValue, "Should preserve Unicode characters")
     }
 
-    func testSetString_HandlesEmptyString() throws {
+    func testSetString_HandlesEmptyString() async throws {
         // Given: An empty string
         let testValue = ""
 
@@ -225,7 +224,7 @@ final class KeychainManagerTests: XCTestCase {
         XCTAssertEqual(result, testValue, "Should handle empty string")
     }
 
-    func testSetString_HandlesLongString() throws {
+    func testSetString_HandlesLongString() async throws {
         // Given: A very long string
         let testValue = String(repeating: "A", count: 10_000)
 
@@ -239,7 +238,7 @@ final class KeychainManagerTests: XCTestCase {
 
     // MARK: - Migration Tests
 
-    func testMigration_WhenUserDefaultsHasValue_MigratesToKeychain() {
+    func testMigration_WhenUserDefaultsHasValue_MigratesToKeychain() async {
         // Given: Pro status stored in UserDefaults
         UserDefaults.standard.set(true, forKey: "isProUnlocked")
         XCTAssertTrue(UserDefaults.standard.bool(forKey: "isProUnlocked"))
@@ -260,7 +259,7 @@ final class KeychainManagerTests: XCTestCase {
                      "Migration should be marked complete")
     }
 
-    func testMigration_WhenUserDefaultsIsFalse_DoesNotMigrate() {
+    func testMigration_WhenUserDefaultsIsFalse_DoesNotMigrate() async {
         // Given: Pro status is false in UserDefaults
         UserDefaults.standard.set(false, forKey: "isProUnlocked")
 
@@ -276,7 +275,7 @@ final class KeychainManagerTests: XCTestCase {
                      "Migration should be marked complete even for false value")
     }
 
-    func testMigration_WhenAlreadyMigrated_DoesNotMigrateAgain() {
+    func testMigration_WhenAlreadyMigrated_DoesNotMigrateAgain() async {
         // Given: Migration already completed
         UserDefaults.standard.set(true, forKey: migrationTestKey)
         UserDefaults.standard.set(true, forKey: "isProUnlocked")
@@ -293,7 +292,7 @@ final class KeychainManagerTests: XCTestCase {
                      "Should not touch UserDefaults on subsequent migrations")
     }
 
-    func testMigration_WhenUserDefaultsNotSet_CompletesWithoutError() {
+    func testMigration_WhenUserDefaultsNotSet_CompletesWithoutError() async {
         // Given: No value in UserDefaults
         UserDefaults.standard.removeObject(forKey: "isProUnlocked")
 
@@ -311,7 +310,7 @@ final class KeychainManagerTests: XCTestCase {
 
     // MARK: - Edge Cases & Error Handling
 
-    func testKeyIsolation_DifferentKeys_DoNotInterfere() throws {
+    func testKeyIsolation_DifferentKeys_DoNotInterfere() async throws {
         // Given: Multiple different keys with values
         try KeychainManager.setString("value1", forKey: "key1")
         try KeychainManager.setString("value2", forKey: "key2")
@@ -333,7 +332,7 @@ final class KeychainManagerTests: XCTestCase {
         try KeychainManager.removeValue(forKey: "key3")
     }
 
-    func testProStatus_IndependentFromGenericStrings() throws {
+    func testProStatus_IndependentFromGenericStrings() async throws {
         // Given: Generic string stored
         try KeychainManager.setString("testValue", forKey: testStringKey)
 

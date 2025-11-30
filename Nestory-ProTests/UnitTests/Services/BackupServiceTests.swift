@@ -17,7 +17,6 @@
 import XCTest
 @testable import Nestory_Pro
 
-@MainActor
 final class BackupServiceTests: XCTestCase {
 
     // MARK: - Properties
@@ -474,7 +473,7 @@ final class BackupServiceTests: XCTestCase {
 
     // MARK: - Restore Result Tests
 
-    func testRestoreResult_SummaryText_NoData() {
+    func testRestoreResult_SummaryText_NoData() async {
         // Arrange
         let result = RestoreResult(
             itemsRestored: 0,
@@ -488,7 +487,7 @@ final class BackupServiceTests: XCTestCase {
         XCTAssertEqual(result.summaryText, "No data was restored.")
     }
 
-    func testRestoreResult_SummaryText_SingleItems() {
+    func testRestoreResult_SummaryText_SingleItems() async {
         // Arrange
         let result = RestoreResult(
             itemsRestored: 1,
@@ -506,7 +505,7 @@ final class BackupServiceTests: XCTestCase {
         XCTAssertFalse(result.summaryText.contains("error"))
     }
 
-    func testRestoreResult_SummaryText_MultipleItems() {
+    func testRestoreResult_SummaryText_MultipleItems() async {
         // Arrange
         let result = RestoreResult(
             itemsRestored: 5,
@@ -523,7 +522,7 @@ final class BackupServiceTests: XCTestCase {
         XCTAssertTrue(result.summaryText.contains("4 receipts"))
     }
 
-    func testRestoreResult_SummaryText_WithErrors() {
+    func testRestoreResult_SummaryText_WithErrors() async {
         // Arrange
         let result = RestoreResult(
             itemsRestored: 5,
@@ -543,7 +542,7 @@ final class BackupServiceTests: XCTestCase {
 
     // MARK: - Restore Strategy Tests
 
-    func testRestoreStrategy_HasCorrectDescriptions() {
+    func testRestoreStrategy_HasCorrectDescriptions() async {
         // Assert
         XCTAssertFalse(RestoreStrategy.merge.description.isEmpty)
         XCTAssertFalse(RestoreStrategy.replace.description.isEmpty)
@@ -552,7 +551,7 @@ final class BackupServiceTests: XCTestCase {
 
     // MARK: - ImportResult Tests
 
-    func testImportResult_SuccessCount_CalculatesCorrectly() {
+    func testImportResult_SuccessCount_CalculatesCorrectly() async {
         // Arrange
         let result = ImportResult(
             itemsImported: 10,
@@ -565,7 +564,7 @@ final class BackupServiceTests: XCTestCase {
         XCTAssertEqual(result.successCount, 18)
     }
 
-    func testImportResult_HasErrors_TrueWhenErrorsExist() {
+    func testImportResult_HasErrors_TrueWhenErrorsExist() async {
         // Arrange
         let resultWithErrors = ImportResult(
             itemsImported: 5,

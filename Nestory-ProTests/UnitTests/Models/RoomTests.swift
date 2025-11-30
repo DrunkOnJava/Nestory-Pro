@@ -13,8 +13,7 @@ final class RoomTests: XCTestCase {
 
     // MARK: - Initialization Tests
 
-    @MainActor
-    func testRoom_InitWithAllFields_SetsCorrectly() {
+    func testRoom_InitWithAllFields_SetsCorrectly() async {
         // Arrange & Act
         let room = Room(
             name: "Living Room",
@@ -32,8 +31,7 @@ final class RoomTests: XCTestCase {
 
     // MARK: - Default Rooms Tests
 
-    @MainActor
-    func testRoom_DefaultRooms_ExistAndAreValid() {
+    func testRoom_DefaultRooms_ExistAndAreValid() async {
         // Arrange & Act
         let defaults = Room.defaultRooms
 
@@ -46,8 +44,7 @@ final class RoomTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testRoom_DefaultRooms_HaveUniqueNames() {
+    func testRoom_DefaultRooms_HaveUniqueNames() async {
         // Arrange
         let defaults = Room.defaultRooms
         let names = defaults.map { $0.name }
@@ -59,8 +56,7 @@ final class RoomTests: XCTestCase {
         XCTAssertEqual(names.count, uniqueNames.count, "Default room names should be unique")
     }
 
-    @MainActor
-    func testRoom_DefaultRooms_IncludeCommonRooms() {
+    func testRoom_DefaultRooms_IncludeCommonRooms() async {
         // Arrange
         let defaults = Room.defaultRooms
         let names = defaults.map { $0.name }
@@ -77,8 +73,7 @@ final class RoomTests: XCTestCase {
 
     // MARK: - Icon Name Tests
 
-    @MainActor
-    func testRoom_SFSymbolIconNames_AreAccepted() {
+    func testRoom_SFSymbolIconNames_AreAccepted() async {
         // Arrange
         let iconNames = ["sofa", "bed.double", "fork.knife", "shower", "car.fill"]
 
@@ -97,8 +92,7 @@ final class RoomTests: XCTestCase {
 
     // MARK: - Relationship Tests
 
-    @MainActor
-    func testRoom_ItemsRelationship_IsInitiallyEmpty() {
+    func testRoom_ItemsRelationship_IsInitiallyEmpty() async {
         // Arrange & Act
         let room = TestFixtures.testRoom()
 
@@ -106,8 +100,7 @@ final class RoomTests: XCTestCase {
         XCTAssertTrue(room.items.isEmpty)
     }
 
-    @MainActor
-    func testRoom_AddItem_UpdatesItemsArray() throws {
+    func testRoom_AddItem_UpdatesItemsArray() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -125,8 +118,7 @@ final class RoomTests: XCTestCase {
         XCTAssertTrue(room.items.contains(item))
     }
 
-    @MainActor
-    func testRoom_MultipleItems_AllLinked() throws {
+    func testRoom_MultipleItems_AllLinked() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -148,8 +140,7 @@ final class RoomTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testRoom_RemoveItem_UpdatesItemsArray() throws {
+    func testRoom_RemoveItem_UpdatesItemsArray() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -174,8 +165,7 @@ final class RoomTests: XCTestCase {
 
     // MARK: - Sort Order Tests
 
-    @MainActor
-    func testRoom_SortOrder_CanBeNegative() {
+    func testRoom_SortOrder_CanBeNegative() async {
         // Arrange & Act
         let room = Room(
             name: "Negative Sort Room",
@@ -187,8 +177,7 @@ final class RoomTests: XCTestCase {
         XCTAssertEqual(room.sortOrder, -5)
     }
 
-    @MainActor
-    func testRoom_SortOrder_CanBeVeryLarge() {
+    func testRoom_SortOrder_CanBeVeryLarge() async {
         // Arrange & Act
         let room = Room(
             name: "Large Sort Room",
@@ -200,8 +189,7 @@ final class RoomTests: XCTestCase {
         XCTAssertEqual(room.sortOrder, Int.max)
     }
 
-    @MainActor
-    func testRoom_SortOrder_DeterminesDisplayOrder() throws {
+    func testRoom_SortOrder_DeterminesDisplayOrder() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -230,8 +218,7 @@ final class RoomTests: XCTestCase {
 
     // MARK: - Edge Cases
 
-    @MainActor
-    func testRoom_EmptyName_IsAllowed() {
+    func testRoom_EmptyName_IsAllowed() async {
         // Arrange & Act
         let room = Room(
             name: "",
@@ -243,8 +230,7 @@ final class RoomTests: XCTestCase {
         XCTAssertEqual(room.name, "")
     }
 
-    @MainActor
-    func testRoom_VeryLongName_IsAccepted() {
+    func testRoom_VeryLongName_IsAccepted() async {
         // Arrange
         let longName = String(repeating: "Room ", count: 100)
 
@@ -259,8 +245,7 @@ final class RoomTests: XCTestCase {
         XCTAssertEqual(room.name, longName)
     }
 
-    @MainActor
-    func testRoom_UnicodeInName_IsPreserved() {
+    func testRoom_UnicodeInName_IsPreserved() async {
         // Arrange
         let unicodeName = "主臥室 🛏️"
 
@@ -275,8 +260,7 @@ final class RoomTests: XCTestCase {
         XCTAssertEqual(room.name, unicodeName)
     }
 
-    @MainActor
-    func testRoom_SpecialCharactersInName_ArePreserved() {
+    func testRoom_SpecialCharactersInName_ArePreserved() async {
         // Arrange
         let specialName = "Kid's Room (Guest) — 2nd Floor"
 
@@ -293,8 +277,7 @@ final class RoomTests: XCTestCase {
 
     // MARK: - UUID Tests
 
-    @MainActor
-    func testRoom_HasUniqueUUID_OnCreation() {
+    func testRoom_HasUniqueUUID_OnCreation() async {
         // Arrange & Act
         let room1 = TestFixtures.testRoom(name: "Room 1")
         let room2 = TestFixtures.testRoom(name: "Room 2")
@@ -305,8 +288,7 @@ final class RoomTests: XCTestCase {
 
     // MARK: - Persistence Tests
 
-    @MainActor
-    func testRoom_PersistsCorrectly() throws {
+    func testRoom_PersistsCorrectly() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext

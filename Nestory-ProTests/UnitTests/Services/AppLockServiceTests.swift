@@ -19,18 +19,17 @@ import XCTest
 import LocalAuthentication
 @testable import Nestory_Pro
 
-@MainActor
 final class AppLockServiceTests: XCTestCase {
 
     // MARK: - Properties
 
-    var sut: AppLockService!
+    nonisolated(unsafe) var sut: AppLockService!
 
     // MARK: - Setup & Teardown
 
     override func setUp() async throws {
         try await super.setUp()
-        sut = AppLockService()
+        sut = await AppLockService()
     }
 
     override func tearDown() async throws {
@@ -154,7 +153,6 @@ final class AppLockServiceTests: XCTestCase {
 // MARK: - Mock App Lock Service
 
 /// Mock implementation for testing
-@MainActor
 final class MockAppLockService: AppLockProviding {
     var mockBiometricAvailable: Bool = true
     var mockBiometricType: BiometricType = .faceID

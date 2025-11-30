@@ -9,7 +9,6 @@ import XCTest
 import SwiftData
 @testable import Nestory_Pro
 
-@MainActor
 final class DocumentationScorePerformanceTests: XCTestCase {
 
     // MARK: - Shared Test Data (Class-Level Setup)
@@ -39,8 +38,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
 
     // MARK: - Documentation Score Performance
 
-    @MainActor
-    func testDocumentationScore_1000Items_Performance() throws {
+    func testDocumentationScore_1000Items_Performance() async throws {
         // Arrange - Use shared container
         let context = Self.sharedContainer1000.mainContext
         let descriptor = FetchDescriptor<Item>()
@@ -56,8 +54,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testIsDocumented_1000Items_Performance() throws {
+    func testIsDocumented_1000Items_Performance() async throws {
         // Arrange - Use shared container
         let context = Self.sharedContainer1000.mainContext
         let descriptor = FetchDescriptor<Item>()
@@ -72,8 +69,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
 
     // MARK: - Data Fetching Performance
 
-    @MainActor
-    func testFetchAllItems_5000Items_Performance() throws {
+    func testFetchAllItems_5000Items_Performance() async throws {
         // Arrange - Use shared container
         let context = Self.sharedContainer5000.mainContext
 
@@ -90,8 +86,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testFetchItemsWithPredicate_Performance() throws {
+    func testFetchItemsWithPredicate_Performance() async throws {
         // Arrange - Use shared container
         let context = Self.sharedContainer2000.mainContext
 
@@ -105,8 +100,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testFetchItemsWithSorting_Performance() throws {
+    func testFetchItemsWithSorting_Performance() async throws {
         // Arrange - Use shared container
         let context = Self.sharedContainer2000.mainContext
 
@@ -122,8 +116,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
 
     // MARK: - Relationship Performance
 
-    @MainActor
-    func testAccessRelationships_Performance() throws {
+    func testAccessRelationships_Performance() async throws {
         // Arrange - Use shared container with relationships
         let context = Self.sharedContainerWithRelationships.mainContext
         let descriptor = FetchDescriptor<Item>()
@@ -143,8 +136,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
 
     // MARK: - Missing Documentation Performance
 
-    @MainActor
-    func testMissingDocumentation_1000Items_Performance() throws {
+    func testMissingDocumentation_1000Items_Performance() async throws {
         // Arrange - Use shared container
         let context = Self.sharedContainer1000.mainContext
         let descriptor = FetchDescriptor<Item>()
@@ -162,8 +154,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
 
     // MARK: - Baseline Metrics
 
-    @MainActor
-    func testMetrics_DocumentationScoreCalculation() {
+    func testMetrics_DocumentationScoreCalculation() async {
         // Arrange
         let options = XCTMeasureOptions()
         options.iterationCount = 10
@@ -192,8 +183,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
 
     // MARK: - Batch Operations Performance
 
-    @MainActor
-    func testBatchInsert_Performance() throws {
+    func testBatchInsert_Performance() async throws {
         // This test creates its own container to measure insertion
         measure {
             let container = TestContainer.empty()
@@ -211,8 +201,7 @@ final class DocumentationScorePerformanceTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testBatchDelete_Performance() throws {
+    func testBatchDelete_Performance() async throws {
         // Arrange - Create fresh container for delete test
         let container = TestContainer.withManyItems(count: 500)
         let context = container.mainContext

@@ -18,7 +18,6 @@
 import XCTest
 @testable import Nestory_Pro
 
-@MainActor
 final class OCRServiceTests: XCTestCase {
 
     // MARK: - Properties

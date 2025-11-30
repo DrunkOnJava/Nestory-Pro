@@ -13,7 +13,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - MainActor Isolation Tests
 
-    @MainActor
     func testSwiftDataOperations_OnMainActor_Succeeds() async throws {
         // Arrange
         let container = TestContainer.empty()
@@ -30,7 +29,6 @@ final class ConcurrencyTests: XCTestCase {
         XCTAssertEqual(items.count, 1)
     }
 
-    @MainActor
     func testConcurrentFetches_OnMainActor_AllSucceed() async throws {
         // Arrange
         let container = TestContainer.withTestItems(count: 10)
@@ -46,7 +44,6 @@ final class ConcurrencyTests: XCTestCase {
         XCTAssertEqual(items2.count, items3.count)
     }
 
-    @MainActor
     private func fetchItems(context: ModelContext) throws -> [Item] {
         let descriptor = FetchDescriptor<Item>()
         return try context.fetch(descriptor)
@@ -54,7 +51,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Async/Await Tests
 
-    @MainActor
     func testAsyncInsertAndFetch_Succeeds() async throws {
         // Arrange
         let container = TestContainer.empty()
@@ -72,7 +68,6 @@ final class ConcurrencyTests: XCTestCase {
         XCTAssertEqual(items.count, 2)
     }
 
-    @MainActor
     private func insertItemAsync(context: ModelContext, name: String) async {
         let item = Item(name: name, condition: .good)
         context.insert(item)
@@ -80,7 +75,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Task Group Tests
 
-    @MainActor
     func testTaskGroup_ConcurrentOperations_NoDataRace() async throws {
         // Arrange
         let container = TestContainer.withTestItems(count: 20)
@@ -110,7 +104,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Sendable Compliance Tests
 
-    @MainActor
     func testItemCondition_IsSendable() async {
         // Arrange
         let condition = ItemCondition.good
@@ -131,7 +124,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Actor Hop Tests
 
-    @MainActor
     func testFetchOnMainActor_AfterBackgroundWork_Succeeds() async throws {
         // Arrange
         let container = TestContainer.withTestItems(count: 5)
@@ -155,7 +147,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Cancellation Tests
 
-    @MainActor
     func testCancellation_DoesNotCorruptData() async throws {
         // Arrange
         let container = TestContainer.empty()
@@ -193,7 +184,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Memory Safety Tests
 
-    @MainActor
     func testLargeDataSet_NoMemoryIssues() async throws {
         // Arrange
         let container = TestContainer.empty()
@@ -219,7 +209,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Structured Concurrency Tests
 
-    @MainActor
     func testStructuredConcurrency_AllTasksComplete() async throws {
         // Arrange
         let container = TestContainer.withTestItems(count: 10)
@@ -244,7 +233,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Race Condition Prevention Tests
 
-    @MainActor
     func testConcurrentModification_SameItem_NoDataCorruption() async throws {
         // Arrange
         let container = TestContainer.empty()
@@ -271,7 +259,6 @@ final class ConcurrencyTests: XCTestCase {
 
     // MARK: - Async Sequence Tests
 
-    @MainActor
     func testAsyncProcessing_ItemStream_Succeeds() async throws {
         // Arrange
         let container = TestContainer.withTestItems(count: 5)

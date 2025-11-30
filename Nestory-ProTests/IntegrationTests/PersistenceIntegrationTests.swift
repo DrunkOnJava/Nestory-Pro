@@ -10,11 +10,11 @@ import SwiftData
 @testable import Nestory_Pro
 
 final class PersistenceIntegrationTests: XCTestCase {
-    
+
     // MARK: - Cascade Delete Tests
-    
-    @MainActor
-    func testItemDelete_WithPhotos_CascadesDelete() throws {
+
+    func testItemDelete_WithPhotos_CascadesDelete() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -41,14 +41,15 @@ final class PersistenceIntegrationTests: XCTestCase {
         context.delete(item)
         try context.save()
         
-        // Assert - Photos should be cascade deleted
-        photoDescriptor = FetchDescriptor<ItemPhoto>()
-        photos = try context.fetch(photoDescriptor)
-        XCTAssertEqual(photos.count, 0, "Photos should be cascade deleted with item")
+            // Assert - Photos should be cascade deleted
+            photoDescriptor = FetchDescriptor<ItemPhoto>()
+            photos = try context.fetch(photoDescriptor)
+            XCTAssertEqual(photos.count, 0, "Photos should be cascade deleted with item")
+        }
     }
-    
-    @MainActor
-    func testItemDelete_WithReceipt_NullifiesRelationship() throws {
+
+    func testItemDelete_WithReceipt_NullifiesRelationship() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -71,17 +72,18 @@ final class PersistenceIntegrationTests: XCTestCase {
         context.delete(item)
         try context.save()
         
-        // Assert - Receipt should still exist but unlinked
-        receiptDescriptor = FetchDescriptor<Receipt>()
-        receipts = try context.fetch(receiptDescriptor)
-        XCTAssertEqual(receipts.count, 1, "Receipt should still exist")
-        XCTAssertNil(receipts.first?.linkedItem, "Receipt should be unlinked from deleted item")
+            // Assert - Receipt should still exist but unlinked
+            receiptDescriptor = FetchDescriptor<Receipt>()
+            receipts = try context.fetch(receiptDescriptor)
+            XCTAssertEqual(receipts.count, 1, "Receipt should still exist")
+            XCTAssertNil(receipts.first?.linkedItem, "Receipt should be unlinked from deleted item")
+        }
     }
-    
+
     // MARK: - Relationship Tests
-    
-    @MainActor
-    func testItemCategoryRelationship_BidirectionalWorks() throws {
+
+    func testItemCategoryRelationship_BidirectionalWorks() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -100,14 +102,15 @@ final class PersistenceIntegrationTests: XCTestCase {
         XCTAssertEqual(item1.category?.name, category.name)
         XCTAssertEqual(item2.category?.name, category.name)
         
-        // Assert - Inverse relationship
-        XCTAssertEqual(category.items.count, 2)
-        XCTAssertTrue(category.items.contains(item1))
-        XCTAssertTrue(category.items.contains(item2))
+            // Assert - Inverse relationship
+            XCTAssertEqual(category.items.count, 2)
+            XCTAssertTrue(category.items.contains(item1))
+            XCTAssertTrue(category.items.contains(item2))
+        }
     }
-    
-    @MainActor
-    func testItemRoomRelationship_BidirectionalWorks() throws {
+
+    func testItemRoomRelationship_BidirectionalWorks() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -126,16 +129,17 @@ final class PersistenceIntegrationTests: XCTestCase {
         XCTAssertEqual(item1.room?.name, room.name)
         XCTAssertEqual(item2.room?.name, room.name)
         
-        // Assert - Inverse relationship
-        XCTAssertEqual(room.items.count, 2)
-        XCTAssertTrue(room.items.contains(item1))
-        XCTAssertTrue(room.items.contains(item2))
+            // Assert - Inverse relationship
+            XCTAssertEqual(room.items.count, 2)
+            XCTAssertTrue(room.items.contains(item1))
+            XCTAssertTrue(room.items.contains(item2))
+        }
     }
-    
+
     // MARK: - CRUD Tests
-    
-    @MainActor
-    func testCreateItem_PersistsSuccessfully() throws {
+
+    func testCreateItem_PersistsSuccessfully() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -155,13 +159,14 @@ final class PersistenceIntegrationTests: XCTestCase {
         )
         let fetchedItems = try context.fetch(descriptor)
         
-        XCTAssertEqual(fetchedItems.count, 1)
-        XCTAssertEqual(fetchedItems.first?.name, "Test Item")
-        XCTAssertEqual(fetchedItems.first?.purchasePrice, Decimal(99.99))
+            XCTAssertEqual(fetchedItems.count, 1)
+            XCTAssertEqual(fetchedItems.first?.name, "Test Item")
+            XCTAssertEqual(fetchedItems.first?.purchasePrice, Decimal(99.99))
+        }
     }
-    
-    @MainActor
-    func testUpdateItem_ChangesArePersisted() throws {
+
+    func testUpdateItem_ChangesArePersisted() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -179,13 +184,14 @@ final class PersistenceIntegrationTests: XCTestCase {
         let descriptor = FetchDescriptor<Item>()
         let fetchedItems = try context.fetch(descriptor)
         
-        XCTAssertEqual(fetchedItems.count, 1)
-        XCTAssertEqual(fetchedItems.first?.name, "Updated Name")
-        XCTAssertEqual(fetchedItems.first?.purchasePrice, Decimal(199.99))
+            XCTAssertEqual(fetchedItems.count, 1)
+            XCTAssertEqual(fetchedItems.first?.name, "Updated Name")
+            XCTAssertEqual(fetchedItems.first?.purchasePrice, Decimal(199.99))
+        }
     }
-    
-    @MainActor
-    func testDeleteItem_RemovesFromContext() throws {
+
+    func testDeleteItem_RemovesFromContext() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -202,16 +208,17 @@ final class PersistenceIntegrationTests: XCTestCase {
         context.delete(item)
         try context.save()
         
-        // Assert
-        descriptor = FetchDescriptor<Item>()
-        items = try context.fetch(descriptor)
-        XCTAssertEqual(items.count, 0)
+            // Assert
+            descriptor = FetchDescriptor<Item>()
+            items = try context.fetch(descriptor)
+            XCTAssertEqual(items.count, 0)
+        }
     }
-    
+
     // MARK: - Query Tests
-    
-    @MainActor
-    func testFetchItems_WithPredicate_ReturnsMatchingItems() throws {
+
+    func testFetchItems_WithPredicate_ReturnsMatchingItems() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.withBasicData()
         let context = container.mainContext
@@ -234,15 +241,16 @@ final class PersistenceIntegrationTests: XCTestCase {
         )
         let itemsInCategory = try context.fetch(descriptor)
         
-        // Assert
-        XCTAssertEqual(itemsInCategory.count, 2)
-        XCTAssertTrue(itemsInCategory.contains(item1))
-        XCTAssertTrue(itemsInCategory.contains(item2))
-        XCTAssertFalse(itemsInCategory.contains(item3))
+            // Assert
+            XCTAssertEqual(itemsInCategory.count, 2)
+            XCTAssertTrue(itemsInCategory.contains(item1))
+            XCTAssertTrue(itemsInCategory.contains(item2))
+            XCTAssertFalse(itemsInCategory.contains(item3))
+        }
     }
-    
-    @MainActor
-    func testFetchItems_WithSortDescriptor_ReturnsSortedItems() throws {
+
+    func testFetchItems_WithSortDescriptor_ReturnsSortedItems() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -262,17 +270,18 @@ final class PersistenceIntegrationTests: XCTestCase {
         )
         let sortedItems = try context.fetch(descriptor)
         
-        // Assert
-        XCTAssertEqual(sortedItems.count, 3)
-        XCTAssertEqual(sortedItems[0].name, "Apple")
-        XCTAssertEqual(sortedItems[1].name, "Mango")
-        XCTAssertEqual(sortedItems[2].name, "Zebra")
+            // Assert
+            XCTAssertEqual(sortedItems.count, 3)
+            XCTAssertEqual(sortedItems[0].name, "Apple")
+            XCTAssertEqual(sortedItems[1].name, "Mango")
+            XCTAssertEqual(sortedItems[2].name, "Zebra")
+        }
     }
-    
+
     // MARK: - Data Volume Tests
-    
-    @MainActor
-    func testBulkInsert_ManyItems_PerformanceAcceptable() throws {
+
+    func testBulkInsert_ManyItems_PerformanceAcceptable() async throws {
+        await MainActor.run {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -294,12 +303,13 @@ final class PersistenceIntegrationTests: XCTestCase {
         let endTime = Date()
         let duration = endTime.timeIntervalSince(startTime)
         
-        // Assert
-        let descriptor = FetchDescriptor<Item>()
-        let fetchedItems = try context.fetch(descriptor)
-        XCTAssertEqual(fetchedItems.count, itemCount)
-        
-        // Performance assertion - should complete in under 1 second
-        XCTAssertLessThan(duration, 1.0, "Bulk insert took too long: \(duration)s")
+            // Assert
+            let descriptor = FetchDescriptor<Item>()
+            let fetchedItems = try context.fetch(descriptor)
+            XCTAssertEqual(fetchedItems.count, itemCount)
+
+            // Performance assertion - should complete in under 1 second
+            XCTAssertLessThan(duration, 1.0, "Bulk insert took too long: \(duration)s")
+        }
     }
 }

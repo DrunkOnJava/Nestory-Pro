@@ -191,26 +191,14 @@ struct TestFixtures {
 
 @MainActor
 struct TestContainer {
-    
+
     /// Creates an empty in-memory container for testing
+    /// Uses NestoryModelContainer.createForTesting() for consistency with production schema
     static func empty() -> ModelContainer {
-        let schema = Schema([
-            Item.self,
-            ItemPhoto.self,
-            Receipt.self,
-            Category.self,
-            Room.self
-        ])
-        
-        let configuration = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: true
-        )
-        
         do {
-            return try ModelContainer(for: schema, configurations: [configuration])
+            return try NestoryModelContainer.createForTesting()
         } catch {
-            fatalError("Failed to create test container: \(error)")
+            fatalError("Failed to create test container: \(error.localizedDescription)")
         }
     }
     

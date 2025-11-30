@@ -13,8 +13,7 @@ final class ItemTests: XCTestCase {
     
     // MARK: - Documentation Score Tests
     
-    @MainActor
-    func testDocumentationScore_AllFieldsFilled_Returns1() throws {
+    func testDocumentationScore_AllFieldsFilled_Returns1() async throws {
         // Arrange - 6-field weighted scoring (Task 1.4.1)
         // Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
         let container = TestContainer.empty()
@@ -45,8 +44,7 @@ final class ItemTests: XCTestCase {
         XCTAssertTrue(item.missingDocumentation.isEmpty)
     }
     
-    @MainActor
-    func testDocumentationScore_NoFieldsFilled_Returns0() {
+    func testDocumentationScore_NoFieldsFilled_Returns0() async {
         // Arrange
         let item = TestFixtures.testUndocumentedItem()
 
@@ -65,8 +63,7 @@ final class ItemTests: XCTestCase {
         XCTAssertTrue(item.missingDocumentation.contains("Serial Number"))
     }
     
-    @MainActor
-    func testDocumentationScore_HalfFieldsFilled_Returns0Point5() throws {
+    func testDocumentationScore_HalfFieldsFilled_Returns0Point5() async throws {
         // Arrange - 6-field weighted scoring (Task 1.4.1)
         // Value (25%) + Room (15%) + Category (10%) = 50%
         let container = TestContainer.empty()
@@ -97,8 +94,7 @@ final class ItemTests: XCTestCase {
     
     // MARK: - Has Photo Tests
     
-    @MainActor
-    func testHasPhoto_WithPhotos_ReturnsTrue() throws {
+    func testHasPhoto_WithPhotos_ReturnsTrue() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -115,8 +111,7 @@ final class ItemTests: XCTestCase {
         XCTAssertEqual(item.photos.count, 1)
     }
     
-    @MainActor
-    func testHasPhoto_NoPhotos_ReturnsFalse() {
+    func testHasPhoto_NoPhotos_ReturnsFalse() async {
         // Arrange
         let item = TestFixtures.testItem()
         
@@ -127,8 +122,7 @@ final class ItemTests: XCTestCase {
     
     // MARK: - Has Value Tests
     
-    @MainActor
-    func testHasValue_WithPrice_ReturnsTrue() {
+    func testHasValue_WithPrice_ReturnsTrue() async {
         // Arrange
         let item = TestFixtures.testItem(purchasePrice: Decimal(100))
         
@@ -136,8 +130,7 @@ final class ItemTests: XCTestCase {
         XCTAssertTrue(item.hasValue)
     }
     
-    @MainActor
-    func testHasValue_NoPrice_ReturnsFalse() {
+    func testHasValue_NoPrice_ReturnsFalse() async {
         // Arrange
         let item = TestFixtures.testItem(purchasePrice: Optional<Decimal>.none)
         
@@ -147,8 +140,7 @@ final class ItemTests: XCTestCase {
     
     // MARK: - Missing Documentation Tests
     
-    @MainActor
-    func testMissingDocumentation_CompleteItem_ReturnsEmptyArray() throws {
+    func testMissingDocumentation_CompleteItem_ReturnsEmptyArray() async throws {
         // Arrange - 6-field scoring (Task 1.4.3)
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -176,8 +168,7 @@ final class ItemTests: XCTestCase {
         XCTAssertTrue(missing.isEmpty)
     }
     
-    @MainActor
-    func testMissingDocumentation_IncompleteItem_ReturnsCorrectFields() {
+    func testMissingDocumentation_IncompleteItem_ReturnsCorrectFields() async {
         // Arrange - 6-field scoring (Task 1.4.3)
         // Item has only value, missing everything else
         let item = Item(
@@ -203,8 +194,7 @@ final class ItemTests: XCTestCase {
     
     // MARK: - Initialization Tests
     
-    @MainActor
-    func testInitialization_DefaultValues_AreSet() {
+    func testInitialization_DefaultValues_AreSet() async {
         // Arrange & Act
         let item = Item(
             name: "Test Item",
@@ -223,8 +213,7 @@ final class ItemTests: XCTestCase {
         XCTAssertTrue(item.tags.isEmpty)
     }
     
-    @MainActor
-    func testInitialization_AllFields_AreSet() throws {
+    func testInitialization_AllFields_AreSet() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext

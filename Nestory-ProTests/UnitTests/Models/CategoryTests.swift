@@ -13,8 +13,7 @@ final class CategoryTests: XCTestCase {
 
     // MARK: - Initialization Tests
 
-    @MainActor
-    func testCategory_InitWithAllFields_SetsCorrectly() {
+    func testCategory_InitWithAllFields_SetsCorrectly() async {
         // Arrange & Act
         let category = Nestory_Pro.Category(
             name: "Electronics",
@@ -34,8 +33,7 @@ final class CategoryTests: XCTestCase {
         XCTAssertTrue(category.items.isEmpty)
     }
 
-    @MainActor
-    func testCategory_CustomCategory_IsMarkedCorrectly() {
+    func testCategory_CustomCategory_IsMarkedCorrectly() async {
         // Arrange & Act
         let customCategory = Nestory_Pro.Category(
             name: "My Custom Category",
@@ -51,8 +49,7 @@ final class CategoryTests: XCTestCase {
 
     // MARK: - Default Categories Tests
 
-    @MainActor
-    func testCategory_DefaultCategories_ExistAndAreValid() {
+    func testCategory_DefaultCategories_ExistAndAreValid() async {
         // Arrange & Act
         let defaults = Nestory_Pro.Category.defaultCategories
 
@@ -66,8 +63,7 @@ final class CategoryTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testCategory_DefaultCategories_HaveUniqueNames() {
+    func testCategory_DefaultCategories_HaveUniqueNames() async {
         // Arrange
         let defaults = Nestory_Pro.Category.defaultCategories
         let names = defaults.map { $0.name }
@@ -81,8 +77,7 @@ final class CategoryTests: XCTestCase {
 
     // MARK: - Color Hex Tests
 
-    @MainActor
-    func testCategory_ValidHexColors_AreAccepted() {
+    func testCategory_ValidHexColors_AreAccepted() async {
         // Arrange
         let validColors = ["#007AFF", "#FF9500", "#34C759", "#000000", "#FFFFFF", "#abc123"]
 
@@ -101,8 +96,7 @@ final class CategoryTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testCategory_InvalidHexColor_IsNotValidated() {
+    func testCategory_InvalidHexColor_IsNotValidated() async {
         // Arrange & Act - Model doesn't validate hex format
         let category = Nestory_Pro.Category(
             name: "Invalid Color",
@@ -118,8 +112,7 @@ final class CategoryTests: XCTestCase {
 
     // MARK: - Icon Name Tests
 
-    @MainActor
-    func testCategory_SFSymbolIconNames_AreAccepted() {
+    func testCategory_SFSymbolIconNames_AreAccepted() async {
         // Arrange
         let iconNames = ["tv", "iphone", "laptopcomputer", "headphones", "gamecontroller.fill"]
 
@@ -140,8 +133,7 @@ final class CategoryTests: XCTestCase {
 
     // MARK: - Relationship Tests
 
-    @MainActor
-    func testCategory_ItemsRelationship_IsInitiallyEmpty() {
+    func testCategory_ItemsRelationship_IsInitiallyEmpty() async {
         // Arrange & Act
         let category = TestFixtures.testCategory()
 
@@ -149,8 +141,7 @@ final class CategoryTests: XCTestCase {
         XCTAssertTrue(category.items.isEmpty)
     }
 
-    @MainActor
-    func testCategory_AddItem_UpdatesItemsArray() throws {
+    func testCategory_AddItem_UpdatesItemsArray() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -168,8 +159,7 @@ final class CategoryTests: XCTestCase {
         XCTAssertTrue(category.items.contains(item))
     }
 
-    @MainActor
-    func testCategory_MultipleItems_AllLinked() throws {
+    func testCategory_MultipleItems_AllLinked() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -193,8 +183,7 @@ final class CategoryTests: XCTestCase {
 
     // MARK: - Sort Order Tests
 
-    @MainActor
-    func testCategory_SortOrder_CanBeNegative() {
+    func testCategory_SortOrder_CanBeNegative() async {
         // Arrange & Act
         let category = Nestory_Pro.Category(
             name: "Negative Sort",
@@ -208,8 +197,7 @@ final class CategoryTests: XCTestCase {
         XCTAssertEqual(category.sortOrder, -10)
     }
 
-    @MainActor
-    func testCategory_SortOrder_CanBeVeryLarge() {
+    func testCategory_SortOrder_CanBeVeryLarge() async {
         // Arrange & Act
         let category = Nestory_Pro.Category(
             name: "Large Sort",
@@ -225,8 +213,7 @@ final class CategoryTests: XCTestCase {
 
     // MARK: - Edge Cases
 
-    @MainActor
-    func testCategory_EmptyName_IsAllowed() {
+    func testCategory_EmptyName_IsAllowed() async {
         // Arrange & Act
         let category = Nestory_Pro.Category(
             name: "",
@@ -240,8 +227,7 @@ final class CategoryTests: XCTestCase {
         XCTAssertEqual(category.name, "")
     }
 
-    @MainActor
-    func testCategory_UnicodeInName_IsPreserved() {
+    func testCategory_UnicodeInName_IsPreserved() async {
         // Arrange
         let unicodeName = "家具 🪑"
 
@@ -260,8 +246,7 @@ final class CategoryTests: XCTestCase {
 
     // MARK: - UUID Tests
 
-    @MainActor
-    func testCategory_HasUniqueUUID_OnCreation() {
+    func testCategory_HasUniqueUUID_OnCreation() async {
         // Arrange & Act
         let cat1 = TestFixtures.testCategory(name: "Category 1")
         let cat2 = TestFixtures.testCategory(name: "Category 2")

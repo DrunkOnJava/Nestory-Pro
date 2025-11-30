@@ -18,19 +18,18 @@ import XCTest
 import PDFKit
 @testable import Nestory_Pro
 
-@MainActor
 final class ReportGeneratorServiceTests: XCTestCase {
 
     // MARK: - Properties
 
-    var sut: ReportGeneratorService!
-    var exportedFileURLs: [URL] = []
+    nonisolated(unsafe) var sut: ReportGeneratorService!
+    nonisolated(unsafe) var exportedFileURLs: [URL] = []
 
     // MARK: - Setup & Teardown
 
     override func setUp() async throws {
         try await super.setUp()
-        sut = ReportGeneratorService.shared
+        sut = await ReportGeneratorService.shared
         exportedFileURLs = []
     }
 
@@ -45,7 +44,7 @@ final class ReportGeneratorServiceTests: XCTestCase {
 
     // MARK: - Helper Methods
 
-    private func createTestItems(count: Int = 3) -> [Item] {
+    nonisolated private func createTestItems(count: Int = 3) -> [Item] {
         (0..<count).map { index in
             let item = Item(
                 name: "Test Item \(index + 1)",

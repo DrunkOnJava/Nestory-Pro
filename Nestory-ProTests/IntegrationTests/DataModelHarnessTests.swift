@@ -14,8 +14,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - Item Model Invariants
 
-    @MainActor
-    func testItem_DefaultValues_AreCorrect() throws {
+    func testItem_DefaultValues_AreCorrect() async throws {
         // Arrange & Act
         let item = Item(name: "Test Item", condition: .good)
 
@@ -42,8 +41,7 @@ final class DataModelHarnessTests: XCTestCase {
         XCTAssertNotNil(item.updatedAt)
     }
 
-    @MainActor
-    func testItem_AllConditions_CanBeSet() throws {
+    func testItem_AllConditions_CanBeSet() async throws {
         // Test all ItemCondition cases work correctly
         for condition in ItemCondition.allCases {
             let item = Item(name: "Item-\(condition.rawValue)", condition: condition)
@@ -52,8 +50,7 @@ final class DataModelHarnessTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testItem_DecimalPurchasePrice_MaintainsPrecision() throws {
+    func testItem_DecimalPurchasePrice_MaintainsPrecision() async throws {
         // Arrange - Test various decimal values
         let testPrices: [Decimal] = [
             Decimal(string: "0.01")!,
@@ -87,8 +84,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - Category Model Invariants
 
-    @MainActor
-    func testCategory_DefaultValues_AreCorrect() throws {
+    func testCategory_DefaultValues_AreCorrect() async throws {
         // Arrange & Act
         let category = Nestory_Pro.Category(
             name: "Electronics",
@@ -106,8 +102,7 @@ final class DataModelHarnessTests: XCTestCase {
         XCTAssertTrue(category.items.isEmpty)
     }
 
-    @MainActor
-    func testCategory_DefaultCategories_AreValid() throws {
+    func testCategory_DefaultCategories_AreValid() async throws {
         // Verify all default categories have required fields
         for cat in Nestory_Pro.Category.defaultCategories {
             XCTAssertFalse(cat.name.isEmpty, "Default category name should not be empty")
@@ -118,8 +113,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - Room Model Invariants
 
-    @MainActor
-    func testRoom_DefaultValues_AreCorrect() throws {
+    func testRoom_DefaultValues_AreCorrect() async throws {
         // Arrange & Act
         let room = Room(name: "Living Room", iconName: "sofa", sortOrder: 0)
 
@@ -132,8 +126,7 @@ final class DataModelHarnessTests: XCTestCase {
         XCTAssertTrue(room.items.isEmpty)
     }
 
-    @MainActor
-    func testRoom_DefaultRooms_AreValid() throws {
+    func testRoom_DefaultRooms_AreValid() async throws {
         // Verify all default rooms have required fields
         for room in Room.defaultRooms {
             XCTAssertFalse(room.name.isEmpty, "Default room name should not be empty")
@@ -143,8 +136,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - ItemPhoto Model Invariants
 
-    @MainActor
-    func testItemPhoto_DefaultValues_AreCorrect() throws {
+    func testItemPhoto_DefaultValues_AreCorrect() async throws {
         // Arrange & Act
         let photo = ItemPhoto(imageIdentifier: "test-photo-123")
 
@@ -159,8 +151,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - Receipt Model Invariants
 
-    @MainActor
-    func testReceipt_DefaultValues_AreCorrect() throws {
+    func testReceipt_DefaultValues_AreCorrect() async throws {
         // Arrange & Act
         let receipt = Receipt(imageIdentifier: "test-receipt-123")
 
@@ -177,8 +168,7 @@ final class DataModelHarnessTests: XCTestCase {
         XCTAssertNotNil(receipt.createdAt)
     }
 
-    @MainActor
-    func testReceipt_ConfidenceRange_IsValid() throws {
+    func testReceipt_ConfidenceRange_IsValid() async throws {
         // Test boundary confidence values
         let lowConfidence = Receipt(imageIdentifier: "low", confidence: 0.0)
         let midConfidence = Receipt(imageIdentifier: "mid", confidence: 0.5)
@@ -191,8 +181,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - Bulk Operations with Relationships
 
-    @MainActor
-    func testBulkCreate_500Items_WithRelationships() throws {
+    func testBulkCreate_500Items_WithRelationships() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -273,8 +262,7 @@ final class DataModelHarnessTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testBulkCreate_ItemsWithMultiplePhotos() throws {
+    func testBulkCreate_ItemsWithMultiplePhotos() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -316,8 +304,7 @@ final class DataModelHarnessTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testBulkCreate_ItemsWithMultipleReceipts() throws {
+    func testBulkCreate_ItemsWithMultipleReceipts() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -358,8 +345,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - Relationship Integrity at Scale
 
-    @MainActor
-    func testCategoryRelationship_AtScale_MaintainsIntegrity() throws {
+    func testCategoryRelationship_AtScale_MaintainsIntegrity() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -391,8 +377,7 @@ final class DataModelHarnessTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testRoomRelationship_AtScale_MaintainsIntegrity() throws {
+    func testRoomRelationship_AtScale_MaintainsIntegrity() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -426,8 +411,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - Documentation Score at Scale
 
-    @MainActor
-    func testDocumentationScore_AtScale_CalculatesCorrectly() throws {
+    func testDocumentationScore_AtScale_CalculatesCorrectly() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -492,8 +476,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - Validation Tests
 
-    @MainActor
-    func testItemValidation_EmptyName_ThrowsError() throws {
+    func testItemValidation_EmptyName_ThrowsError() async throws {
         let item = Item(name: "", condition: .good)
 
         XCTAssertThrowsError(try item.validate()) { error in
@@ -501,8 +484,7 @@ final class DataModelHarnessTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testItemValidation_WhitespaceOnlyName_ThrowsError() throws {
+    func testItemValidation_WhitespaceOnlyName_ThrowsError() async throws {
         let item = Item(name: "   \t\n", condition: .good)
 
         XCTAssertThrowsError(try item.validate()) { error in
@@ -510,8 +492,7 @@ final class DataModelHarnessTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testItemValidation_NegativePrice_ThrowsError() throws {
+    func testItemValidation_NegativePrice_ThrowsError() async throws {
         let item = Item(name: "Test", purchasePrice: Decimal(-10), condition: .good)
 
         XCTAssertThrowsError(try item.validate()) { error in
@@ -519,8 +500,7 @@ final class DataModelHarnessTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testItemValidation_InvalidCurrencyCode_ThrowsError() throws {
+    func testItemValidation_InvalidCurrencyCode_ThrowsError() async throws {
         var item = Item(name: "Test", condition: .good)
         item.currencyCode = "US"  // Invalid - needs 3 letters
 
@@ -529,8 +509,7 @@ final class DataModelHarnessTests: XCTestCase {
         }
     }
 
-    @MainActor
-    func testItemValidation_ValidItem_DoesNotThrow() throws {
+    func testItemValidation_ValidItem_DoesNotThrow() async throws {
         let item = Item(
             name: "Valid Item",
             purchasePrice: Decimal(100),
@@ -542,8 +521,7 @@ final class DataModelHarnessTests: XCTestCase {
 
     // MARK: - UUID Uniqueness
 
-    @MainActor
-    func testUUIDs_AreUnique_AcrossModels() throws {
+    func testUUIDs_AreUnique_AcrossModels() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext

@@ -13,8 +13,7 @@ final class ReceiptTests: XCTestCase {
 
     // MARK: - Initialization Tests
 
-    @MainActor
-    func testReceipt_InitWithRequiredFields_SetsDefaults() {
+    func testReceipt_InitWithRequiredFields_SetsDefaults() async {
         // Arrange & Act
         let receipt = Receipt(imageIdentifier: "test-receipt-123")
 
@@ -31,8 +30,7 @@ final class ReceiptTests: XCTestCase {
         XCTAssertNotNil(receipt.createdAt)
     }
 
-    @MainActor
-    func testReceipt_InitWithAllFields_SetsCorrectly() {
+    func testReceipt_InitWithAllFields_SetsCorrectly() async {
         // Arrange
         let testDate = TestFixtures.referenceDate
 
@@ -58,8 +56,7 @@ final class ReceiptTests: XCTestCase {
 
     // MARK: - Confidence Score Tests
 
-    @MainActor
-    func testReceipt_ConfidenceZero_IsValid() {
+    func testReceipt_ConfidenceZero_IsValid() async {
         // Arrange & Act
         let receipt = Receipt(
             imageIdentifier: "low-conf",
@@ -70,8 +67,7 @@ final class ReceiptTests: XCTestCase {
         XCTAssertEqual(receipt.confidence, 0.0)
     }
 
-    @MainActor
-    func testReceipt_ConfidenceOne_IsValid() {
+    func testReceipt_ConfidenceOne_IsValid() async {
         // Arrange & Act
         let receipt = Receipt(
             imageIdentifier: "high-conf",
@@ -82,8 +78,7 @@ final class ReceiptTests: XCTestCase {
         XCTAssertEqual(receipt.confidence, 1.0)
     }
 
-    @MainActor
-    func testReceipt_ConfidenceOutOfRange_IsNotValidated() {
+    func testReceipt_ConfidenceOutOfRange_IsNotValidated() async {
         // Arrange & Act - Model doesn't enforce 0-1 range
         let receipt = Receipt(
             imageIdentifier: "invalid-conf",
@@ -96,8 +91,7 @@ final class ReceiptTests: XCTestCase {
 
     // MARK: - OCR Text Tests
 
-    @MainActor
-    func testReceipt_LongRawText_IsPreserved() {
+    func testReceipt_LongRawText_IsPreserved() async {
         // Arrange
         let longText = String(repeating: "Receipt line item with details\n", count: 100)
 
@@ -111,8 +105,7 @@ final class ReceiptTests: XCTestCase {
         XCTAssertEqual(receipt.rawText, longText)
     }
 
-    @MainActor
-    func testReceipt_SpecialCharactersInText_ArePreserved() {
+    func testReceipt_SpecialCharactersInText_ArePreserved() async {
         // Arrange
         let specialText = """
         APPLE STORE
@@ -137,8 +130,7 @@ final class ReceiptTests: XCTestCase {
 
     // MARK: - Relationship Tests
 
-    @MainActor
-    func testReceipt_LinkToItem_Works() throws {
+    func testReceipt_LinkToItem_Works() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -159,8 +151,7 @@ final class ReceiptTests: XCTestCase {
         XCTAssertTrue(item.receipts.contains(receipt))
     }
 
-    @MainActor
-    func testReceipt_UnlinkFromItem_Works() throws {
+    func testReceipt_UnlinkFromItem_Works() async throws {
         // Arrange
         let container = TestContainer.empty()
         let context = container.mainContext
@@ -185,8 +176,7 @@ final class ReceiptTests: XCTestCase {
 
     // MARK: - Decimal Edge Cases
 
-    @MainActor
-    func testReceipt_ZeroTotal_IsValid() {
+    func testReceipt_ZeroTotal_IsValid() async {
         // Arrange & Act (e.g., free items, store credits)
         let receipt = Receipt(
             imageIdentifier: "zero-total",
@@ -197,8 +187,7 @@ final class ReceiptTests: XCTestCase {
         XCTAssertEqual(receipt.total, Decimal(0))
     }
 
-    @MainActor
-    func testReceipt_NegativeTotal_IsValid() {
+    func testReceipt_NegativeTotal_IsValid() async {
         // Arrange & Act (refunds)
         let receipt = Receipt(
             imageIdentifier: "refund",
@@ -209,8 +198,7 @@ final class ReceiptTests: XCTestCase {
         XCTAssertEqual(receipt.total, Decimal(-150.00))
     }
 
-    @MainActor
-    func testReceipt_TaxGreaterThanTotal_IsNotValidated() {
+    func testReceipt_TaxGreaterThanTotal_IsNotValidated() async {
         // Arrange & Act - Model doesn't validate tax logic
         let receipt = Receipt(
             imageIdentifier: "bad-tax",
@@ -225,8 +213,7 @@ final class ReceiptTests: XCTestCase {
 
     // MARK: - UUID Tests
 
-    @MainActor
-    func testReceipt_HasUniqueUUID_OnCreation() {
+    func testReceipt_HasUniqueUUID_OnCreation() async {
         // Arrange & Act
         let receipt1 = Receipt(imageIdentifier: "receipt-1")
         let receipt2 = Receipt(imageIdentifier: "receipt-2")
@@ -237,8 +224,7 @@ final class ReceiptTests: XCTestCase {
 
     // MARK: - Timestamp Tests
 
-    @MainActor
-    func testReceipt_CreatedAt_IsSetOnInit() {
+    func testReceipt_CreatedAt_IsSetOnInit() async {
         // Arrange
         let before = Date()
 

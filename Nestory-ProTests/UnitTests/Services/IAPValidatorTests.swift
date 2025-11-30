@@ -5,10 +5,9 @@
 //  Unit tests for IAPValidator
 //
 
-import XCTest
+@preconcurrency import XCTest
 @testable import Nestory_Pro
 
-@MainActor
 final class IAPValidatorTests: XCTestCase {
 
     // MARK: - Setup & Teardown
