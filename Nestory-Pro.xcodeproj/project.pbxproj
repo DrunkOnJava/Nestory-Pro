@@ -7,605 +7,1374 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8573C15B2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */; };
-		8573C15C2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */; };
-		8573C15D2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */; };
+		00E783936034C44FCF2391C8 /* DocumentationScorePerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF29DB96D23EF1905F5E315 /* DocumentationScorePerformanceTests.swift */; };
+		064FA7050328B0C1AD54195F /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EF52A27F13FE4C18093684 /* NetworkMonitor.swift */; };
+		074D103049D1A8433F1CC1F5 /* OCRServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D5FD0A7F0C9C019D3BF74B /* OCRServiceTests.swift */; };
+		0DA4FEBA5265489F9F0E7BED /* WarrantyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE6F5FB0133F75B60744060 /* WarrantyListView.swift */; };
+		0FDB606A50ED3671FB4BB2CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67CB8EFEE8BB66D286013C4F /* Assets.xcassets */; };
+		10193AD6F5D84CD7DE0F8C91 /* ContextualPaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C05C4629B01E23E03DBDD1 /* ContextualPaywallSheet.swift */; };
+		15771584CD95FCCD707BB7D7 /* CategoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DD9D6C89EA50CD19485C57 /* CategoryTests.swift */; };
+		1B7655C870AC4B0F0E85CE4D /* ItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC825B7AE914E2904DE087A4 /* ItemTests.swift */; };
+		1D54C8BB128046F0EED390CE /* LossListSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8446007D2DF5B2C60EDD3D7 /* LossListSelectionView.swift */; };
+		1DAE270C8FB14996A7C3D57A /* CaptureTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E1ABDC597F6FEBE2CB09CD /* CaptureTabViewModel.swift */; };
+		1F69FEFEF4D49ADFF85C4441 /* DataModelHarnessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EB26F780F5414E110F6C0B /* DataModelHarnessTests.swift */; };
+		26BBA756FF275629336F6FEA /* ItemEdgeCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749D2BEF6858048FF54501C /* ItemEdgeCaseTests.swift */; };
+		2F0B2BD2F465426F1086C185 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2B5403C03A3F5C222CDEB355 /* PrivacyInfo.xcprivacy */; };
+		2F9AE5CB02364B085DA2F1C9 /* SnapshotHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF2B5CBC65DBA8B692DC350 /* SnapshotHelpers.swift */; };
+		2FE2BEDF749B94EFEFC52319 /* ReportGeneratorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327267283BFF718A45EC5CE6 /* ReportGeneratorService.swift */; };
+		322BDC085471594B9F0FF744 /* ImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82485E7348C260CFB704EFB6 /* ImportService.swift */; };
+		32301D679EFB3CE5B14C5D03 /* LossListUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578190F8881B5359642E4B1A /* LossListUITests.swift */; };
+		32DA401A0AB39D241E582AA2 /* BackgroundTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2570E3498A23B43BD087E6 /* BackgroundTaskManager.swift */; };
+		33C0B8BC65702DCFA7576500 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B77FDFA4D5F13BE3B7F27F8 /* MainTabView.swift */; };
+		3484D39FF6F653A7662D1163 /* AppLockServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B65EAE4B561DCD152E5F68 /* AppLockServiceTests.swift */; };
+		37704B0401FFB9841FB69224 /* ReceiptReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A53CF8E2F1018799C341924 /* ReceiptReviewSheet.swift */; };
+		38066CE3EF2E879C7260E335 /* CaptureTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = E214EC934C21562700F111D5 /* CaptureTab.swift */; };
+		384894CC18DFDC067E4FA7E3 /* LossListPDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5646526C6DF455589B2CC974 /* LossListPDFView.swift */; };
+		3A095FA2FE9700F5090E7C18 /* ModelContextOptimization.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD7949EF555A710C19A85C /* ModelContextOptimization.swift */; };
+		3A86D85CC5C0ABCEA3B91A64 /* MockBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B418DB0A662A43299E94BF21 /* MockBackupService.swift */; };
+		3C1D381B6966AD552E5005A8 /* InventoryUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A8255F31D080B55A580457 /* InventoryUITests.swift */; };
+		3E2E619A4DD48A8C30BB3695 /* ViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC7CDB7FDABB7E02B759A23 /* ViewSnapshotTests.swift */; };
+		3F6957D8583B223DA84C0609 /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 691B8BDCB8AD6A8BA1E5953D /* OCRService.swift */; };
+		43F578A652781A0921E30ACF /* Nestory_ProUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2DB42D14141865CB8F9170 /* Nestory_ProUITestsLaunchTests.swift */; };
+		458CD34D3AE83E0A091E7C3E /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA57A0647D57B571ECBDE50B /* ImageCache.swift */; };
+		474467D095B9472B06168279 /* PaginatedFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E102EDA1ABEC20655B9A5317 /* PaginatedFetch.swift */; };
+		479A20D22C3134164F2390DE /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C6B16988046C01A73A1A3B /* SettingsManager.swift */; };
+		48327A6B597688B6209194F8 /* IncidentDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2040BB51987888A639D22BF9 /* IncidentDetailsSheet.swift */; };
+		4D7ED3AC3FBEF74132186D17 /* ReceiptCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D16FC9D5866A87B95F18894 /* ReceiptCaptureView.swift */; };
+		4FDEF31AE65AB5B81FB07C84 /* Nestory_ProTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D5E578A47CD4A35C71CAB2 /* Nestory_ProTests.swift */; };
+		51C564F74E72EC8323EB5F41 /* CloudKitSyncMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210036BB6E4F74416FD97FD6 /* CloudKitSyncMonitor.swift */; };
+		53F9E6627769E469D2B2B6F3 /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D45039C50F31AA1D2F87CC0 /* PreviewContainer.swift */; };
+		5402DD8E430B24BDEE21A579 /* Nestory_ProUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89BB8BB418B55EA7CF546ED /* Nestory_ProUITests.swift */; };
+		5812BCE699DE21F8A4AE4078 /* AddItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E32ECC5756CCC60406FD88E /* AddItemViewModel.swift */; };
+		5B40D3BA705A30AE289AB9F7 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B5ECB7E89727798B58ABE1 /* KeychainManager.swift */; };
+		5BB88D0BBE99238A65DB89C7 /* CaptureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA44FC6538954584168A5969 /* CaptureUITests.swift */; };
+		5D236ACB88284C0D55754D39 /* ItemDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D586D1F4C34AB2179F2DC648 /* ItemDetailViewModel.swift */; };
+		5E37CD3929E856A64596AD0E /* Tips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183A9054338E26E5544BC6EC /* Tips.swift */; };
+		5FCEC37F3DE359FEAFB484C0 /* MockOCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E266F6C3CC20BB45B07262F /* MockOCRService.swift */; };
+		622D80AE68F568E98175DFB8 /* AppLockProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36F81B778122741A0578F2A8 /* AppLockProtocol.swift */; };
+		68FE01F5A8074809397B400F /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD980A2E4CF367EA3C4F7E4A /* BackupService.swift */; };
+		6AF5E1AE0B743610AC3C3289 /* InventoryTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7516109502951CF7C53396D3 /* InventoryTabViewModel.swift */; };
+		6B76E11AE622BA0A32654562 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5564D39A0C20442E873CAF5 /* HapticManager.swift */; };
+		70B389AEC0AB60F0EFFAF930 /* ItemPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = D026E3CB9A0F8E0290D22506 /* ItemPhoto.swift */; };
+		71E9AC46174610213ABD226D /* ReportsTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89466A5976C84FB26204A548 /* ReportsTabViewModel.swift */; };
+		730BED663AB871323CCCB296 /* MockSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5043BD4B690B77275FCEE1D9 /* MockSettingsManager.swift */; };
+		748C42AAC8E8047C84CE7E23 /* KeychainManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7910180273F2EF066D656A8 /* KeychainManagerTests.swift */; };
+		787ACD488231CB6E100BB39A /* AppLockService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70ED62187FF9B9C3473A8FB /* AppLockService.swift */; };
+		7B1AA96DD304A5236F0CBE9F /* ItemDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B76DEF87A48FD27E4C4DD8C /* ItemDetailView.swift */; };
+		810686AD1460C9488F538F13 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653C03A8A49A3114C442970 /* AppEnvironment.swift */; };
+		8446D9C8862A516E5DCABF07 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4DA8202AA05662427487DF /* PreviewHelpers.swift */; };
+		878196F14FFA9A1757D5BCA4 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 39DFC438BAE3AA57A51D9CCF /* SnapshotTesting */; };
+		8F90C2361A29A15A789253ED /* DataModelInvariantsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05E47D8CA046C70AB8C1764 /* DataModelInvariantsTests.swift */; };
+		90A3DA41F16613DC2880FD87 /* ReportGeneratorServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203A52CEA90D0D3F9A37121D /* ReportGeneratorServiceTests.swift */; };
+		95D374AB1FB671A966743444 /* IAPValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C15A5D6D3013C5AC746B6D /* IAPValidatorTests.swift */; };
+		962225689998C11F42ED9BF1 /* AccessibilityIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB327C9D677B1C5948D772EF /* AccessibilityIdentifiers.swift */; };
+		98169B5D8E9EAB39044F4757 /* OCRServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA65608358AA67C90A92252A /* OCRServiceProtocol.swift */; };
+		9842FE9F8056CA5BA3325B8D /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 595B22268E358E854501860E /* LockScreenView.swift */; };
+		985AA4912EDB83F70EA672ED /* PersistenceIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F3ECA6B0BBBC35821F2CBB /* PersistenceIntegrationTests.swift */; };
+		9A5BA1349EE3F28A430008D4 /* MockPhotoStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A315716C91A758138ED01B18 /* MockPhotoStorageService.swift */; };
+		9A70A0388D356323BAEEBD89 /* ReceiptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0424B0A34E9480B6795493 /* ReceiptTests.swift */; };
+		9C0A4C2E3F390B8BBA643861 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D4A97164E5CACE20A284FA /* Category.swift */; };
+		9F8671974AA7EA67748BE4C9 /* MemoryPressureObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D000F680763582C730C10723 /* MemoryPressureObserver.swift */; };
+		A6B579D24DA98B33E6024A27 /* ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA78C5DC75A6040877149036 /* ConcurrencyTests.swift */; };
+		AED13D59EFBD81D9BFE78F61 /* ReportsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F61902426241554FEA3C5DC /* ReportsUITests.swift */; };
+		B45F107818B95BCE002521F0 /* SettingsProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D760CB47B56787C85419092F /* SettingsProviding.swift */; };
+		B5EDE9875D0A69B7B8F59547 /* InventoryTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E45CAC8181A071E6346B31 /* InventoryTab.swift */; };
+		B6E42F69FE9331877A7AA30D /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F42C1ECE2829875FE6D4D69 /* Room.swift */; };
+		B8767C75E3D9CCBCBDF06488 /* FullInventoryReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6465FE38D9A42742BA25A049 /* FullInventoryReportView.swift */; };
+		B9437A7C7E3EE465704A82ED /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F1A9480C41DB315188E832 /* Item.swift */; };
+		BF5AB99EA9CD75C96BBE5C97 /* PreviewFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB8EBDE3D962AB372DC0F37C /* PreviewFixtures.swift */; };
+		C1E1905D4BD7FB57BEE66D7E /* PhotoCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B641EEA46BA1B2E29EBA9EB /* PhotoCaptureView.swift */; };
+		C4C814A3F5188CCA77707FB5 /* Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7904FA83EE43C54BC2707EFA /* Receipt.swift */; };
+		C65B8EAB366002700A58CDBC /* RoomTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D192B40B1E6E865064B0359 /* RoomTests.swift */; };
+		C8EB4CDA87A8112132E49D67 /* TabNavigationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD34375249EC8CAFFBFED51 /* TabNavigationUITests.swift */; };
+		CA59046AB8D9498E618E09A3 /* TestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB01AF753C6A4D79073E59E /* TestFixtures.swift */; };
+		D0499BEF7A775ECD515D1231 /* PhotoStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CC446CDBCB13C683821808 /* PhotoStorageService.swift */; };
+		D0910031253ECD576C94B713 /* PhotoStorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A15C0B70CD701EFD6FA301B /* PhotoStorageProtocol.swift */; };
+		D112EA34E943D35C9FBFCAFB /* BackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104338325C6EBFA88F1F61D2 /* BackupServiceTests.swift */; };
+		D538159B8017E9F5C051C7A3 /* PhotoStorageServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0326F2AE5DF60E470ECEDA /* PhotoStorageServiceTests.swift */; };
+		D6E39EDC3250849D373F608C /* PerformanceLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C66DC9AD1CD0976A3C594E /* PerformanceLogger.swift */; };
+		D7BDE7D44F9657C8317CDC45 /* QuickAddItemSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C0E92B15B924E981EEDF31 /* QuickAddItemSheet.swift */; };
+		DAD1C8D5280D2B1F009816E9 /* AccessibilityIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C37771B2E2B900F207DF71B /* AccessibilityIdentifiers.swift */; };
+		E074797F887100A5F0F068FF /* NestorySchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283BE8E8988F4A4DB7AB4F84 /* NestorySchema.swift */; };
+		E18F3D1CB0C003F74338476C /* BarcodeScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5686579D477122A1C25747A9 /* BarcodeScanView.swift */; };
+		E6E795C52E91AE886FB5D1A7 /* SettingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221F4EC64826F26DBC087506 /* SettingsUITests.swift */; };
+		EA0717C752C5DF9020B0B307 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664D8D6AC00620F73F9AF5F4 /* SharedComponents.swift */; };
+		F65ED6B0CBEBF2630902985B /* BackupServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89914B65785B24CCAB31A828 /* BackupServiceProtocol.swift */; };
+		F727644992AEEAD382037198 /* Nestory_ProApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF7C75D1357D5E12886E630A /* Nestory_ProApp.swift */; };
+		F87719E4BA06EA47448CC329 /* AddItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3100F23B6EA4E1F2A7D88139 /* AddItemView.swift */; };
+		FB715DD13734004735134560 /* SettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B141A02FDB6FA90E0FE6A75 /* SettingsTab.swift */; };
+		FC0C7935C77BD18E902B1EB8 /* IAPValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A9140EE071B48193812C1B /* IAPValidator.swift */; };
+		FC9B3190695CC342CDF520B1 /* ReportsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = D62C551553F8D42E6A19E887 /* ReportsTab.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		85B6C29D2ED9E32D006F56EA /* PBXContainerItemProxy */ = {
+		45E971AA705AF13B9BADDA89 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 85B6C2832ED9E32B006F56EA /* Project object */;
+			containerPortal = F3D05D12103DA8ECDB903306 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 85B6C28A2ED9E32B006F56EA;
+			remoteGlobalIDString = E194CB4F685030542F9BFFBE;
 			remoteInfo = "Nestory-Pro";
 		};
-		85B6C2A72ED9E32D006F56EA /* PBXContainerItemProxy */ = {
+		999D8061225902D93250091E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 85B6C2832ED9E32B006F56EA /* Project object */;
+			containerPortal = F3D05D12103DA8ECDB903306 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 85B6C28A2ED9E32B006F56EA;
+			remoteGlobalIDString = E194CB4F685030542F9BFFBE;
 			remoteInfo = "Nestory-Pro";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nestory-Pro.xctestplan"; sourceTree = "<group>"; };
-		85B6C28B2ED9E32B006F56EA /* Nestory-Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nestory-Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		85B6C29C2ED9E32D006F56EA /* Nestory-ProTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Nestory-ProTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		85B6C2A62ED9E32D006F56EA /* Nestory-ProUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Nestory-ProUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0013C4B68AC5FDD48C5DC2DE /* Tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Tests.xcconfig; sourceTree = "<group>"; };
+		003005F87A9F1A396A00BC27 /* .env */ = {isa = PBXFileReference; path = .env; sourceTree = "<group>"; };
+		01C0BE59617B518DFE4FCB54 /* beta.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = beta.yml; sourceTree = "<group>"; };
+		037CE62CC4A31413762C1822 /* models.instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = models.instructions.md; sourceTree = "<group>"; };
+		04C6B16988046C01A73A1A3B /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		0636488D2EA23CA0CEFCF699 /* Nestory_Pro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Nestory_Pro.entitlements; sourceTree = "<group>"; };
+		0749D2BEF6858048FF54501C /* ItemEdgeCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemEdgeCaseTests.swift; sourceTree = "<group>"; };
+		07C15A5D6D3013C5AC746B6D /* IAPValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPValidatorTests.swift; sourceTree = "<group>"; };
+		08F1A9480C41DB315188E832 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		08F3ECA6B0BBBC35821F2CBB /* PersistenceIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceIntegrationTests.swift; sourceTree = "<group>"; };
+		0B77FDFA4D5F13BE3B7F27F8 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		0C6A61FAF4F66E6781A01A69 /* tests.instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = tests.instructions.md; sourceTree = "<group>"; };
+		0D192B40B1E6E865064B0359 /* RoomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomTests.swift; sourceTree = "<group>"; };
+		104338325C6EBFA88F1F61D2 /* BackupServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceTests.swift; sourceTree = "<group>"; };
+		116C8438DDF205D311DA33B3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		12B5ECB7E89727798B58ABE1 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		13C05C4629B01E23E03DBDD1 /* ContextualPaywallSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualPaywallSheet.swift; sourceTree = "<group>"; };
+		183A9054338E26E5544BC6EC /* Tips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tips.swift; sourceTree = "<group>"; };
+		19ABF95D945430B0CBC153E6 /* marketing_url.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = marketing_url.txt; sourceTree = "<group>"; };
+		1C37771B2E2B900F207DF71B /* AccessibilityIdentifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityIdentifiers.swift; sourceTree = "<group>"; };
+		1D16FC9D5866A87B95F18894 /* ReceiptCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCaptureView.swift; sourceTree = "<group>"; };
+		1FF29DB96D23EF1905F5E315 /* DocumentationScorePerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentationScorePerformanceTests.swift; sourceTree = "<group>"; };
+		203A52CEA90D0D3F9A37121D /* ReportGeneratorServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportGeneratorServiceTests.swift; sourceTree = "<group>"; };
+		2040BB51987888A639D22BF9 /* IncidentDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncidentDetailsSheet.swift; sourceTree = "<group>"; };
+		210036BB6E4F74416FD97FD6 /* CloudKitSyncMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitSyncMonitor.swift; sourceTree = "<group>"; };
+		221F4EC64826F26DBC087506 /* SettingsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUITests.swift; sourceTree = "<group>"; };
+		253EF21D0D147DA45813E3F9 /* Nestory-ProTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "Nestory-ProTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		283BE8E8988F4A4DB7AB4F84 /* NestorySchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestorySchema.swift; sourceTree = "<group>"; };
+		2A15C0B70CD701EFD6FA301B /* PhotoStorageProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStorageProtocol.swift; sourceTree = "<group>"; };
+		2B5403C03A3F5C222CDEB355 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2EA79ECF70C1CAF1517BB7FF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		3100F23B6EA4E1F2A7D88139 /* AddItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemView.swift; sourceTree = "<group>"; };
+		327267283BFF718A45EC5CE6 /* ReportGeneratorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportGeneratorService.swift; sourceTree = "<group>"; };
+		342C1A2E8FD39F16CA823BFC /* privacy_url.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = privacy_url.txt; sourceTree = "<group>"; };
+		36F81B778122741A0578F2A8 /* AppLockProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLockProtocol.swift; sourceTree = "<group>"; };
+		37A9140EE071B48193812C1B /* IAPValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPValidator.swift; sourceTree = "<group>"; };
+		37EB26F780F5414E110F6C0B /* DataModelHarnessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModelHarnessTests.swift; sourceTree = "<group>"; };
+		38BA5C70DF3447DEC538FAFC /* Beta.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Beta.xcconfig; sourceTree = "<group>"; };
+		3F42C1ECE2829875FE6D4D69 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
+		40E1ABDC597F6FEBE2CB09CD /* CaptureTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTabViewModel.swift; sourceTree = "<group>"; };
+		44576D95DAB0D942C571C717 /* Nestory-Pro.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Nestory-Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		458162818F335C6F11752D76 /* Fastfile */ = {isa = PBXFileReference; path = Fastfile; sourceTree = "<group>"; };
+		47AB78AD95F128A203338E07 /* AuthKey_ACR4LF383U.p8 */ = {isa = PBXFileReference; path = AuthKey_ACR4LF383U.p8; sourceTree = "<group>"; };
+		4802D86F8F58FE717007B060 /* copilot-instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "copilot-instructions.md"; sourceTree = "<group>"; };
+		4DFE0E86371400D6B93FF163 /* Nestory-ProUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "Nestory-ProUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E621107DFD87AA78D6BB4F2 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		5043BD4B690B77275FCEE1D9 /* MockSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSettingsManager.swift; sourceTree = "<group>"; };
+		5646526C6DF455589B2CC974 /* LossListPDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossListPDFView.swift; sourceTree = "<group>"; };
+		5653C03A8A49A3114C442970 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		5686579D477122A1C25747A9 /* BarcodeScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScanView.swift; sourceTree = "<group>"; };
+		56D4A97164E5CACE20A284FA /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		578190F8881B5359642E4B1A /* LossListUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossListUITests.swift; sourceTree = "<group>"; };
+		578A9F48326BAEB4B5C867A5 /* report.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = report.xml; sourceTree = "<group>"; };
+		595B22268E358E854501860E /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
+		5D8648A647219AE1686EAEDE /* Appfile */ = {isa = PBXFileReference; path = Appfile; sourceTree = "<group>"; };
+		5E266F6C3CC20BB45B07262F /* MockOCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockOCRService.swift; sourceTree = "<group>"; };
+		5FF2B5CBC65DBA8B692DC350 /* SnapshotHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelpers.swift; sourceTree = "<group>"; };
+		6121AC6E3EEA2201B4909B24 /* scheduling.log */ = {isa = PBXFileReference; path = scheduling.log; sourceTree = "<group>"; };
+		6465FE38D9A42742BA25A049 /* FullInventoryReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullInventoryReportView.swift; sourceTree = "<group>"; };
+		664D8D6AC00620F73F9AF5F4 /* SharedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedComponents.swift; sourceTree = "<group>"; };
+		67CB8EFEE8BB66D286013C4F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		691B8BDCB8AD6A8BA1E5953D /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
+		69C2085E3983CF6FE407471D /* services.instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = services.instructions.md; sourceTree = "<group>"; };
+		6D0424B0A34E9480B6795493 /* ReceiptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptTests.swift; sourceTree = "<group>"; };
+		6E2DB42D14141865CB8F9170 /* Nestory_ProUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nestory_ProUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		6F4DA8202AA05662427487DF /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
+		7352354D5F13066F8587FC85 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		73A14609777ED2E4B390759A /* description.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = description.txt; sourceTree = "<group>"; };
+		7516109502951CF7C53396D3 /* InventoryTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryTabViewModel.swift; sourceTree = "<group>"; };
+		7904FA83EE43C54BC2707EFA /* Receipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receipt.swift; sourceTree = "<group>"; };
+		7A2A91AA3CBA012193C7253E /* support_url.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = support_url.txt; sourceTree = "<group>"; };
+		7A53CF8E2F1018799C341924 /* ReceiptReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptReviewSheet.swift; sourceTree = "<group>"; };
+		7EE6F5FB0133F75B60744060 /* WarrantyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarrantyListView.swift; sourceTree = "<group>"; };
+		82485E7348C260CFB704EFB6 /* ImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportService.swift; sourceTree = "<group>"; };
+		89151F0E56DA8C519D6F2316 /* release_notes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = release_notes.txt; sourceTree = "<group>"; };
+		89466A5976C84FB26204A548 /* ReportsTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsTabViewModel.swift; sourceTree = "<group>"; };
+		89914B65785B24CCAB31A828 /* BackupServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceProtocol.swift; sourceTree = "<group>"; };
+		8B641EEA46BA1B2E29EBA9EB /* PhotoCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureView.swift; sourceTree = "<group>"; };
+		8B76DEF87A48FD27E4C4DD8C /* ItemDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailView.swift; sourceTree = "<group>"; };
+		8CD34375249EC8CAFFBFED51 /* TabNavigationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationUITests.swift; sourceTree = "<group>"; };
+		8D45039C50F31AA1D2F87CC0 /* PreviewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContainer.swift; sourceTree = "<group>"; };
+		8E32ECC5756CCC60406FD88E /* AddItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemViewModel.swift; sourceTree = "<group>"; };
+		8F61902426241554FEA3C5DC /* ReportsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsUITests.swift; sourceTree = "<group>"; };
+		8FC7CDB7FDABB7E02B759A23 /* ViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSnapshotTests.swift; sourceTree = "<group>"; };
+		92EF52A27F13FE4C18093684 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		94C0E92B15B924E981EEDF31 /* QuickAddItemSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAddItemSheet.swift; sourceTree = "<group>"; };
+		94E45CAC8181A071E6346B31 /* InventoryTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryTab.swift; sourceTree = "<group>"; };
+		9B141A02FDB6FA90E0FE6A75 /* SettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTab.swift; sourceTree = "<group>"; };
+		A25898B3BFA374CC51B54ED3 /* Pluginfile */ = {isa = PBXFileReference; path = Pluginfile; sourceTree = "<group>"; };
+		A315716C91A758138ED01B18 /* MockPhotoStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPhotoStorageService.swift; sourceTree = "<group>"; };
+		A8446007D2DF5B2C60EDD3D7 /* LossListSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossListSelectionView.swift; sourceTree = "<group>"; };
+		AA681E831835FF923C8E2D74 /* name.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = name.txt; sourceTree = "<group>"; };
+		AB8EBDE3D962AB372DC0F37C /* PreviewFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewFixtures.swift; sourceTree = "<group>"; };
+		ACD72EAF86BC9AE692CAA094 /* UITests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = UITests.xcconfig; sourceTree = "<group>"; };
+		B3FD7949EF555A710C19A85C /* ModelContextOptimization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContextOptimization.swift; sourceTree = "<group>"; };
+		B418DB0A662A43299E94BF21 /* MockBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBackupService.swift; sourceTree = "<group>"; };
+		B70ED62187FF9B9C3473A8FB /* AppLockService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLockService.swift; sourceTree = "<group>"; };
+		B9D5E578A47CD4A35C71CAB2 /* Nestory_ProTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nestory_ProTests.swift; sourceTree = "<group>"; };
+		BBEE9B595317B02E6B936475 /* promotional_text.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = promotional_text.txt; sourceTree = "<group>"; };
+		BD2570E3498A23B43BD087E6 /* BackgroundTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskManager.swift; sourceTree = "<group>"; };
+		BD980A2E4CF367EA3C4F7E4A /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
+		C650A1FCF9E29A6427FDAAAC /* subtitle.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = subtitle.txt; sourceTree = "<group>"; };
+		C6D5FD0A7F0C9C019D3BF74B /* OCRServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRServiceTests.swift; sourceTree = "<group>"; };
+		C9A8255F31D080B55A580457 /* InventoryUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryUITests.swift; sourceTree = "<group>"; };
+		CC825B7AE914E2904DE087A4 /* ItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTests.swift; sourceTree = "<group>"; };
+		CED3C38D18CC939052B39A9B /* .env.example */ = {isa = PBXFileReference; path = .env.example; sourceTree = "<group>"; };
+		D000F680763582C730C10723 /* MemoryPressureObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryPressureObserver.swift; sourceTree = "<group>"; };
+		D026E3CB9A0F8E0290D22506 /* ItemPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemPhoto.swift; sourceTree = "<group>"; };
+		D586D1F4C34AB2179F2DC648 /* ItemDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailViewModel.swift; sourceTree = "<group>"; };
+		D62C551553F8D42E6A19E887 /* ReportsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsTab.swift; sourceTree = "<group>"; };
+		D6CC446CDBCB13C683821808 /* PhotoStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStorageService.swift; sourceTree = "<group>"; };
+		D760CB47B56787C85419092F /* SettingsProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsProviding.swift; sourceTree = "<group>"; };
+		DA44FC6538954584168A5969 /* CaptureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureUITests.swift; sourceTree = "<group>"; };
+		DA65608358AA67C90A92252A /* OCRServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRServiceProtocol.swift; sourceTree = "<group>"; };
+		DB327C9D677B1C5948D772EF /* AccessibilityIdentifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityIdentifiers.swift; sourceTree = "<group>"; };
+		DB461ACED2B94E55D13D27D6 /* test.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = test.yml; sourceTree = "<group>"; };
+		E102EDA1ABEC20655B9A5317 /* PaginatedFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginatedFetch.swift; sourceTree = "<group>"; };
+		E214EC934C21562700F111D5 /* CaptureTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTab.swift; sourceTree = "<group>"; };
+		E2DD9D6C89EA50CD19485C57 /* CategoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTests.swift; sourceTree = "<group>"; };
+		E5564D39A0C20442E873CAF5 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		E7910180273F2EF066D656A8 /* KeychainManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManagerTests.swift; sourceTree = "<group>"; };
+		E7B65EAE4B561DCD152E5F68 /* AppLockServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLockServiceTests.swift; sourceTree = "<group>"; };
+		E89BB8BB418B55EA7CF546ED /* Nestory_ProUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nestory_ProUITests.swift; sourceTree = "<group>"; };
+		E96639C23600B3D265FD614B /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		F05E47D8CA046C70AB8C1764 /* DataModelInvariantsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModelInvariantsTests.swift; sourceTree = "<group>"; };
+		F32D998CDFF91C748AF302B3 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
+		F4040210298D4D4BC9D8C6EF /* viewmodels.instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = viewmodels.instructions.md; sourceTree = "<group>"; };
+		F5D3E2EDF43713BD8FF3A90E /* keywords.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = keywords.txt; sourceTree = "<group>"; };
+		F7C66DC9AD1CD0976A3C594E /* PerformanceLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceLogger.swift; sourceTree = "<group>"; };
+		FA0326F2AE5DF60E470ECEDA /* PhotoStorageServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStorageServiceTests.swift; sourceTree = "<group>"; };
+		FA57A0647D57B571ECBDE50B /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		FA78C5DC75A6040877149036 /* ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyTests.swift; sourceTree = "<group>"; };
+		FBAF4BEAD3A9AE9CF2F19FBA /* scheduling.log */ = {isa = PBXFileReference; path = scheduling.log; sourceTree = "<group>"; };
+		FDB01AF753C6A4D79073E59E /* TestFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFixtures.swift; sourceTree = "<group>"; };
+		FF7C75D1357D5E12886E630A /* Nestory_ProApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nestory_ProApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		85B6C2AE2ED9E32D006F56EA /* Exceptions for "Nestory-Pro" folder in "Nestory-Pro" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 85B6C28A2ED9E32B006F56EA /* Nestory-Pro */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		85B6C28D2ED9E32B006F56EA /* Nestory-Pro */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				85B6C2AE2ED9E32D006F56EA /* Exceptions for "Nestory-Pro" folder in "Nestory-Pro" target */,
-			);
-			path = "Nestory-Pro";
-			sourceTree = "<group>";
-		};
-		85B6C29F2ED9E32D006F56EA /* Nestory-ProTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Nestory-ProTests";
-			sourceTree = "<group>";
-		};
-		85B6C2A92ED9E32D006F56EA /* Nestory-ProUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Nestory-ProUITests";
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
-		85B6C2882ED9E32B006F56EA /* Frameworks */ = {
+		C9D69C5F399F12A1875D170B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		85B6C2992ED9E32D006F56EA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		85B6C2A32ED9E32D006F56EA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				878196F14FFA9A1757D5BCA4 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		85B6C2822ED9E32B006F56EA = {
+		01C43123EC17EAB76EC6817B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				8573C15A2EDA196000FE0026 /* Nestory-Pro.xctestplan */,
-				85B6C28D2ED9E32B006F56EA /* Nestory-Pro */,
-				85B6C29F2ED9E32D006F56EA /* Nestory-ProTests */,
-				85B6C2A92ED9E32D006F56EA /* Nestory-ProUITests */,
-				85B6C28C2ED9E32B006F56EA /* Products */,
+				E2DD9D6C89EA50CD19485C57 /* CategoryTests.swift */,
+				0749D2BEF6858048FF54501C /* ItemEdgeCaseTests.swift */,
+				CC825B7AE914E2904DE087A4 /* ItemTests.swift */,
+				6D0424B0A34E9480B6795493 /* ReceiptTests.swift */,
+				0D192B40B1E6E865064B0359 /* RoomTests.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		0BD91E79DFAA0190D6BBD59E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				44576D95DAB0D942C571C717 /* Nestory-Pro.app */,
+				253EF21D0D147DA45813E3F9 /* Nestory-ProTests.xctest */,
+				4DFE0E86371400D6B93FF163 /* Nestory-ProUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		100C4B9EC175E01EC0DCADC7 /* TestUtilities */ = {
+			isa = PBXGroup;
+			children = (
+				DB327C9D677B1C5948D772EF /* AccessibilityIdentifiers.swift */,
+			);
+			path = TestUtilities;
+			sourceTree = "<group>";
+		};
+		146EEA56492BE9E769A2228F /* PerformanceTests */ = {
+			isa = PBXGroup;
+			children = (
+				1FF29DB96D23EF1905F5E315 /* DocumentationScorePerformanceTests.swift */,
+			);
+			path = PerformanceTests;
+			sourceTree = "<group>";
+		};
+		18C9DF2792E32305C79C90B9 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BD5E230537C445CA928093CE /* Capture */,
+				9D9C1E96045315E34869480B /* Inventory */,
+				8BFB32D6CCACBD08C87C7236 /* Reports */,
+				7185F077088F66018C8B6D50 /* Settings */,
+				224C0ACD487F78DFB4924E71 /* SharedUI */,
+				0B77FDFA4D5F13BE3B7F27F8 /* MainTabView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		224C0ACD487F78DFB4924E71 /* SharedUI */ = {
+			isa = PBXGroup;
+			children = (
+				1C37771B2E2B900F207DF71B /* AccessibilityIdentifiers.swift */,
+				595B22268E358E854501860E /* LockScreenView.swift */,
+				664D8D6AC00620F73F9AF5F4 /* SharedComponents.swift */,
+				183A9054338E26E5544BC6EC /* Tips.swift */,
+			);
+			path = SharedUI;
+			sourceTree = "<group>";
+		};
+		2E41BC143C2AF47E0C9C4E7C /* test_output */ = {
+			isa = PBXGroup;
+			children = (
+				C3A3306333F924CFACF0047B /* Nestory-Pro.xcresult */,
+			);
+			path = test_output;
+			sourceTree = "<group>";
+		};
+		325401D725A2E18581FF8831 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B70ED62187FF9B9C3473A8FB /* AppLockService.swift */,
+				BD980A2E4CF367EA3C4F7E4A /* BackupService.swift */,
+				210036BB6E4F74416FD97FD6 /* CloudKitSyncMonitor.swift */,
+				E5564D39A0C20442E873CAF5 /* HapticManager.swift */,
+				37A9140EE071B48193812C1B /* IAPValidator.swift */,
+				FA57A0647D57B571ECBDE50B /* ImageCache.swift */,
+				82485E7348C260CFB704EFB6 /* ImportService.swift */,
+				12B5ECB7E89727798B58ABE1 /* KeychainManager.swift */,
+				92EF52A27F13FE4C18093684 /* NetworkMonitor.swift */,
+				691B8BDCB8AD6A8BA1E5953D /* OCRService.swift */,
+				E102EDA1ABEC20655B9A5317 /* PaginatedFetch.swift */,
+				F7C66DC9AD1CD0976A3C594E /* PerformanceLogger.swift */,
+				D6CC446CDBCB13C683821808 /* PhotoStorageService.swift */,
+				327267283BFF718A45EC5CE6 /* ReportGeneratorService.swift */,
+				04C6B16988046C01A73A1A3B /* SettingsManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		463634419F6B8D50018E0EF4 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		50DABFA1CA411178513A5D1E /* Nestory-ProTests */ = {
+			isa = PBXGroup;
+			children = (
+				FCE837A3475023EEEF6363D2 /* IntegrationTests */,
+				C348E563FCE520CD15AC0F9A /* Mocks */,
+				146EEA56492BE9E769A2228F /* PerformanceTests */,
+				C10F17957A83CDDF171647EA /* SnapshotTests */,
+				FDA4848D95487B8D24F6EC00 /* TestUtilities */,
+				A13E265A2AB68C80AEFB4101 /* UnitTests */,
+				B9D5E578A47CD4A35C71CAB2 /* Nestory_ProTests.swift */,
+				FDB01AF753C6A4D79073E59E /* TestFixtures.swift */,
+			);
+			path = "Nestory-ProTests";
+			sourceTree = "<group>";
+		};
+		5DF770B55F297DB518CA51C1 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				38BA5C70DF3447DEC538FAFC /* Beta.xcconfig */,
+				F32D998CDFF91C748AF302B3 /* Common.xcconfig */,
+				4E621107DFD87AA78D6BB4F2 /* Debug.xcconfig */,
+				E96639C23600B3D265FD614B /* Release.xcconfig */,
+				0013C4B68AC5FDD48C5DC2DE /* Tests.xcconfig */,
+				ACD72EAF86BC9AE692CAA094 /* UITests.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		5F1F062E7090F3AE2D791FAC /* .github */ = {
+			isa = PBXGroup;
+			children = (
+				A6794483D3F2AD4F3267908C /* instructions */,
+				C1A59A2C4484E3064FDEE5CF /* workflows */,
+				4802D86F8F58FE717007B060 /* copilot-instructions.md */,
+				116C8438DDF205D311DA33B3 /* README.md */,
+			);
+			path = .github;
+			sourceTree = "<group>";
+		};
+		60073E345EB64229DEB8438B /* 3_Test */ = {
+			isa = PBXGroup;
+			children = (
+				FC840DAB47E0EFE23D74C0B8 /* Diagnostics */,
+			);
+			path = 3_Test;
+			sourceTree = "<group>";
+		};
+		7185F077088F66018C8B6D50 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				13C05C4629B01E23E03DBDD1 /* ContextualPaywallSheet.swift */,
+				9B141A02FDB6FA90E0FE6A75 /* SettingsTab.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		77AAFE9E5F5EF6D4DC01A86E /* PreviewContent */ = {
+			isa = PBXGroup;
+			children = (
+				8D45039C50F31AA1D2F87CC0 /* PreviewContainer.swift */,
+				AB8EBDE3D962AB372DC0F37C /* PreviewFixtures.swift */,
+				6F4DA8202AA05662427487DF /* PreviewHelpers.swift */,
+			);
+			path = PreviewContent;
+			sourceTree = "<group>";
+		};
+		88ED3242730A455DE38B26C2 /* metadata */ = {
+			isa = PBXGroup;
+			children = (
+				E8FE2505A6A4CF72D395DB47 /* en-US */,
+			);
+			path = metadata;
+			sourceTree = "<group>";
+		};
+		8BFB32D6CCACBD08C87C7236 /* Reports */ = {
+			isa = PBXGroup;
+			children = (
+				6465FE38D9A42742BA25A049 /* FullInventoryReportView.swift */,
+				2040BB51987888A639D22BF9 /* IncidentDetailsSheet.swift */,
+				5646526C6DF455589B2CC974 /* LossListPDFView.swift */,
+				A8446007D2DF5B2C60EDD3D7 /* LossListSelectionView.swift */,
+				D62C551553F8D42E6A19E887 /* ReportsTab.swift */,
+			);
+			path = Reports;
+			sourceTree = "<group>";
+		};
+		98BE946E349BF29CB705B6E3 /* Nestory-Pro */ = {
+			isa = PBXGroup;
+			children = (
+				9A004424DEDE592C0FD709EC /* Models */,
+				77AAFE9E5F5EF6D4DC01A86E /* PreviewContent */,
+				F978A1E13C42876ED677EC69 /* Protocols */,
+				325401D725A2E18581FF8831 /* Services */,
+				E11A60F9A049A0CB552A3939 /* Utilities */,
+				B0599E7DC08AD1607389B288 /* ViewModels */,
+				18C9DF2792E32305C79C90B9 /* Views */,
+				5653C03A8A49A3114C442970 /* AppEnvironment.swift */,
+				67CB8EFEE8BB66D286013C4F /* Assets.xcassets */,
+				7352354D5F13066F8587FC85 /* Info.plist */,
+				0636488D2EA23CA0CEFCF699 /* Nestory_Pro.entitlements */,
+				FF7C75D1357D5E12886E630A /* Nestory_ProApp.swift */,
+				2B5403C03A3F5C222CDEB355 /* PrivacyInfo.xcprivacy */,
+			);
+			path = "Nestory-Pro";
+			sourceTree = "<group>";
+		};
+		9A004424DEDE592C0FD709EC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				56D4A97164E5CACE20A284FA /* Category.swift */,
+				08F1A9480C41DB315188E832 /* Item.swift */,
+				D026E3CB9A0F8E0290D22506 /* ItemPhoto.swift */,
+				283BE8E8988F4A4DB7AB4F84 /* NestorySchema.swift */,
+				7904FA83EE43C54BC2707EFA /* Receipt.swift */,
+				3F42C1ECE2829875FE6D4D69 /* Room.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9D9C1E96045315E34869480B /* Inventory */ = {
+			isa = PBXGroup;
+			children = (
+				3100F23B6EA4E1F2A7D88139 /* AddItemView.swift */,
+				94E45CAC8181A071E6346B31 /* InventoryTab.swift */,
+				8B76DEF87A48FD27E4C4DD8C /* ItemDetailView.swift */,
+				7EE6F5FB0133F75B60744060 /* WarrantyListView.swift */,
+			);
+			path = Inventory;
+			sourceTree = "<group>";
+		};
+		A13E265A2AB68C80AEFB4101 /* UnitTests */ = {
+			isa = PBXGroup;
+			children = (
+				01C43123EC17EAB76EC6817B /* Models */,
+				A8EC86B802E63CAA64708A03 /* Services */,
+			);
+			path = UnitTests;
+			sourceTree = "<group>";
+		};
+		A6794483D3F2AD4F3267908C /* instructions */ = {
+			isa = PBXGroup;
+			children = (
+				037CE62CC4A31413762C1822 /* models.instructions.md */,
+				69C2085E3983CF6FE407471D /* services.instructions.md */,
+				0C6A61FAF4F66E6781A01A69 /* tests.instructions.md */,
+				F4040210298D4D4BC9D8C6EF /* viewmodels.instructions.md */,
+			);
+			path = instructions;
+			sourceTree = "<group>";
+		};
+		A7392BB633E47F763BF429ED /* Flows */ = {
+			isa = PBXGroup;
+			children = (
+				DA44FC6538954584168A5969 /* CaptureUITests.swift */,
+				C9A8255F31D080B55A580457 /* InventoryUITests.swift */,
+				578190F8881B5359642E4B1A /* LossListUITests.swift */,
+				8F61902426241554FEA3C5DC /* ReportsUITests.swift */,
+				221F4EC64826F26DBC087506 /* SettingsUITests.swift */,
+				8CD34375249EC8CAFFBFED51 /* TabNavigationUITests.swift */,
+			);
+			path = Flows;
+			sourceTree = "<group>";
+		};
+		A8EC86B802E63CAA64708A03 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				E7B65EAE4B561DCD152E5F68 /* AppLockServiceTests.swift */,
+				104338325C6EBFA88F1F61D2 /* BackupServiceTests.swift */,
+				07C15A5D6D3013C5AC746B6D /* IAPValidatorTests.swift */,
+				E7910180273F2EF066D656A8 /* KeychainManagerTests.swift */,
+				C6D5FD0A7F0C9C019D3BF74B /* OCRServiceTests.swift */,
+				FA0326F2AE5DF60E470ECEDA /* PhotoStorageServiceTests.swift */,
+				203A52CEA90D0D3F9A37121D /* ReportGeneratorServiceTests.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		B0599E7DC08AD1607389B288 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				8E32ECC5756CCC60406FD88E /* AddItemViewModel.swift */,
+				40E1ABDC597F6FEBE2CB09CD /* CaptureTabViewModel.swift */,
+				7516109502951CF7C53396D3 /* InventoryTabViewModel.swift */,
+				D586D1F4C34AB2179F2DC648 /* ItemDetailViewModel.swift */,
+				89466A5976C84FB26204A548 /* ReportsTabViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BA9356DC72A47E1F80C54153 /* Staging */ = {
+			isa = PBXGroup;
+			children = (
+				60073E345EB64229DEB8438B /* 3_Test */,
+			);
+			path = Staging;
+			sourceTree = "<group>";
+		};
+		BD5E230537C445CA928093CE /* Capture */ = {
+			isa = PBXGroup;
+			children = (
+				5686579D477122A1C25747A9 /* BarcodeScanView.swift */,
+				E214EC934C21562700F111D5 /* CaptureTab.swift */,
+				8B641EEA46BA1B2E29EBA9EB /* PhotoCaptureView.swift */,
+				94C0E92B15B924E981EEDF31 /* QuickAddItemSheet.swift */,
+				1D16FC9D5866A87B95F18894 /* ReceiptCaptureView.swift */,
+				7A53CF8E2F1018799C341924 /* ReceiptReviewSheet.swift */,
+			);
+			path = Capture;
+			sourceTree = "<group>";
+		};
+		C10F17957A83CDDF171647EA /* SnapshotTests */ = {
+			isa = PBXGroup;
+			children = (
+				5FF2B5CBC65DBA8B692DC350 /* SnapshotHelpers.swift */,
+				8FC7CDB7FDABB7E02B759A23 /* ViewSnapshotTests.swift */,
+			);
+			path = SnapshotTests;
+			sourceTree = "<group>";
+		};
+		C1A59A2C4484E3064FDEE5CF /* workflows */ = {
+			isa = PBXGroup;
+			children = (
+				01C0BE59617B518DFE4FCB54 /* beta.yml */,
+				DB461ACED2B94E55D13D27D6 /* test.yml */,
+			);
+			path = workflows;
+			sourceTree = "<group>";
+		};
+		C348E563FCE520CD15AC0F9A /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				B418DB0A662A43299E94BF21 /* MockBackupService.swift */,
+				5E266F6C3CC20BB45B07262F /* MockOCRService.swift */,
+				A315716C91A758138ED01B18 /* MockPhotoStorageService.swift */,
+				5043BD4B690B77275FCEE1D9 /* MockSettingsManager.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
+		C3A3306333F924CFACF0047B /* Nestory-Pro.xcresult */ = {
+			isa = PBXGroup;
+			children = (
+				463634419F6B8D50018E0EF4 /* Data */,
+				BA9356DC72A47E1F80C54153 /* Staging */,
+			);
+			path = "Nestory-Pro.xcresult";
+			sourceTree = "<group>";
+		};
+		C44B243EB8982F6D83512CBA /* Nestory-ProUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A7392BB633E47F763BF429ED /* Flows */,
+				100C4B9EC175E01EC0DCADC7 /* TestUtilities */,
+				E89BB8BB418B55EA7CF546ED /* Nestory_ProUITests.swift */,
+				6E2DB42D14141865CB8F9170 /* Nestory_ProUITestsLaunchTests.swift */,
+			);
+			path = "Nestory-ProUITests";
+			sourceTree = "<group>";
+		};
+		C868AECFB197147FB6F6BC47 /* fastlane */ = {
+			isa = PBXGroup;
+			children = (
+				88ED3242730A455DE38B26C2 /* metadata */,
+				2E41BC143C2AF47E0C9C4E7C /* test_output */,
+				003005F87A9F1A396A00BC27 /* .env */,
+				CED3C38D18CC939052B39A9B /* .env.example */,
+				5D8648A647219AE1686EAEDE /* Appfile */,
+				47AB78AD95F128A203338E07 /* AuthKey_ACR4LF383U.p8 */,
+				458162818F335C6F11752D76 /* Fastfile */,
+				A25898B3BFA374CC51B54ED3 /* Pluginfile */,
+				2EA79ECF70C1CAF1517BB7FF /* README.md */,
+				578A9F48326BAEB4B5C867A5 /* report.xml */,
+			);
+			path = fastlane;
+			sourceTree = "<group>";
+		};
+		CA8C75AEDBD63A7C3E8D328A /* Nestory-ProTests-9DF42BE3-A815-438A-AD7A-EB4505B37D2A-Configuration-Test Scheme Action-Iteration-1 */ = {
+			isa = PBXGroup;
+			children = (
+				6121AC6E3EEA2201B4909B24 /* scheduling.log */,
+			);
+			path = "Nestory-ProTests-9DF42BE3-A815-438A-AD7A-EB4505B37D2A-Configuration-Test Scheme Action-Iteration-1";
+			sourceTree = "<group>";
+		};
+		D2F1A35C6AE4AF0E9FF3F1BD = {
+			isa = PBXGroup;
+			children = (
+				5F1F062E7090F3AE2D791FAC /* .github */,
+				5DF770B55F297DB518CA51C1 /* Config */,
+				C868AECFB197147FB6F6BC47 /* fastlane */,
+				98BE946E349BF29CB705B6E3 /* Nestory-Pro */,
+				50DABFA1CA411178513A5D1E /* Nestory-ProTests */,
+				C44B243EB8982F6D83512CBA /* Nestory-ProUITests */,
+				0BD91E79DFAA0190D6BBD59E /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		85B6C28C2ED9E32B006F56EA /* Products */ = {
+		DD6EB503383BDF95B84B275A /* Nestory-ProUITests-8668390B-7BB3-4718-8F7E-394A21BCA5F5-Configuration-Test Scheme Action-Iteration-1 */ = {
 			isa = PBXGroup;
 			children = (
-				85B6C28B2ED9E32B006F56EA /* Nestory-Pro.app */,
-				85B6C29C2ED9E32D006F56EA /* Nestory-ProTests.xctest */,
-				85B6C2A62ED9E32D006F56EA /* Nestory-ProUITests.xctest */,
+				FBAF4BEAD3A9AE9CF2F19FBA /* scheduling.log */,
 			);
-			name = Products;
+			path = "Nestory-ProUITests-8668390B-7BB3-4718-8F7E-394A21BCA5F5-Configuration-Test Scheme Action-Iteration-1";
+			sourceTree = "<group>";
+		};
+		E11A60F9A049A0CB552A3939 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				BD2570E3498A23B43BD087E6 /* BackgroundTaskManager.swift */,
+				D000F680763582C730C10723 /* MemoryPressureObserver.swift */,
+				B3FD7949EF555A710C19A85C /* ModelContextOptimization.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		E8FE2505A6A4CF72D395DB47 /* en-US */ = {
+			isa = PBXGroup;
+			children = (
+				73A14609777ED2E4B390759A /* description.txt */,
+				F5D3E2EDF43713BD8FF3A90E /* keywords.txt */,
+				19ABF95D945430B0CBC153E6 /* marketing_url.txt */,
+				AA681E831835FF923C8E2D74 /* name.txt */,
+				342C1A2E8FD39F16CA823BFC /* privacy_url.txt */,
+				BBEE9B595317B02E6B936475 /* promotional_text.txt */,
+				89151F0E56DA8C519D6F2316 /* release_notes.txt */,
+				C650A1FCF9E29A6427FDAAAC /* subtitle.txt */,
+				7A2A91AA3CBA012193C7253E /* support_url.txt */,
+			);
+			path = "en-US";
+			sourceTree = "<group>";
+		};
+		F978A1E13C42876ED677EC69 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				36F81B778122741A0578F2A8 /* AppLockProtocol.swift */,
+				89914B65785B24CCAB31A828 /* BackupServiceProtocol.swift */,
+				DA65608358AA67C90A92252A /* OCRServiceProtocol.swift */,
+				2A15C0B70CD701EFD6FA301B /* PhotoStorageProtocol.swift */,
+				D760CB47B56787C85419092F /* SettingsProviding.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		FC840DAB47E0EFE23D74C0B8 /* Diagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				CA8C75AEDBD63A7C3E8D328A /* Nestory-ProTests-9DF42BE3-A815-438A-AD7A-EB4505B37D2A-Configuration-Test Scheme Action-Iteration-1 */,
+				DD6EB503383BDF95B84B275A /* Nestory-ProUITests-8668390B-7BB3-4718-8F7E-394A21BCA5F5-Configuration-Test Scheme Action-Iteration-1 */,
+			);
+			path = Diagnostics;
+			sourceTree = "<group>";
+		};
+		FCE837A3475023EEEF6363D2 /* IntegrationTests */ = {
+			isa = PBXGroup;
+			children = (
+				FA78C5DC75A6040877149036 /* ConcurrencyTests.swift */,
+				37EB26F780F5414E110F6C0B /* DataModelHarnessTests.swift */,
+				F05E47D8CA046C70AB8C1764 /* DataModelInvariantsTests.swift */,
+				08F3ECA6B0BBBC35821F2CBB /* PersistenceIntegrationTests.swift */,
+			);
+			path = IntegrationTests;
+			sourceTree = "<group>";
+		};
+		FDA4848D95487B8D24F6EC00 /* TestUtilities */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = TestUtilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		85B6C28A2ED9E32B006F56EA /* Nestory-Pro */ = {
+		09BD34CD822D741EBC31A896 /* Nestory-ProTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 85B6C2AF2ED9E32D006F56EA /* Build configuration list for PBXNativeTarget "Nestory-Pro" */;
+			buildConfigurationList = 7309CCF8A7E70DF5822DB17D /* Build configuration list for PBXNativeTarget "Nestory-ProTests" */;
 			buildPhases = (
-				85B6C2872ED9E32B006F56EA /* Sources */,
-				85B6C2882ED9E32B006F56EA /* Frameworks */,
-				85B6C2892ED9E32B006F56EA /* Resources */,
+				34C42126417852394C482E42 /* Sources */,
+				C9D69C5F399F12A1875D170B /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				85B6C28D2ED9E32B006F56EA /* Nestory-Pro */,
-			);
-			name = "Nestory-Pro";
-			packageProductDependencies = (
-			);
-			productName = "Nestory-Pro";
-			productReference = 85B6C28B2ED9E32B006F56EA /* Nestory-Pro.app */;
-			productType = "com.apple.product-type.application";
-		};
-		85B6C29B2ED9E32D006F56EA /* Nestory-ProTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 85B6C2B42ED9E32D006F56EA /* Build configuration list for PBXNativeTarget "Nestory-ProTests" */;
-			buildPhases = (
-				85B6C2982ED9E32D006F56EA /* Sources */,
-				85B6C2992ED9E32D006F56EA /* Frameworks */,
-				85B6C29A2ED9E32D006F56EA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				85B6C29E2ED9E32D006F56EA /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				85B6C29F2ED9E32D006F56EA /* Nestory-ProTests */,
+				DE21369404D0AC5E829E2FD4 /* PBXTargetDependency */,
 			);
 			name = "Nestory-ProTests";
 			packageProductDependencies = (
+				39DFC438BAE3AA57A51D9CCF /* SnapshotTesting */,
 			);
 			productName = "Nestory-ProTests";
-			productReference = 85B6C29C2ED9E32D006F56EA /* Nestory-ProTests.xctest */;
+			productReference = 253EF21D0D147DA45813E3F9 /* Nestory-ProTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		85B6C2A52ED9E32D006F56EA /* Nestory-ProUITests */ = {
+		99F66FDA9B2DAD80E24D1010 /* Nestory-ProUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 85B6C2B72ED9E32D006F56EA /* Build configuration list for PBXNativeTarget "Nestory-ProUITests" */;
+			buildConfigurationList = D095991547A58C820C677138 /* Build configuration list for PBXNativeTarget "Nestory-ProUITests" */;
 			buildPhases = (
-				85B6C2A22ED9E32D006F56EA /* Sources */,
-				85B6C2A32ED9E32D006F56EA /* Frameworks */,
-				85B6C2A42ED9E32D006F56EA /* Resources */,
+				431560F96C8AB8CDFE3FAE04 /* Sources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				85B6C2A82ED9E32D006F56EA /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				85B6C2A92ED9E32D006F56EA /* Nestory-ProUITests */,
+				5B2FB76B6BD883F6EA6B78EF /* PBXTargetDependency */,
 			);
 			name = "Nestory-ProUITests";
 			packageProductDependencies = (
 			);
 			productName = "Nestory-ProUITests";
-			productReference = 85B6C2A62ED9E32D006F56EA /* Nestory-ProUITests.xctest */;
+			productReference = 4DFE0E86371400D6B93FF163 /* Nestory-ProUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		E194CB4F685030542F9BFFBE /* Nestory-Pro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69642E3CB3B91F2BFDFC3922 /* Build configuration list for PBXNativeTarget "Nestory-Pro" */;
+			buildPhases = (
+				891FF92525E4D31F33125AD5 /* Sources */,
+				889CEFEA1BACF938C39413CC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Nestory-Pro";
+			packageProductDependencies = (
+			);
+			productName = "Nestory-Pro";
+			productReference = 44576D95DAB0D942C571C717 /* Nestory-Pro.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		85B6C2832ED9E32B006F56EA /* Project object */ = {
+		F3D05D12103DA8ECDB903306 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2610;
-				LastUpgradeCheck = 2610;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					85B6C28A2ED9E32B006F56EA = {
-						CreatedOnToolsVersion = 26.1.1;
+					09BD34CD822D741EBC31A896 = {
+						DevelopmentTeam = 2VXBQV4XC9;
+						ProvisioningStyle = Automatic;
 					};
-					85B6C29B2ED9E32D006F56EA = {
-						CreatedOnToolsVersion = 26.1.1;
-						TestTargetID = 85B6C28A2ED9E32B006F56EA;
+					99F66FDA9B2DAD80E24D1010 = {
+						DevelopmentTeam = 2VXBQV4XC9;
+						ProvisioningStyle = Automatic;
+						TestTargetID = E194CB4F685030542F9BFFBE;
 					};
-					85B6C2A52ED9E32D006F56EA = {
-						CreatedOnToolsVersion = 26.1.1;
-						TestTargetID = 85B6C28A2ED9E32B006F56EA;
+					E194CB4F685030542F9BFFBE = {
+						DevelopmentTeam = 2VXBQV4XC9;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 85B6C2862ED9E32B006F56EA /* Build configuration list for PBXProject "Nestory-Pro" */;
+			buildConfigurationList = B2D33F7EA4E66849745C90EB /* Build configuration list for PBXProject "Nestory-Pro" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				en,
 			);
-			mainGroup = 85B6C2822ED9E32B006F56EA;
+			mainGroup = D2F1A35C6AE4AF0E9FF3F1BD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				473A77232F4DB57FF5C79071 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 85B6C28C2ED9E32B006F56EA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				85B6C28A2ED9E32B006F56EA /* Nestory-Pro */,
-				85B6C29B2ED9E32D006F56EA /* Nestory-ProTests */,
-				85B6C2A52ED9E32D006F56EA /* Nestory-ProUITests */,
+				E194CB4F685030542F9BFFBE /* Nestory-Pro */,
+				09BD34CD822D741EBC31A896 /* Nestory-ProTests */,
+				99F66FDA9B2DAD80E24D1010 /* Nestory-ProUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		85B6C2892ED9E32B006F56EA /* Resources */ = {
+		889CEFEA1BACF938C39413CC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8573C15D2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		85B6C29A2ED9E32D006F56EA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8573C15B2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		85B6C2A42ED9E32D006F56EA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8573C15C2EDA196000FE0026 /* Nestory-Pro.xctestplan in Resources */,
+				0FDB606A50ED3671FB4BB2CD /* Assets.xcassets in Resources */,
+				2F0B2BD2F465426F1086C185 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		85B6C2872ED9E32B006F56EA /* Sources */ = {
+		34C42126417852394C482E42 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3484D39FF6F653A7662D1163 /* AppLockServiceTests.swift in Sources */,
+				D112EA34E943D35C9FBFCAFB /* BackupServiceTests.swift in Sources */,
+				15771584CD95FCCD707BB7D7 /* CategoryTests.swift in Sources */,
+				A6B579D24DA98B33E6024A27 /* ConcurrencyTests.swift in Sources */,
+				1F69FEFEF4D49ADFF85C4441 /* DataModelHarnessTests.swift in Sources */,
+				8F90C2361A29A15A789253ED /* DataModelInvariantsTests.swift in Sources */,
+				00E783936034C44FCF2391C8 /* DocumentationScorePerformanceTests.swift in Sources */,
+				95D374AB1FB671A966743444 /* IAPValidatorTests.swift in Sources */,
+				26BBA756FF275629336F6FEA /* ItemEdgeCaseTests.swift in Sources */,
+				1B7655C870AC4B0F0E85CE4D /* ItemTests.swift in Sources */,
+				748C42AAC8E8047C84CE7E23 /* KeychainManagerTests.swift in Sources */,
+				3A86D85CC5C0ABCEA3B91A64 /* MockBackupService.swift in Sources */,
+				5FCEC37F3DE359FEAFB484C0 /* MockOCRService.swift in Sources */,
+				9A5BA1349EE3F28A430008D4 /* MockPhotoStorageService.swift in Sources */,
+				730BED663AB871323CCCB296 /* MockSettingsManager.swift in Sources */,
+				4FDEF31AE65AB5B81FB07C84 /* Nestory_ProTests.swift in Sources */,
+				074D103049D1A8433F1CC1F5 /* OCRServiceTests.swift in Sources */,
+				985AA4912EDB83F70EA672ED /* PersistenceIntegrationTests.swift in Sources */,
+				D538159B8017E9F5C051C7A3 /* PhotoStorageServiceTests.swift in Sources */,
+				9A70A0388D356323BAEEBD89 /* ReceiptTests.swift in Sources */,
+				90A3DA41F16613DC2880FD87 /* ReportGeneratorServiceTests.swift in Sources */,
+				C65B8EAB366002700A58CDBC /* RoomTests.swift in Sources */,
+				2F9AE5CB02364B085DA2F1C9 /* SnapshotHelpers.swift in Sources */,
+				CA59046AB8D9498E618E09A3 /* TestFixtures.swift in Sources */,
+				3E2E619A4DD48A8C30BB3695 /* ViewSnapshotTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		85B6C2982ED9E32D006F56EA /* Sources */ = {
+		431560F96C8AB8CDFE3FAE04 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				962225689998C11F42ED9BF1 /* AccessibilityIdentifiers.swift in Sources */,
+				5BB88D0BBE99238A65DB89C7 /* CaptureUITests.swift in Sources */,
+				3C1D381B6966AD552E5005A8 /* InventoryUITests.swift in Sources */,
+				32301D679EFB3CE5B14C5D03 /* LossListUITests.swift in Sources */,
+				5402DD8E430B24BDEE21A579 /* Nestory_ProUITests.swift in Sources */,
+				43F578A652781A0921E30ACF /* Nestory_ProUITestsLaunchTests.swift in Sources */,
+				AED13D59EFBD81D9BFE78F61 /* ReportsUITests.swift in Sources */,
+				E6E795C52E91AE886FB5D1A7 /* SettingsUITests.swift in Sources */,
+				C8EB4CDA87A8112132E49D67 /* TabNavigationUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		85B6C2A22ED9E32D006F56EA /* Sources */ = {
+		891FF92525E4D31F33125AD5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DAD1C8D5280D2B1F009816E9 /* AccessibilityIdentifiers.swift in Sources */,
+				F87719E4BA06EA47448CC329 /* AddItemView.swift in Sources */,
+				5812BCE699DE21F8A4AE4078 /* AddItemViewModel.swift in Sources */,
+				810686AD1460C9488F538F13 /* AppEnvironment.swift in Sources */,
+				622D80AE68F568E98175DFB8 /* AppLockProtocol.swift in Sources */,
+				787ACD488231CB6E100BB39A /* AppLockService.swift in Sources */,
+				32DA401A0AB39D241E582AA2 /* BackgroundTaskManager.swift in Sources */,
+				68FE01F5A8074809397B400F /* BackupService.swift in Sources */,
+				F65ED6B0CBEBF2630902985B /* BackupServiceProtocol.swift in Sources */,
+				E18F3D1CB0C003F74338476C /* BarcodeScanView.swift in Sources */,
+				38066CE3EF2E879C7260E335 /* CaptureTab.swift in Sources */,
+				1DAE270C8FB14996A7C3D57A /* CaptureTabViewModel.swift in Sources */,
+				9C0A4C2E3F390B8BBA643861 /* Category.swift in Sources */,
+				51C564F74E72EC8323EB5F41 /* CloudKitSyncMonitor.swift in Sources */,
+				10193AD6F5D84CD7DE0F8C91 /* ContextualPaywallSheet.swift in Sources */,
+				B8767C75E3D9CCBCBDF06488 /* FullInventoryReportView.swift in Sources */,
+				6B76E11AE622BA0A32654562 /* HapticManager.swift in Sources */,
+				FC0C7935C77BD18E902B1EB8 /* IAPValidator.swift in Sources */,
+				458CD34D3AE83E0A091E7C3E /* ImageCache.swift in Sources */,
+				322BDC085471594B9F0FF744 /* ImportService.swift in Sources */,
+				48327A6B597688B6209194F8 /* IncidentDetailsSheet.swift in Sources */,
+				B5EDE9875D0A69B7B8F59547 /* InventoryTab.swift in Sources */,
+				6AF5E1AE0B743610AC3C3289 /* InventoryTabViewModel.swift in Sources */,
+				B9437A7C7E3EE465704A82ED /* Item.swift in Sources */,
+				7B1AA96DD304A5236F0CBE9F /* ItemDetailView.swift in Sources */,
+				5D236ACB88284C0D55754D39 /* ItemDetailViewModel.swift in Sources */,
+				70B389AEC0AB60F0EFFAF930 /* ItemPhoto.swift in Sources */,
+				5B40D3BA705A30AE289AB9F7 /* KeychainManager.swift in Sources */,
+				9842FE9F8056CA5BA3325B8D /* LockScreenView.swift in Sources */,
+				384894CC18DFDC067E4FA7E3 /* LossListPDFView.swift in Sources */,
+				1D54C8BB128046F0EED390CE /* LossListSelectionView.swift in Sources */,
+				33C0B8BC65702DCFA7576500 /* MainTabView.swift in Sources */,
+				9F8671974AA7EA67748BE4C9 /* MemoryPressureObserver.swift in Sources */,
+				3A095FA2FE9700F5090E7C18 /* ModelContextOptimization.swift in Sources */,
+				E074797F887100A5F0F068FF /* NestorySchema.swift in Sources */,
+				F727644992AEEAD382037198 /* Nestory_ProApp.swift in Sources */,
+				064FA7050328B0C1AD54195F /* NetworkMonitor.swift in Sources */,
+				3F6957D8583B223DA84C0609 /* OCRService.swift in Sources */,
+				98169B5D8E9EAB39044F4757 /* OCRServiceProtocol.swift in Sources */,
+				474467D095B9472B06168279 /* PaginatedFetch.swift in Sources */,
+				D6E39EDC3250849D373F608C /* PerformanceLogger.swift in Sources */,
+				C1E1905D4BD7FB57BEE66D7E /* PhotoCaptureView.swift in Sources */,
+				D0910031253ECD576C94B713 /* PhotoStorageProtocol.swift in Sources */,
+				D0499BEF7A775ECD515D1231 /* PhotoStorageService.swift in Sources */,
+				53F9E6627769E469D2B2B6F3 /* PreviewContainer.swift in Sources */,
+				BF5AB99EA9CD75C96BBE5C97 /* PreviewFixtures.swift in Sources */,
+				8446D9C8862A516E5DCABF07 /* PreviewHelpers.swift in Sources */,
+				D7BDE7D44F9657C8317CDC45 /* QuickAddItemSheet.swift in Sources */,
+				C4C814A3F5188CCA77707FB5 /* Receipt.swift in Sources */,
+				4D7ED3AC3FBEF74132186D17 /* ReceiptCaptureView.swift in Sources */,
+				37704B0401FFB9841FB69224 /* ReceiptReviewSheet.swift in Sources */,
+				2FE2BEDF749B94EFEFC52319 /* ReportGeneratorService.swift in Sources */,
+				FC9B3190695CC342CDF520B1 /* ReportsTab.swift in Sources */,
+				71E9AC46174610213ABD226D /* ReportsTabViewModel.swift in Sources */,
+				B6E42F69FE9331877A7AA30D /* Room.swift in Sources */,
+				479A20D22C3134164F2390DE /* SettingsManager.swift in Sources */,
+				B45F107818B95BCE002521F0 /* SettingsProviding.swift in Sources */,
+				FB715DD13734004735134560 /* SettingsTab.swift in Sources */,
+				EA0717C752C5DF9020B0B307 /* SharedComponents.swift in Sources */,
+				5E37CD3929E856A64596AD0E /* Tips.swift in Sources */,
+				0DA4FEBA5265489F9F0E7BED /* WarrantyListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		85B6C29E2ED9E32D006F56EA /* PBXTargetDependency */ = {
+		5B2FB76B6BD883F6EA6B78EF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 85B6C28A2ED9E32B006F56EA /* Nestory-Pro */;
-			targetProxy = 85B6C29D2ED9E32D006F56EA /* PBXContainerItemProxy */;
+			target = E194CB4F685030542F9BFFBE /* Nestory-Pro */;
+			targetProxy = 45E971AA705AF13B9BADDA89 /* PBXContainerItemProxy */;
 		};
-		85B6C2A82ED9E32D006F56EA /* PBXTargetDependency */ = {
+		DE21369404D0AC5E829E2FD4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 85B6C28A2ED9E32B006F56EA /* Nestory-Pro */;
-			targetProxy = 85B6C2A72ED9E32D006F56EA /* PBXContainerItemProxy */;
+			target = E194CB4F685030542F9BFFBE /* Nestory-Pro */;
+			targetProxy = 999D8061225902D93250091E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		85B6C2B02ED9E32D006F56EA /* Debug */ = {
+		131A1500CD4E146A198FCC39 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Nestory-Pro/Nestory_Pro.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2VXBQV4XC9;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Nestory-Pro/Info.plist";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-Pro";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		85B6C2B12ED9E32D006F56EA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Nestory-Pro/Nestory_Pro.entitlements";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2VXBQV4XC9;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Nestory-Pro/Info.plist";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-Pro";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		85B6C2B22ED9E32D006F56EA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 2VXBQV4XC9;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
-		};
-		85B6C2B32ED9E32D006F56EA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 2VXBQV4XC9;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
+				ENABLE_TESTABILITY = NO;
+				INFOPLIST_FILE = "Nestory-Pro/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-Pro";
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				VALIDATE_PRODUCT = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
-		85B6C2B52ED9E32D006F56EA /* Debug */ = {
+		214789801C34F41C323EAA6A /* Beta */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 38BA5C70DF3447DEC538FAFC /* Beta.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Beta;
+		};
+		57AC7271EACC5C8059FDCE87 /* Beta */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0013C4B68AC5FDD48C5DC2DE /* Tests.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2VXBQV4XC9;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
-				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-ProTests";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nestory-Pro.app/Nestory-Pro";
+			};
+			name = Beta;
+		};
+		6359A8822622A900A70331DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E621107DFD87AA78D6BB4F2 /* Debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nestory-Pro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nestory-Pro";
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
-		85B6C2B62ED9E32D006F56EA /* Release */ = {
+		73E53BA7576D99DF0930EB10 /* Beta */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ACD72EAF86BC9AE692CAA094 /* UITests.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2VXBQV4XC9;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-ProTests";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-ProUITests";
+				SDKROOT = iphoneos;
+				TEST_TARGET_NAME = "Nestory-Pro";
+			};
+			name = Beta;
+		};
+		7B0CF4570223782BD16E26CA /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E96639C23600B3D265FD614B /* Release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nestory-Pro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nestory-Pro";
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
-		85B6C2B82ED9E32D006F56EA /* Debug */ = {
+		86282E96C16B324F10BB2403 /* Beta */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Nestory-Pro/Nestory_Pro.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 2VXBQV4XC9;
+				ENABLE_TESTABILITY = YES;
+				INFOPLIST_FILE = "Nestory-Pro/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-Pro";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Beta;
+		};
+		A29B267BBDD3D947066BFE2C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ACD72EAF86BC9AE692CAA094 /* UITests.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2VXBQV4XC9;
 				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-ProUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				SDKROOT = iphoneos;
 				TEST_TARGET_NAME = "Nestory-Pro";
 			};
 			name = Debug;
 		};
-		85B6C2B92ED9E32D006F56EA /* Release */ = {
+		A2FA6A1AB0D1566B0840AED8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ACD72EAF86BC9AE692CAA094 /* UITests.xcconfig */;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2VXBQV4XC9;
 				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-ProUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				SDKROOT = iphoneos;
 				TEST_TARGET_NAME = "Nestory-Pro";
 			};
 			name = Release;
+		};
+		D658EAD2DFF480DDB96C3133 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0013C4B68AC5FDD48C5DC2DE /* Tests.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2VXBQV4XC9;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-ProTests";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nestory-Pro.app/Nestory-Pro";
+			};
+			name = Release;
+		};
+		DD07DF158FB46A4CD66D3722 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0013C4B68AC5FDD48C5DC2DE /* Tests.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2VXBQV4XC9;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-ProTests";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nestory-Pro.app/Nestory-Pro";
+			};
+			name = Debug;
+		};
+		F2386E2615AE6CB81B8DB2C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Nestory-Pro/Nestory_Pro.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 2VXBQV4XC9;
+				ENABLE_TESTABILITY = YES;
+				INFOPLIST_FILE = "Nestory-Pro/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.drunkonjava.Nestory-Pro";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		85B6C2862ED9E32B006F56EA /* Build configuration list for PBXProject "Nestory-Pro" */ = {
+		69642E3CB3B91F2BFDFC3922 /* Build configuration list for PBXNativeTarget "Nestory-Pro" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85B6C2B22ED9E32D006F56EA /* Debug */,
-				85B6C2B32ED9E32D006F56EA /* Release */,
+				86282E96C16B324F10BB2403 /* Beta */,
+				F2386E2615AE6CB81B8DB2C4 /* Debug */,
+				131A1500CD4E146A198FCC39 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
-		85B6C2AF2ED9E32D006F56EA /* Build configuration list for PBXNativeTarget "Nestory-Pro" */ = {
+		7309CCF8A7E70DF5822DB17D /* Build configuration list for PBXNativeTarget "Nestory-ProTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85B6C2B02ED9E32D006F56EA /* Debug */,
-				85B6C2B12ED9E32D006F56EA /* Release */,
+				57AC7271EACC5C8059FDCE87 /* Beta */,
+				DD07DF158FB46A4CD66D3722 /* Debug */,
+				D658EAD2DFF480DDB96C3133 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
-		85B6C2B42ED9E32D006F56EA /* Build configuration list for PBXNativeTarget "Nestory-ProTests" */ = {
+		B2D33F7EA4E66849745C90EB /* Build configuration list for PBXProject "Nestory-Pro" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85B6C2B52ED9E32D006F56EA /* Debug */,
-				85B6C2B62ED9E32D006F56EA /* Release */,
+				214789801C34F41C323EAA6A /* Beta */,
+				6359A8822622A900A70331DE /* Debug */,
+				7B0CF4570223782BD16E26CA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
-		85B6C2B72ED9E32D006F56EA /* Build configuration list for PBXNativeTarget "Nestory-ProUITests" */ = {
+		D095991547A58C820C677138 /* Build configuration list for PBXNativeTarget "Nestory-ProUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85B6C2B82ED9E32D006F56EA /* Debug */,
-				85B6C2B92ED9E32D006F56EA /* Release */,
+				73E53BA7576D99DF0930EB10 /* Beta */,
+				A29B267BBDD3D947066BFE2C /* Debug */,
+				A2FA6A1AB0D1566B0840AED8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		473A77232F4DB57FF5C79071 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.17.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		39DFC438BAE3AA57A51D9CCF /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 473A77232F4DB57FF5C79071 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 85B6C2832ED9E32B006F56EA /* Project object */;
+	rootObject = F3D05D12103DA8ECDB903306 /* Project object */;
 }

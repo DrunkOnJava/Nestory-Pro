@@ -21,43 +21,14 @@
                ReferencedContainer = "container:Nestory-Pro.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "09BD34CD822D741EBC31A896"
-               BuildableName = "Nestory-ProTests.xctest"
-               BlueprintName = "Nestory-ProTests"
-               ReferencedContainer = "container:Nestory-Pro.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "99F66FDA9B2DAD80E24D1010"
-               BuildableName = "Nestory-ProUITests.xctest"
-               BlueprintName = "Nestory-ProUITests"
-               ReferencedContainer = "container:Nestory-Pro.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "YES">
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -70,8 +41,7 @@
       <Testables>
          <TestableReference
             skipped = "NO"
-            parallelizable = "YES"
-            testExecutionOrdering = "random">
+            parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "09BD34CD822D741EBC31A896"
@@ -80,32 +50,12 @@
                ReferencedContainer = "container:Nestory-Pro.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "99F66FDA9B2DAD80E24D1010"
-               BuildableName = "Nestory-ProUITests.xctest"
-               BlueprintName = "Nestory-ProUITests"
-               ReferencedContainer = "container:Nestory-Pro.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E194CB4F685030542F9BFFBE"
-            BuildableName = "Nestory-Pro.app"
-            BlueprintName = "Nestory-Pro"
-            ReferencedContainer = "container:Nestory-Pro.xcodeproj">
-         </BuildableReference>
-      </CodeCoverageTargets>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -125,10 +75,6 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-com.apple.CoreData.ConcurrencyDebug"
-            isEnabled = "YES">
-         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
@@ -151,7 +97,7 @@
       </CommandLineArguments>
    </ProfileAction>
    <AnalyzeAction
-      buildConfiguration = "Debug">
+      buildConfiguration = "Release">
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
