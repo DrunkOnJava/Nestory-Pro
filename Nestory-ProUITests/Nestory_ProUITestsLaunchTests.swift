@@ -5,7 +5,7 @@
 //  Created by Griffin on 11/28/25.
 //
 
-import XCTest
+@preconcurrency import XCTest
 
 final class Nestory_ProUITestsLaunchTests: XCTestCase {
 
@@ -17,7 +17,6 @@ final class Nestory_ProUITestsLaunchTests: XCTestCase {
         continueAfterFailure = false
     }
 
-    @MainActor
     func testLaunch() throws {
         let app = XCUIApplication()
         app.launch()

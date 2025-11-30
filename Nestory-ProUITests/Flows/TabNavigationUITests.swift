@@ -5,11 +5,11 @@
 //  UI tests for tab navigation and main user flows
 //
 
-import XCTest
+@preconcurrency import XCTest
 
 final class TabNavigationUITests: XCTestCase {
     
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
     
     // MARK: - Setup & Teardown
     

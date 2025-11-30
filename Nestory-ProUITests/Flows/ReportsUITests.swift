@@ -5,11 +5,11 @@
 //  UI tests for reports generation and sharing
 //
 
-import XCTest
+@preconcurrency import XCTest
 
 final class ReportsUITests: XCTestCase {
 
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 
