@@ -742,10 +742,11 @@ Phase 12 is **complete** when:
 
 ---
 
-#### [ ] F7 – Offline Mode Indicator (Quick Win)
-- Checked-out-by: none
+#### [x] F7 – Offline Mode Indicator (Quick Win) ✅ (2025-12-01)
+- Checked-out-by: AGENT-opus-2025-12-01
 - Blocked-by: None
 - **Priority:** SHOULD HAVE | **Tier:** Free | **Effort:** LOW (1-2 days)
+- **Status:** COMPLETE - All criteria met at Gold level
 
 **Goal:** Show users when they're offline and when data is syncing to iCloud.
 
@@ -753,19 +754,19 @@ Phase 12 is **complete** when:
 
 | Level | Criteria |
 |-------|----------|
-| **Bronze (MVP)** | Status badge in Settings showing online/offline state |
-| **Silver (Production)** | Real-time banner with sync status, pending changes count |
-| **Gold (Polished)** | Sync progress indicator, retry button, accessibility support |
+| **Bronze (MVP)** | ✅ Status badge in Settings showing online/offline state |
+| **Silver (Production)** | ✅ Real-time banner with sync status, pending changes count |
+| **Gold (Polished)** | ✅ Sync progress indicator, retry button, accessibility support |
 
 **Subtasks:**
-- [ ] **F7-01** Create `NetworkMonitor` service (NWPathMonitor, @Observable, AppEnvironment injection)
-- [ ] **F7-02** Create `SyncStatusService` for CloudKit state (.idle, .syncing, .synced, .error)
-- [ ] **F7-03** Create `SyncStatusBanner` UI component (auto-dismiss, states: hidden/yellow/green/red)
-- [ ] **F7-04** Add sync status to SettingsTab (indicator, timestamp, "Sync Now" button)
-- [ ] **F7-05** Handle offline gracefully (queue ops, no error modals for expected state)
-- [ ] **F7-06** Unit tests for NetworkMonitor and SyncStatusService
+- [x] **F7-01** Create `NetworkMonitor` service (NWPathMonitor, @Observable, AppEnvironment injection)
+- [x] **F7-02** Create `SyncStatusService` for CloudKit state (.idle, .syncing, .synced, .error) - `CloudKitSyncMonitor.swift`
+- [x] **F7-03** Create `SyncStatusBanner` UI component (auto-dismiss, states: hidden/yellow/green/red)
+- [x] **F7-04** Add sync status to SettingsTab (indicator, timestamp, "Sync Now" button)
+- [x] **F7-05** Handle offline gracefully (queue ops, no error modals for expected state)
+- [x] **F7-06** Unit tests for NetworkMonitor and SyncStatusService (62+ tests)
 
-**Files:** `Services/NetworkMonitor.swift`, `Services/SyncStatusService.swift`, `Views/SharedUI/SyncStatusBanner.swift`
+**Files:** `Services/NetworkMonitor.swift`, `Services/CloudKitSyncMonitor.swift`, `Views/SharedUI/SyncStatusBanner.swift`
 
 ---
 
