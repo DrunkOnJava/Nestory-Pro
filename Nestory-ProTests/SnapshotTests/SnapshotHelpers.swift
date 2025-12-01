@@ -99,7 +99,7 @@ extension XCTestCase {
         named name: String? = nil,
         isProUnlocked: Bool = true,
         record recording: Bool = false,
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         testName: String = #function,
         line: UInt = #line
     ) {

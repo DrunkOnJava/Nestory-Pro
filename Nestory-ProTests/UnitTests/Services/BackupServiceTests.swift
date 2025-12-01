@@ -28,7 +28,7 @@ final class BackupServiceTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        sut = await BackupService.shared
+        sut = BackupService.shared
         exportedFileURLs = []
     }
 

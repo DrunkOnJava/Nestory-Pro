@@ -14,7 +14,7 @@ final class ItemTests: XCTestCase {
     // MARK: - Documentation Score Tests
 
     func testDocumentationScore_AllFieldsFilled_Returns1() async throws {
-        try await MainActor.run {
+        await MainActor.run {
             // Arrange - 6-field weighted scoring (Task 1.4.1)
             // Photo 30%, Value 25%, Room 15%, Category 10%, Receipt 10%, Serial 10%
             let container = TestContainer.empty()
@@ -68,7 +68,7 @@ final class ItemTests: XCTestCase {
     }
 
     func testDocumentationScore_HalfFieldsFilled_Returns0Point5() async throws {
-        try await MainActor.run {
+        await MainActor.run {
             // Arrange - 6-field weighted scoring (Task 1.4.1)
             // Value (25%) + Room (15%) + Category (10%) = 50%
             let container = TestContainer.empty()
@@ -101,7 +101,7 @@ final class ItemTests: XCTestCase {
     // MARK: - Has Photo Tests
 
     func testHasPhoto_WithPhotos_ReturnsTrue() async throws {
-        try await MainActor.run {
+        await MainActor.run {
             // Arrange
             let container = TestContainer.empty()
             let context = container.mainContext
@@ -155,7 +155,7 @@ final class ItemTests: XCTestCase {
     // MARK: - Missing Documentation Tests
 
     func testMissingDocumentation_CompleteItem_ReturnsEmptyArray() async throws {
-        try await MainActor.run {
+        await MainActor.run {
             // Arrange - 6-field scoring (Task 1.4.3)
             let container = TestContainer.empty()
             let context = container.mainContext
@@ -234,7 +234,7 @@ final class ItemTests: XCTestCase {
     }
 
     func testInitialization_AllFields_AreSet() async throws {
-        try await MainActor.run {
+        await MainActor.run {
             // Arrange
             let container = TestContainer.empty()
             let context = container.mainContext

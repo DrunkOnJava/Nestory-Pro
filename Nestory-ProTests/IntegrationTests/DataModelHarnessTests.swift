@@ -518,8 +518,7 @@ final class DataModelHarnessTests: XCTestCase {
     }
 
     func testItemValidation_InvalidCurrencyCode_ThrowsError() async throws {
-        var item = Item(name: "Test", condition: .good)
-        item.currencyCode = "US"  // Invalid - needs 3 letters
+        let item = Item(name: "Test", currencyCode: "US", condition: .good)  // Invalid - needs 3 letters
 
         XCTAssertThrowsError(try item.validate()) { error in
             XCTAssertEqual(error as? Item.ValidationError, .invalidCurrencyCode)
