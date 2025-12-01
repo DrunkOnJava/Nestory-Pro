@@ -15,19 +15,23 @@ final class LossListUITests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
-    override func setUpWithError() throws {
-        continueAfterFailure = false
+    nonisolated override func setUpWithError() throws {
+        MainActor.assumeIsolated {
+            continueAfterFailure = false
 
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
+            app = XCUIApplication()
+            app.launchArguments = ["--uitesting"]
+            app.launch()
 
-        // Navigate to Reports tab
-        app.buttons["Reports"].tap()
+            // Navigate to Reports tab
+            app.buttons["Reports"].tap()
+        }
     }
 
-    override func tearDownWithError() throws {
-        app = nil
+    nonisolated override func tearDownWithError() throws {
+        MainActor.assumeIsolated {
+            app = nil
+        }
     }
 
     // MARK: - Loss List Card Tests

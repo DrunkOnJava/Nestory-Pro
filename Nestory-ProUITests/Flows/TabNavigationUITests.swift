@@ -11,19 +11,23 @@ import XCTest
 final class TabNavigationUITests: XCTestCase {
 
     var app: XCUIApplication!
-    
+
     // MARK: - Setup & Teardown
-    
-    override func setUpWithError() throws {
-        continueAfterFailure = false
-        
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
+
+    nonisolated override func setUpWithError() throws {
+        MainActor.assumeIsolated {
+            continueAfterFailure = false
+
+            app = XCUIApplication()
+            app.launchArguments = ["--uitesting"]
+            app.launch()
+        }
     }
-    
-    override func tearDownWithError() throws {
-        app = nil
+
+    nonisolated override func tearDownWithError() throws {
+        MainActor.assumeIsolated {
+            app = nil
+        }
     }
     
     // MARK: - Tab Navigation Tests

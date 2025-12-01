@@ -14,19 +14,23 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
-    override func setUpWithError() throws {
-        continueAfterFailure = false
+    nonisolated override func setUpWithError() throws {
+        MainActor.assumeIsolated {
+            continueAfterFailure = false
 
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
+            app = XCUIApplication()
+            app.launchArguments = ["--uitesting"]
+            app.launch()
 
-        // Navigate to Settings
-        app.buttons["Settings"].tap()
+            // Navigate to Settings
+            app.buttons["Settings"].tap()
+        }
     }
 
-    override func tearDownWithError() throws {
-        app = nil
+    nonisolated override func tearDownWithError() throws {
+        MainActor.assumeIsolated {
+            app = nil
+        }
     }
 
     // MARK: - Settings Screen Tests

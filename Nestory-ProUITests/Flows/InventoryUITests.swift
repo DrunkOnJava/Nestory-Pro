@@ -14,16 +14,20 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
-    override func setUpWithError() throws {
-        continueAfterFailure = false
+    nonisolated override func setUpWithError() throws {
+        MainActor.assumeIsolated {
+            continueAfterFailure = false
 
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--reset-data"]
-        app.launch()
+            app = XCUIApplication()
+            app.launchArguments = ["--uitesting", "--reset-data"]
+            app.launch()
+        }
     }
 
-    override func tearDownWithError() throws {
-        app = nil
+    nonisolated override func tearDownWithError() throws {
+        MainActor.assumeIsolated {
+            app = nil
+        }
     }
 
     // MARK: - Empty State Tests

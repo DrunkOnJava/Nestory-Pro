@@ -15,19 +15,23 @@ final class CaptureUITests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
-    override func setUpWithError() throws {
-        continueAfterFailure = false
+    nonisolated override func setUpWithError() throws {
+        MainActor.assumeIsolated {
+            continueAfterFailure = false
 
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--reset-data"]
-        app.launch()
+            app = XCUIApplication()
+            app.launchArguments = ["--uitesting", "--reset-data"]
+            app.launch()
 
-        // Navigate to Capture tab
-        app.buttons["Capture"].tap()
+            // Navigate to Capture tab
+            app.buttons["Capture"].tap()
+        }
     }
 
-    override func tearDownWithError() throws {
-        app = nil
+    nonisolated override func tearDownWithError() throws {
+        MainActor.assumeIsolated {
+            app = nil
+        }
     }
 
     // MARK: - Screen Display Tests
