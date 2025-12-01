@@ -118,14 +118,14 @@ struct InventoryTab: View {
         
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
                     // Documentation score tip (Task 8.3.1)
                     TipView(documentationScoreTip) { action in
                         if action.id == "learn-more" {
                             viewModel.showDocumentationInfo()
                         }
                     }
-                    .tipBackground(Color(.secondarySystemGroupedBackground))
+                    .tipBackground(NestoryTheme.Colors.cardBackground)
                     
                     // Summary Cards
                     summarySection
@@ -141,9 +141,9 @@ struct InventoryTab: View {
                     // Items List/Grid
                     itemsSection
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(NestoryTheme.Colors.background)
             .navigationTitle("Inventory")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -154,7 +154,7 @@ struct InventoryTab: View {
                     .accessibilityLabel("Add Item")
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    HStack(spacing: 16) {
+                    HStack(spacing: NestoryTheme.Metrics.spacingLarge) {
                         Button(action: viewModel.showSearchHelp) {
                             Image(systemName: "questionmark.circle")
                         }
@@ -198,65 +198,65 @@ struct InventoryTab: View {
 
     private var itemLimitWarningBanner: some View {
         let warningLevel = viewModel.itemLimitWarningLevel(itemCount: items.count)
-        
-        return HStack(alignment: .top, spacing: 12) {
+        let warningColor = warningLevel == .limitReached ? NestoryTheme.Colors.error : NestoryTheme.Colors.warning
+
+        return HStack(alignment: .top, spacing: NestoryTheme.Metrics.spacingMedium) {
             // Warning icon
             Image(systemName: warningLevel == .limitReached ? "exclamationmark.triangle.fill" : "info.circle.fill")
                 .font(.title3)
-                .foregroundStyle(warningLevel == .limitReached ? .red : .orange)
+                .foregroundStyle(warningColor)
 
             // Message
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
                 Text(warningLevel == .limitReached ? "Item Limit Reached" : "Approaching Item Limit")
-                    .font(.headline)
-                    .foregroundStyle(warningLevel == .limitReached ? .red : .orange)
+                    .font(NestoryTheme.Typography.headline)
+                    .foregroundStyle(warningColor)
 
                 Text(warningLevel == .limitReached
                      ? "You've reached the 100-item limit for free users. Upgrade to Pro for unlimited items."
                      : "You've used \(items.count) of 100 free items. Upgrade to Pro for unlimited storage.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
 
                 // Upgrade button
                 Button(action: viewModel.showProPaywall) {
-                    HStack(spacing: 4) {
+                    HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                         Image(systemName: "star.fill")
                         Text("Upgrade to Pro")
                     }
-                    .font(.subheadline.bold())
+                    .font(NestoryTheme.Typography.buttonLabel)
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(warningLevel == .limitReached ? Color.red : Color.orange)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal, NestoryTheme.Metrics.paddingLarge)
+                    .padding(.vertical, NestoryTheme.Metrics.paddingSmall)
+                    .background(warningColor)
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall))
                 }
-                .padding(.top, 4)
+                .padding(.top, NestoryTheme.Metrics.paddingXSmall)
             }
 
             Spacer()
 
             // Dismiss button
             Button(action: {
-                withAnimation {
+                withAnimation(NestoryTheme.Animation.quick) {
                     viewModel.dismissItemLimitWarning()
                 }
             }) {
                 Image(systemName: "xmark")
-                    .font(.caption.bold())
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.caption)
+                    .fontWeight(.bold)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
             .accessibilityLabel("Dismiss warning")
         }
-        .padding()
+        .padding(NestoryTheme.Metrics.paddingMedium)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(warningLevel == .limitReached
-                      ? Color.red.opacity(0.1)
-                      : Color.orange.opacity(0.1))
+            RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge)
+                .fill(warningColor.opacity(0.1))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(warningLevel == .limitReached ? Color.red : Color.orange, lineWidth: 1)
+            RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge)
+                .stroke(warningColor, lineWidth: 1)
         )
     }
 
@@ -266,9 +266,9 @@ struct InventoryTab: View {
         let documentationScore = viewModel.calculateDocumentationScore(items)
         let documentedCount = viewModel.calculateDocumentedCount(items)
         let uniqueRoomCount = viewModel.calculateUniqueRoomCount(items)
-        
+
         return ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
+            HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 SummaryCard(
                     title: "Total Items",
                     value: "\(items.count)",
@@ -295,24 +295,24 @@ struct InventoryTab: View {
                     viewModel.showDocumentationInfo()
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
         }
     }
-    
+
     // MARK: - Filter Section
     private var filterSection: some View {
         @Bindable var vm = viewModel
-        
-        return VStack(spacing: 12) {
+
+        return VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             // Filter chips
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+                HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                     ForEach(ItemFilter.allCases, id: \.self) { filter in
                         FilterChip(
                             label: filter.rawValue,
                             isSelected: vm.selectedFilter == filter
                         ) {
-                            withAnimation(.easeInOut(duration: 0.2)) {
+                            withAnimation(NestoryTheme.Animation.quick) {
                                 vm.selectedFilter = filter
                             }
                         }
@@ -373,7 +373,7 @@ struct InventoryTab: View {
         if filteredItems.isEmpty {
             emptyStateView
         } else if viewModel.viewMode == .list {
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                 ForEach(filteredItems) { item in
                     NavigationLink(destination: ItemDetailView(item: item)) {
                         ItemListCell(item: item, settings: env.settings)
@@ -388,11 +388,11 @@ struct InventoryTab: View {
             .id("\(viewModel.selectedFilter.rawValue)-\(viewModel.selectedSort.rawValue)")
         } else {
             let columns = [
-                GridItem(.flexible(), spacing: 12),
-                GridItem(.flexible(), spacing: 12)
+                GridItem(.flexible(), spacing: NestoryTheme.Metrics.spacingMedium),
+                GridItem(.flexible(), spacing: NestoryTheme.Metrics.spacingMedium)
             ]
 
-            LazyVGrid(columns: columns, spacing: 12) {
+            LazyVGrid(columns: columns, spacing: NestoryTheme.Metrics.spacingMedium) {
                 ForEach(filteredItems) { item in
                     NavigationLink(destination: ItemDetailView(item: item)) {
                         ItemGridCell(item: item, settings: env.settings)

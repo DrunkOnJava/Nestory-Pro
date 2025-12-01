@@ -70,8 +70,8 @@ struct CaptureTab: View {
             VStack(spacing: 0) {
                 // Quick Capture Tip (Task 8.3.3 - general guidance)
                 TipView(quickCaptureTip)
-                    .tipBackground(Color(.secondarySystemGroupedBackground))
-                    .padding(.horizontal)
+                    .tipBackground(NestoryTheme.Colors.cardBackground)
+                    .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
                 
                 // Segmented Control
                 Picker("Capture Mode", selection: $vm.selectedSegment) {
@@ -80,7 +80,7 @@ struct CaptureTab: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding()
+                .padding(NestoryTheme.Metrics.paddingMedium)
                 .accessibilityIdentifier("captureTab.segmentedControl")
 
                 // Content Area
@@ -151,40 +151,39 @@ struct CaptureTab: View {
     // MARK: - Photo Segment
 
     private var photoSegmentContent: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
             Spacer()
 
             // Icon
             Image(systemName: "camera.fill")
-                .font(.system(size: 60))
-                .foregroundStyle(Color.accentColor)
+                .font(.system(size: NestoryTheme.Metrics.iconHero))
+                .foregroundStyle(NestoryTheme.Colors.accent)
 
             // Title
             Text("Photo Capture")
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(NestoryTheme.Typography.title2)
 
             // Description
             Text("Take photos of your items to build a visual inventory for insurance documentation.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.subheadline)
+                .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
 
             Spacer()
 
             // Action Button
             Button(action: viewModel.startPhotoCapture) {
                 Label("Start Photo Capture", systemImage: "camera")
-                    .font(.headline)
+                    .font(NestoryTheme.Typography.headline)
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.accentColor)
+                    .padding(NestoryTheme.Metrics.paddingMedium)
+                    .background(NestoryTheme.Colors.accent)
                     .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 32)
+            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
             .accessibilityIdentifier("captureTab.startPhotoCaptureButton")
             
             // Recent Captures Strip (Task 2.5.4)
@@ -196,18 +195,18 @@ struct CaptureTab: View {
     }
     
     // MARK: - Recent Captures Strip (Task 2.5.4)
-    
+
     /// Bottom strip showing 3 most recent items with photos
     private var recentCapturesStrip: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
             Text("Recent Captures")
-                .font(.subheadline)
+                .font(NestoryTheme.Typography.subheadline)
                 .fontWeight(.medium)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 32)
-            
+                .foregroundStyle(NestoryTheme.Colors.muted)
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
+                HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                     ForEach(Array(recentItems.prefix(3))) { item in
                         NavigationLink(destination: ItemDetailView(item: item)) {
                             RecentCaptureCell(item: item)
@@ -215,7 +214,7 @@ struct CaptureTab: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 32)
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
             }
         }
     }
@@ -223,38 +222,37 @@ struct CaptureTab: View {
     // MARK: - Receipt Segment
 
     private var receiptSegmentContent: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
             Spacer()
 
             Image(systemName: "doc.text.viewfinder")
-                .font(.system(size: 60))
-                .foregroundStyle(Color.accentColor)
+                .font(.system(size: NestoryTheme.Metrics.iconHero))
+                .foregroundStyle(NestoryTheme.Colors.accent)
 
             Text("Receipt Capture")
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(NestoryTheme.Typography.title2)
 
             Text("Scan receipts to automatically extract purchase details and attach them to items.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.subheadline)
+                .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
 
             Spacer()
 
             // Action Button
             Button(action: viewModel.startReceiptCapture) {
                 Label("Scan Receipt", systemImage: "doc.text.viewfinder")
-                    .font(.headline)
+                    .font(NestoryTheme.Typography.headline)
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.accentColor)
+                    .padding(NestoryTheme.Metrics.paddingMedium)
+                    .background(NestoryTheme.Colors.accent)
                     .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 32)
-            .padding(.bottom, 48)
+            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+            .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge)
             .accessibilityIdentifier("captureTab.startReceiptCaptureButton")
         }
     }
@@ -262,43 +260,42 @@ struct CaptureTab: View {
     // MARK: - Barcode Segment (Task 2.7.1)
 
     private var barcodeSegmentContent: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
             Spacer()
 
             Image(systemName: "barcode.viewfinder")
-                .font(.system(size: 60))
-                .foregroundStyle(Color.accentColor)
+                .font(.system(size: NestoryTheme.Metrics.iconHero))
+                .foregroundStyle(NestoryTheme.Colors.accent)
 
             Text("Barcode Scan")
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(NestoryTheme.Typography.title2)
 
             Text("Scan product barcodes to quickly add items. The barcode is saved for your records.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.subheadline)
+                .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-            
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+
             // v1.0 notice
             Text("Product lookup coming in a future update")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
+                .font(NestoryTheme.Typography.caption)
+                .foregroundStyle(NestoryTheme.Colors.muted.opacity(0.7))
 
             Spacer()
 
             // Action Button
             Button(action: viewModel.startBarcodeScanning) {
                 Label("Start Barcode Scan", systemImage: "barcode.viewfinder")
-                    .font(.headline)
+                    .font(NestoryTheme.Typography.headline)
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.accentColor)
+                    .padding(NestoryTheme.Metrics.paddingMedium)
+                    .background(NestoryTheme.Colors.accent)
                     .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 32)
-            .padding(.bottom, 48)
+            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+            .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge)
             .accessibilityIdentifier("captureTab.startBarcodeScanButton")
         }
     }
@@ -309,35 +306,35 @@ struct CaptureTab: View {
 /// Cell for recent captures strip showing item thumbnail and name
 struct RecentCaptureCell: View {
     let item: Item
-    
+
     var body: some View {
-        VStack(alignment: .center, spacing: 8) {
+        VStack(alignment: .center, spacing: NestoryTheme.Metrics.spacingSmall) {
             // Thumbnail
             ZStack {
                 Rectangle()
-                    .fill(Color(.tertiarySystemFill))
-                
+                    .fill(NestoryTheme.Colors.cardBackground)
+
                 if !item.photos.isEmpty {
                     // TODO: Load actual photo from PhotoStorageService
                     Image(systemName: item.category?.iconName ?? "cube.fill")
                         .font(.title2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 } else if let category = item.category {
                     Image(systemName: category.iconName)
                         .font(.title2)
-                        .foregroundStyle(Color(hex: category.colorHex) ?? .secondary)
+                        .foregroundStyle(Color(hex: category.colorHex) ?? NestoryTheme.Colors.muted)
                 } else {
                     Image(systemName: "cube.fill")
                         .font(.title2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
             }
             .frame(width: 80, height: 80)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            
+            .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusMedium))
+
             // Item name
             Text(item.name)
-                .font(.caption)
+                .font(NestoryTheme.Typography.caption)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
                 .frame(width: 80)

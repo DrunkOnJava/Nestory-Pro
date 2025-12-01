@@ -209,3 +209,4 @@ struct DocumentationFieldItem: Identifiable, Equatable {
     let iconName: String
 
     var id: String { name }
+}

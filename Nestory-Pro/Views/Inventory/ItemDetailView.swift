@@ -48,30 +48,30 @@ struct ItemDetailView: View {
             VStack(spacing: 0) {
                 // Photo Header
                 photoHeaderSection
-                
-                VStack(spacing: 20) {
+
+                VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
                     // Title & Location
                     titleSection
-                    
+
                     // Tags (P2-05)
                     tagsSection
-                    
+
                     // Documentation Status
                     documentationSection
-                    
+
                     // Basic Info
                     basicInfoSection
-                    
+
                     // Receipts
                     receiptsSection
-                    
+
                     // Warranty
                     warrantySection
                 }
-                .padding()
+                .padding(NestoryTheme.Metrics.paddingMedium)
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(NestoryTheme.Colors.background)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -132,24 +132,24 @@ struct ItemDetailView: View {
     }
 
     private var emptyPhotoPlaceholder: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             if let category = item.category {
                 Image(systemName: category.iconName)
-                    .font(.system(size: 60))
-                    .foregroundStyle(Color(hex: category.colorHex) ?? .secondary)
+                    .font(.system(size: NestoryTheme.Metrics.iconHero))
+                    .foregroundStyle(Color(hex: category.colorHex) ?? NestoryTheme.Colors.muted)
             } else {
                 Image(systemName: "cube.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: NestoryTheme.Metrics.iconHero))
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
 
             Text("No photos yet")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.subheadline)
+                .foregroundStyle(NestoryTheme.Colors.muted)
 
             Button(action: viewModel.showAddPhoto) {
                 Label("Add Photo", systemImage: "camera")
-                    .font(.subheadline)
+                    .font(NestoryTheme.Typography.subheadline)
             }
             .buttonStyle(.bordered)
         }
@@ -240,44 +240,43 @@ private struct PhotoThumbnailView: View {
 extension ItemDetailView {
     // MARK: - Title Section
     var titleSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
             Text(item.name)
-                .font(.title)
-                .fontWeight(.bold)
-            
+                .font(NestoryTheme.Typography.title)
+
             if let brandModel = viewModel.brandModelText(brand: item.brand, modelNumber: item.modelNumber) {
                 Text(brandModel)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
-            
+
             // Category & Room pills
-            HStack(spacing: 8) {
+            HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                 if let category = item.category {
-                    HStack(spacing: 4) {
+                    HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                         Image(systemName: category.iconName)
-                            .font(.caption)
+                            .font(NestoryTheme.Typography.caption)
                         Text(category.name)
-                            .font(.caption)
+                            .font(NestoryTheme.Typography.caption)
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(Color(hex: category.colorHex)?.opacity(0.15) ?? Color.secondary.opacity(0.1))
-                    .foregroundStyle(Color(hex: category.colorHex) ?? .secondary)
+                    .background(Color(hex: category.colorHex)?.opacity(0.15) ?? NestoryTheme.Colors.muted.opacity(0.1))
+                    .foregroundStyle(Color(hex: category.colorHex) ?? NestoryTheme.Colors.muted)
                     .clipShape(Capsule())
                 }
-                
+
                 if let room = item.room {
-                    HStack(spacing: 4) {
+                    HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                         Image(systemName: room.iconName)
-                            .font(.caption)
+                            .font(NestoryTheme.Typography.caption)
                         Text(room.name)
-                            .font(.caption)
+                            .font(NestoryTheme.Typography.caption)
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(Color.secondary.opacity(0.1))
-                    .foregroundStyle(.secondary)
+                    .background(NestoryTheme.Colors.muted.opacity(0.1))
+                    .foregroundStyle(NestoryTheme.Colors.muted)
                     .clipShape(Capsule())
                 }
             }
@@ -287,24 +286,24 @@ extension ItemDetailView {
     
     // MARK: - Tags Section (P2-05)
     private var tagsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
             HStack {
                 Text("Tags")
-                    .font(.headline)
+                    .font(NestoryTheme.Typography.headline)
                 Spacer()
                 Button {
                     showingTagEditor = true
                 } label: {
                     Image(systemName: "plus.circle")
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(NestoryTheme.Colors.accent)
                 }
                 .accessibilityLabel("Add tags")
             }
-            
+
             if item.tagObjects.isEmpty {
                 Text("No tags")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             } else {
                 TagFlowView(tags: item.tagObjects) { tag in
                     item.tagObjects.removeAll { $0.id == tag.id }
@@ -320,28 +319,28 @@ extension ItemDetailView {
     
     // MARK: - Documentation Section (6-field scoring per Task 1.4.1)
     private var documentationSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
             HStack {
                 Text("Documentation Status")
-                    .font(.headline)
+                    .font(NestoryTheme.Typography.headline)
                 Spacer()
 
                 // Documentation score percentage with status text
-                HStack(spacing: 4) {
+                HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                     Text("\(Int(item.documentationScore * 100))%")
-                        .font(.headline)
+                        .font(NestoryTheme.Typography.headline)
                         .foregroundStyle(documentationScoreColor)
                     Text("•")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                     Text(documentationStatusText)
-                        .font(.subheadline)
+                        .font(NestoryTheme.Typography.subheadline)
                         .foregroundStyle(documentationScoreColor)
                 }
 
                 // "What's missing?" info button
                 Button(action: { showingDocumentationInfo = true }) {
                     Image(systemName: "info.circle")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
                 .accessibilityLabel("Documentation score info")
                 .accessibilityHint("Double tap to learn about documentation score weights")
@@ -350,11 +349,11 @@ extension ItemDetailView {
             // Progress bar
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(.systemGray5))
+                    RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall)
+                        .fill(NestoryTheme.Colors.cardBackground)
                         .frame(height: 8)
 
-                    RoundedRectangle(cornerRadius: 4)
+                    RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall)
                         .fill(documentationScoreColor)
                         .frame(width: geometry.size.width * item.documentationScore, height: 8)
                 }
@@ -365,13 +364,13 @@ extension ItemDetailView {
             .accessibilityValue("\(Int(item.documentationScore * 100)) percent, \(documentationStatusText)")
 
             // 6-field badges in two rows
-            VStack(spacing: 8) {
-                HStack(spacing: 8) {
+            VStack(spacing: NestoryTheme.Metrics.spacingSmall) {
+                HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                     DocumentationBadge("Photo", isComplete: item.hasPhoto, weight: "30%")
                     DocumentationBadge("Value", isComplete: item.hasValue, weight: "25%")
                     DocumentationBadge("Room", isComplete: item.hasLocation, weight: "15%")
                 }
-                HStack(spacing: 8) {
+                HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                     DocumentationBadge("Category", isComplete: item.hasCategory, weight: "10%")
                     DocumentationBadge("Receipt", isComplete: item.hasReceipt, weight: "10%")
                     DocumentationBadge("Serial", isComplete: item.hasSerial, weight: "10%")
@@ -380,14 +379,14 @@ extension ItemDetailView {
 
             if !item.missingDocumentation.isEmpty {
                 Text("Missing: \(item.missingDocumentation.joined(separator: ", "))")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
         }
-        .padding()
+        .padding(NestoryTheme.Metrics.paddingMedium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(NestoryTheme.Colors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
         .sheet(isPresented: $showingDocumentationInfo) {
             documentationInfoSheet
         }
@@ -485,57 +484,57 @@ extension ItemDetailView {
     
     // MARK: - Basic Info Section
     private var basicInfoSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
             Text("Details")
-                .font(.headline)
-            
+                .font(NestoryTheme.Typography.headline)
+
             VStack(spacing: 0) {
                 if let price = item.purchasePrice {
                     infoRow(label: "Purchase Price", value: env.settings.formatCurrency(price))
                 }
-                
+
                 if let date = item.purchaseDate {
                     infoRow(label: "Purchase Date", value: date.formatted(date: .long, time: .omitted))
                 }
-                
+
                 if let serial = item.serialNumber, !serial.isEmpty {
                     infoRow(label: "Serial Number", value: serial, canCopy: true)
                 }
-                
+
                 if let barcode = item.barcode, !barcode.isEmpty {
                     infoRow(label: "Barcode", value: barcode, canCopy: true)
                 }
-                
+
                 infoRow(label: "Condition", value: item.condition.displayName)
-                
+
                 if let notes = item.conditionNotes, !notes.isEmpty {
                     infoRow(label: "Condition Notes", value: notes)
                 }
-                
+
                 if let notes = item.notes, !notes.isEmpty {
                     infoRow(label: "Notes", value: notes)
                 }
             }
         }
-        .padding()
+        .padding(NestoryTheme.Metrics.paddingMedium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(NestoryTheme.Colors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
     }
     
     private func infoRow(label: String, value: String, canCopy: Bool = false) -> some View {
         HStack {
             Text(label)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(NestoryTheme.Colors.muted)
             Spacer()
             if canCopy {
                 Button(action: {
                     viewModel.copyToClipboard(value)
                 }) {
-                    HStack(spacing: 4) {
+                    HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                         Text(value)
                         Image(systemName: "doc.on.doc")
-                            .font(.caption)
+                            .font(NestoryTheme.Typography.caption)
                     }
                 }
                 .buttonStyle(.plain)
@@ -543,157 +542,157 @@ extension ItemDetailView {
                 Text(value)
             }
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, NestoryTheme.Metrics.spacingSmall)
     }
     
     // MARK: - Receipts Section
     private var receiptsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
             HStack {
                 Text("Receipts")
-                    .font(.headline)
+                    .font(NestoryTheme.Typography.headline)
                 Spacer()
                 Button(action: viewModel.showAddReceipt) {
                     Image(systemName: "plus.circle.fill")
-                        .foregroundColor(Color.accentColor)
+                        .foregroundColor(NestoryTheme.Colors.accent)
                 }
             }
-            
+
             if item.receipts.isEmpty {
                 HStack {
                     Image(systemName: "doc.text")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                     Text("No receipts linked")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(NestoryTheme.Typography.subheadline)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                     Spacer()
                     Button("Add Receipt") {
                         viewModel.showAddReceipt()
                     }
-                    .font(.subheadline)
+                    .font(NestoryTheme.Typography.subheadline)
                 }
-                .padding(.vertical, 8)
+                .padding(.vertical, NestoryTheme.Metrics.spacingSmall)
             } else {
                 ForEach(item.receipts) { receipt in
                     HStack {
                         Image(systemName: "doc.text.fill")
-                            .foregroundColor(Color.accentColor)
+                            .foregroundColor(NestoryTheme.Colors.accent)
                         VStack(alignment: .leading) {
                             Text(receipt.vendor ?? "Unknown Vendor")
-                                .font(.subheadline)
+                                .font(NestoryTheme.Typography.subheadline)
                             if let total = receipt.total {
                                 Text(env.settings.formatCurrency(total))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(NestoryTheme.Colors.muted)
                             }
                         }
                         Spacer()
                         if let date = receipt.purchaseDate {
                             Text(date.formatted(date: .abbreviated, time: .omitted))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(NestoryTheme.Typography.caption)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
                         }
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, NestoryTheme.Metrics.spacingXSmall)
                 }
             }
         }
-        .padding()
+        .padding(NestoryTheme.Metrics.paddingMedium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(NestoryTheme.Colors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
     }
     
     // MARK: - Warranty Section
     private var warrantySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
             Text("Warranty")
-                .font(.headline)
-            
+                .font(NestoryTheme.Typography.headline)
+
             if let expiryDate = item.warrantyExpiryDate {
                 let isExpired = viewModel.isWarrantyExpired(expiryDate: expiryDate)
                 HStack {
                     Image(systemName: isExpired ? "exclamationmark.shield.fill" : "checkmark.shield.fill")
-                        .foregroundStyle(isExpired ? .red : .green)
+                        .foregroundStyle(isExpired ? NestoryTheme.Colors.error : NestoryTheme.Colors.success)
                     VStack(alignment: .leading) {
                         Text(isExpired ? "Warranty Expired" : "Warranty Active")
-                            .font(.subheadline)
+                            .font(NestoryTheme.Typography.subheadline)
                         Text("Expires: \(expiryDate.formatted(date: .long, time: .omitted))")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.caption)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                     }
                 }
             } else {
                 HStack {
                     Image(systemName: "shield")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                     Text("No warranty information")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(NestoryTheme.Typography.subheadline)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                     Spacer()
                     Button("Add") {
                         viewModel.showEditSheet()
                     }
-                    .font(.subheadline)
+                    .font(NestoryTheme.Typography.subheadline)
                 }
             }
         }
-        .padding()
+        .padding(NestoryTheme.Metrics.paddingMedium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(NestoryTheme.Colors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
     }
     
     // MARK: - Quick Actions Bar
     private var quickActionsBar: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             Button(action: viewModel.showEditSheet) {
-                VStack(spacing: 4) {
+                VStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                     Image(systemName: "pencil")
                     Text("Edit")
-                        .font(.caption)
+                        .font(NestoryTheme.Typography.caption)
                 }
             }
             .accessibilityLabel("Edit item")
             .accessibilityHint("Double tap to edit item details")
-            
+
             Spacer()
-            
+
             Button(action: viewModel.showAddPhoto) {
-                VStack(spacing: 4) {
+                VStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                     Image(systemName: "camera")
                     Text("Photo")
-                        .font(.caption)
+                        .font(NestoryTheme.Typography.caption)
                 }
             }
             .accessibilityLabel("Add photo")
             .accessibilityHint("Double tap to add a photo to this item")
-            
+
             Spacer()
-            
+
             Button(action: viewModel.showAddReceipt) {
-                VStack(spacing: 4) {
+                VStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                     Image(systemName: "doc.text")
                     Text("Receipt")
-                        .font(.caption)
+                        .font(NestoryTheme.Typography.caption)
                 }
             }
             .accessibilityLabel("Add receipt")
             .accessibilityHint("Double tap to add a receipt to this item")
-            
+
             Spacer()
-            
+
             Button(action: {}) {
-                VStack(spacing: 4) {
+                VStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                     Image(systemName: "doc.badge.plus")
                     Text("Report")
-                        .font(.caption)
+                        .font(NestoryTheme.Typography.caption)
                 }
             }
             .accessibilityLabel("Add to report")
             .accessibilityHint("Double tap to include this item in a report")
         }
-        .padding()
+        .padding(NestoryTheme.Metrics.paddingMedium)
         .background(.ultraThinMaterial)
     }
 }

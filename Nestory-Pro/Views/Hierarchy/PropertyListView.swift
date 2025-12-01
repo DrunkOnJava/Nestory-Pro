@@ -78,6 +78,7 @@ struct PropertyListView: View {
         .onAppear {
             ensureDefaultPropertyExists()
         }
+        .accessibilityIdentifier(AccessibilityIdentifiers.Hierarchy.propertyList)
     }
     
     // MARK: - Properties Section
@@ -185,6 +186,7 @@ struct PropertyRowView: View {
                 .frame(width: NestoryTheme.Metrics.thumbnailSmall + 4, height: NestoryTheme.Metrics.thumbnailSmall + 4)
                 .background(Color(hex: property.colorHex)?.opacity(0.1) ?? NestoryTheme.Colors.accent.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusMedium))
+                .accessibilityHidden(true)
 
             // Info
             VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
@@ -214,6 +216,19 @@ struct PropertyRowView: View {
             Spacer()
         }
         .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityDescription)
+        .accessibilityHint("Double-tap to view rooms")
+        .accessibilityIdentifier(AccessibilityIdentifiers.propertyRow(id: property.id.uuidString))
+    }
+
+    private var accessibilityDescription: String {
+        var description = property.name
+        if property.isDefault {
+            description += ", default property"
+        }
+        description += ", \(property.rooms.count) rooms, \(property.totalItemCount) items"
+        return description
     }
 }
 

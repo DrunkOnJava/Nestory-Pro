@@ -45,21 +45,21 @@ struct ReportsTab: View {
 
     var body: some View {
         @Bindable var vm = viewModel
-        
+
         return NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
                     // Quick Stats Section
                     if !allItems.isEmpty {
                         quickStatsSection
                     }
 
                     // Report Cards
-                    VStack(spacing: 16) {
+                    VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                         // Full Inventory Report Card
                         ReportCard(
                             icon: "doc.text.fill",
-                            iconColor: .blue,
+                            iconColor: NestoryTheme.Colors.accent,
                             title: "Full Inventory Report",
                             description: "Generate a comprehensive PDF of all your items"
                         ) {
@@ -69,19 +69,19 @@ struct ReportsTab: View {
                         // Loss List Report Card
                         ReportCard(
                             icon: "exclamationmark.triangle.fill",
-                            iconColor: .orange,
+                            iconColor: NestoryTheme.Colors.warning,
                             title: "Insurance Loss List",
                             description: "Create a claim-ready report for lost or damaged items"
                         ) {
                             viewModel.showLossListSelection()
                         }
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom, 20)
+                    .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
+                    .padding(.bottom, NestoryTheme.Metrics.spacingLarge)
                 }
-                .padding(.top, 20)
+                .padding(.top, NestoryTheme.Metrics.spacingLarge)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(NestoryTheme.Colors.background)
             .navigationTitle("Reports")
             .sheet(isPresented: $vm.showingLossListSelection) {
                 LossListSelectionView()
@@ -95,14 +95,14 @@ struct ReportsTab: View {
     // MARK: - View Components
 
     private var quickStatsSection: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 16) {
+        VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+            HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 // Total Items Stat
                 StatCard(
                     title: "Total Items",
                     value: "\(allItems.count)",
                     icon: "square.stack.3d.up.fill",
-                    color: .blue
+                    color: NestoryTheme.Colors.accent
                 )
 
                 // Total Value Stat
@@ -110,11 +110,11 @@ struct ReportsTab: View {
                     title: "Total Value",
                     value: env.settings.formatCurrency(viewModel.calculateTotalInventoryValue(allItems)),
                     icon: "dollarsign.circle.fill",
-                    color: .green
+                    color: NestoryTheme.Colors.success
                 )
             }
         }
-        .padding(.horizontal)
+        .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
     }
 }
 
@@ -130,24 +130,24 @@ private struct ReportCard: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 16) {
+            HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 // Icon
                 Image(systemName: icon)
                     .font(.title2)
                     .foregroundStyle(iconColor)
                     .frame(width: 44, height: 44)
                     .background(iconColor.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusMedium))
 
                 // Content
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
                     Text(title)
-                        .font(.headline)
+                        .font(NestoryTheme.Typography.headline)
                         .foregroundStyle(.primary)
 
                     Text(description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(NestoryTheme.Typography.subheadline)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                         .multilineTextAlignment(.leading)
                 }
 
@@ -155,12 +155,12 @@ private struct ReportCard: View {
 
                 // Chevron
                 Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
-            .padding()
-            .background(Color(.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(NestoryTheme.Metrics.paddingMedium)
+            .background(NestoryTheme.Colors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
             .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         }
         .buttonStyle(.plain)
@@ -175,27 +175,26 @@ private struct StatCard: View {
     let color: Color
 
     var body: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 8) {
+        VStack(spacing: NestoryTheme.Metrics.spacingSmall) {
+            HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                 Image(systemName: icon)
                     .font(.title3)
                     .foregroundStyle(color)
 
                 Text(title)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(value)
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(NestoryTheme.Typography.title2)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding()
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(NestoryTheme.Metrics.paddingMedium)
+        .background(NestoryTheme.Colors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 }

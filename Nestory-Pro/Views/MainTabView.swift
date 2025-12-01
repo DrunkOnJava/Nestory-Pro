@@ -43,35 +43,50 @@ struct MainTabView: View {
                         Label(AppTab.inventory.rawValue, systemImage: AppTab.inventory.iconName)
                     }
                     .tag(AppTab.inventory)
-                    .accessibilityIdentifier("mainTab.inventory")
-                
+                    .accessibilityIdentifier(AccessibilityIdentifiers.MainTab.inventoryTab)
+                    .accessibilityLabel("Inventory tab")
+                    .accessibilityHint("View and manage your inventory items")
+
                 CaptureTab()
                     .tabItem {
                         Label(AppTab.capture.rawValue, systemImage: AppTab.capture.iconName)
                     }
                     .tag(AppTab.capture)
-                    .accessibilityIdentifier("mainTab.capture")
-                
+                    .accessibilityIdentifier(AccessibilityIdentifiers.MainTab.captureTab)
+                    .accessibilityLabel("Capture tab")
+                    .accessibilityHint("Capture photos, receipts, and barcodes")
+
                 ReportsTab()
                     .tabItem {
                         Label(AppTab.reports.rawValue, systemImage: AppTab.reports.iconName)
                     }
                     .tag(AppTab.reports)
-                    .accessibilityIdentifier("mainTab.reports")
-                
+                    .accessibilityIdentifier(AccessibilityIdentifiers.MainTab.reportsTab)
+                    .accessibilityLabel("Reports tab")
+                    .accessibilityHint("Generate inventory and loss reports")
+
                 SettingsTab()
                     .tabItem {
                         Label(AppTab.settings.rawValue, systemImage: AppTab.settings.iconName)
                     }
                     .tag(AppTab.settings)
-                    .accessibilityIdentifier("mainTab.settings")
+                    .accessibilityIdentifier(AccessibilityIdentifiers.MainTab.settingsTab)
+                    .accessibilityLabel("Settings tab")
+                    .accessibilityHint("Configure app settings and preferences")
             }
-            .tint(.accentColor)
-            
+            .tint(NestoryTheme.Colors.accent)
+            .toolbarBackground(.visible, for: .tabBar)
+            .toolbarBackground(NestoryTheme.Colors.cardBackground, for: .tabBar)
+
             // App Lock Overlay (Task 6.2.2)
             if isLocked && env.settings.requiresBiometrics {
+                // Blur content when locked (P2-09-1)
+                Color.black.opacity(0.35)
+                    .ignoresSafeArea()
+                    .blur(radius: 20)
+
                 LockScreenView(isLocked: $isLocked)
-                    .transition(.opacity)
+                    .transitionWithMotionPreference()
             }
         }
         .preferredColorScheme(themePreference.colorScheme)

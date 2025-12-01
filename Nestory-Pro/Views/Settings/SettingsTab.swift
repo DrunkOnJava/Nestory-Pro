@@ -69,8 +69,8 @@ struct SettingsTab: View {
                                     .foregroundStyle(.orange)
                                 Spacer()
                                 Text("Upgrade")
-                                    .font(.subheadline)
-                                    .foregroundColor(Color.accentColor)
+                                    .font(NestoryTheme.Typography.subheadline)
+                                    .foregroundColor(NestoryTheme.Colors.accent)
                                 Image(systemName: "chevron.right")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
@@ -583,59 +583,58 @@ struct ProPaywallView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
                     // Header
-                    VStack(spacing: 12) {
+                    VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                         Image(systemName: "star.fill")
-                            .font(.system(size: 60))
+                            .font(.system(size: NestoryTheme.Metrics.iconHero))
                             .foregroundStyle(.orange)
-                        
+
                         Text("Nestory Pro")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        
+                            .font(NestoryTheme.Typography.largeTitle)
+
                         Text("One-time purchase. No subscriptions.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.subheadline)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                     }
-                    .padding(.top, 40)
+                    .padding(.top, NestoryTheme.Metrics.spacingXXLarge)
                     
                     // Features
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingLarge) {
                         FeatureRow(
                             icon: "infinity",
                             title: "Unlimited Items",
                             description: "Document everything you own without limits"
                         )
-                        
+
                         FeatureRow(
                             icon: "photo.fill",
                             title: "Photos in Reports",
                             description: "Include item photos in PDF inventory reports"
                         )
-                        
+
                         FeatureRow(
                             icon: "doc.text.fill",
                             title: "Advanced Exports",
                             description: "Export data in CSV and JSON formats"
                         )
-                        
+
                         FeatureRow(
                             icon: "list.bullet.rectangle.fill",
                             title: "Unlimited Loss Lists",
                             description: "Create reports for any number of items"
                         )
-                        
+
                         FeatureRow(
                             icon: "chart.bar.fill",
                             title: "Extended Analytics",
                             description: "More detailed breakdowns and visualizations"
                         )
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, NestoryTheme.Metrics.spacingXLarge)
                     
                     // Price
-                    VStack(spacing: 8) {
+                    VStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                         if isLoadingProduct {
                             ProgressView()
                                 .frame(height: 60)
@@ -644,18 +643,18 @@ struct ProPaywallView: View {
                                 .font(.system(size: 48, weight: .bold))
 
                             Text("One-time payment")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(NestoryTheme.Typography.subheadline)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
                         } else {
                             Text("$19.99")
                                 .font(.system(size: 48, weight: .bold))
 
                             Text("One-time payment")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(NestoryTheme.Typography.subheadline)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
                         }
                     }
-                    .padding(.top, 20)
+                    .padding(.top, NestoryTheme.Metrics.spacingLarge)
                     
                     // Purchase Button
                     Button(action: {
@@ -668,19 +667,19 @@ struct ProPaywallView: View {
                                 .progressViewStyle(.circular)
                                 .tint(.white)
                                 .frame(maxWidth: .infinity)
-                                .padding()
+                                .padding(NestoryTheme.Metrics.paddingMedium)
                         } else {
                             Text("Unlock Nestory Pro")
-                                .font(.headline)
+                                .font(NestoryTheme.Typography.headline)
                                 .frame(maxWidth: .infinity)
-                                .padding()
+                                .padding(NestoryTheme.Metrics.paddingMedium)
                         }
                     }
-                    .background(Color.accentColor)
+                    .background(NestoryTheme.Colors.accent)
                     .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                     .disabled(env.iapValidator.isPurchasing || isLoadingProduct)
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, NestoryTheme.Metrics.spacingXLarge)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Pro.purchaseButton)
 
                     Button("Restore Purchases") {
@@ -688,17 +687,17 @@ struct ProPaywallView: View {
                             await restorePurchases()
                         }
                     }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
                     .disabled(env.iapValidator.isPurchasing)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Pro.restorePurchasesButton)
-                    
+
                     Text("Free tier includes up to 100 items with all core features.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(NestoryTheme.Typography.caption)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                        .padding(.bottom, 40)
+                        .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+                        .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -764,21 +763,21 @@ struct FeatureRow: View {
     let icon: String
     let title: String
     let description: String
-    
+
     var body: some View {
-        HStack(alignment: .top, spacing: 16) {
+        HStack(alignment: .top, spacing: NestoryTheme.Metrics.spacingMedium) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundColor(Color.accentColor)
+                .foregroundColor(NestoryTheme.Colors.accent)
                 .frame(width: 32)
-            
-            VStack(alignment: .leading, spacing: 4) {
+
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
                 Text(title)
-                    .font(.headline)
-                
+                    .font(NestoryTheme.Typography.headline)
+
                 Text(description)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
         }
     }
