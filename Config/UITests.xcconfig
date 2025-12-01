@@ -2,17 +2,18 @@
 // UI Test specific build settings
 // Created for v1.1 - Swift 6 migration
 
-// Note: UITests intentionally do NOT include Common.xcconfig
-// because XCTestCase methods are nonisolated and conflict with MainActor default isolation
+// Note: UITests use nonisolated default because XCTestCase lifecycle methods
+// (init, setUp, tearDown) are nonisolated. Individual test methods that need
+// MainActor isolation should be marked @MainActor explicitly.
 
 // MARK: - Swift Settings
 SWIFT_VERSION = 6.0
 SWIFT_STRICT_CONCURRENCY = complete
 SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full
 SWIFT_APPROACHABLE_CONCURRENCY = YES
-// MainActor is now explicitly added to each test class
-// This allows proper access to @MainActor-isolated XCUIElement properties
-SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor
+// nonisolated default - matches XCTestCase's design
+// Test methods using XCUIElement should be marked @MainActor individually
+SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated
 
 // MARK: - Warnings (Strict)
 GCC_WARN_64_TO_32_BIT_CONVERSION = YES

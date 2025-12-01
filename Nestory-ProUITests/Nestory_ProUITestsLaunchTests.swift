@@ -7,19 +7,17 @@
 
 import XCTest
 
-@MainActor
 final class Nestory_ProUITestsLaunchTests: XCTestCase {
 
-    nonisolated override class var runsForEachTargetApplicationUIConfiguration: Bool {
+    override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }
 
-    nonisolated override func setUpWithError() throws {
-        MainActor.assumeIsolated {
-            continueAfterFailure = false
-        }
+    override func setUpWithError() throws {
+        continueAfterFailure = false
     }
 
+    @MainActor
     func testLaunch() throws {
         let app = XCUIApplication()
         app.launch()

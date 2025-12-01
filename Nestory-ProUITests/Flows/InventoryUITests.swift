@@ -7,31 +7,26 @@
 
 import XCTest
 
-@MainActor
 final class InventoryUITests: XCTestCase {
 
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 
-    nonisolated override func setUpWithError() throws {
-        MainActor.assumeIsolated {
-            continueAfterFailure = false
-
-            app = XCUIApplication()
-            app.launchArguments = ["--uitesting", "--reset-data"]
-            app.launch()
-        }
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["--uitesting", "--reset-data"]
+        app.launch()
     }
 
-    nonisolated override func tearDownWithError() throws {
-        MainActor.assumeIsolated {
-            app = nil
-        }
+    override func tearDownWithError() throws {
+        app = nil
     }
 
     // MARK: - Empty State Tests
 
+    @MainActor
     func testInventory_EmptyState_ShowsEmptyMessage() throws {
         // Verify on Inventory tab
         XCTAssertTrue(app.buttons["Inventory"].exists)
@@ -46,6 +41,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Add Item Flow Tests
 
+    @MainActor
     func testAddItem_BasicFlow_CreatesItem() throws {
         // Navigate to add item
         app.buttons["Inventory"].tap()
@@ -74,6 +70,7 @@ final class InventoryUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testAddItem_Cancel_DoesNotCreateItem() throws {
         // Navigate to add item
         app.buttons["Inventory"].tap()
@@ -105,6 +102,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Search Tests
 
+    @MainActor
     func testSearch_WithMatchingQuery_ShowsResults() throws {
         // Skip if search not implemented
         let searchField = app.searchFields[AccessibilityIdentifiers.Inventory.searchField]
@@ -120,6 +118,7 @@ final class InventoryUITests: XCTestCase {
         XCTAssertTrue(hasResults, "Search should show results or no results message")
     }
 
+    @MainActor
     func testSearch_ClearButton_ResetsResults() throws {
         let searchField = app.searchFields[AccessibilityIdentifiers.Inventory.searchField]
         guard searchField.waitForExistence(timeout: 3) else {
@@ -141,6 +140,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Filter Tests
 
+    @MainActor
     func testFilter_ByCategory_FiltersResults() throws {
         let filterChip = app.buttons[AccessibilityIdentifiers.Inventory.filterChip]
         guard filterChip.waitForExistence(timeout: 3) else {
@@ -159,6 +159,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Sort Tests
 
+    @MainActor
     func testSort_ByName_SortsAlphabetically() throws {
         let sortButton = app.buttons[AccessibilityIdentifiers.Inventory.sortButton]
         guard sortButton.waitForExistence(timeout: 3) else {
@@ -177,6 +178,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Item Detail Tests
 
+    @MainActor
     func testItemDetail_Tap_ShowsDetailView() throws {
         // This requires at least one item to exist
         // First check if there are any items
@@ -197,6 +199,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Delete Item Tests
 
+    @MainActor
     func testDeleteItem_Confirmation_DeletesItem() throws {
         guard app.cells.count > 0 else {
             throw XCTSkip("No items to delete")
@@ -230,6 +233,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Layout Toggle Tests
 
+    @MainActor
     func testLayoutToggle_SwitchBetweenListAndGrid() throws {
         let layoutToggle = app.buttons[AccessibilityIdentifiers.Inventory.layoutToggle]
         guard layoutToggle.waitForExistence(timeout: 3) else {
@@ -247,6 +251,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Accessibility Tests
 
+    @MainActor
     func testInventory_VoiceOverLabels_ArePresent() throws {
         app.buttons["Inventory"].tap()
 
@@ -259,6 +264,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Performance Tests
 
+    @MainActor
     func testPerformance_InventoryTabLoad() throws {
         // Navigate away first
         app.buttons["Settings"].tap()
@@ -272,6 +278,7 @@ final class InventoryUITests: XCTestCase {
 
     // MARK: - Helper Methods
 
+    @MainActor
     private func createTestItem(name: String) {
         app.buttons["Inventory"].tap()
 

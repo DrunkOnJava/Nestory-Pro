@@ -7,38 +7,34 @@
 
 import XCTest
 
-@MainActor
 final class ReportsUITests: XCTestCase {
 
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 
-    nonisolated override func setUpWithError() throws {
-        MainActor.assumeIsolated {
-            continueAfterFailure = false
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
+        app.launch()
 
-            app = XCUIApplication()
-            app.launchArguments = ["--uitesting"]
-            app.launch()
-
-            // Navigate to Reports
-            app.buttons["Reports"].tap()
-        }
+        // Navigate to Reports
+        app.buttons["Reports"].tap()
     }
 
-    nonisolated override func tearDownWithError() throws {
-        MainActor.assumeIsolated {
-            app = nil
-        }
+    override func tearDownWithError() throws {
+        app = nil
     }
 
     // MARK: - Reports Screen Tests
 
+    @MainActor
     func testReports_ScreenDisplays() throws {
         XCTAssertTrue(app.staticTexts["Reports"].exists, "Reports screen should display")
     }
 
+    @MainActor
     func testReports_FullInventoryCard_Exists() throws {
         let fullInventoryCard = app.buttons[AccessibilityIdentifiers.Reports.fullInventoryCard]
         let cardExists = fullInventoryCard.waitForExistence(timeout: 3) ||
@@ -51,6 +47,7 @@ final class ReportsUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testReports_LossListCard_Exists() throws {
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
         let cardExists = lossListCard.waitForExistence(timeout: 3) ||
@@ -64,6 +61,7 @@ final class ReportsUITests: XCTestCase {
 
     // MARK: - Report Generation Tests
 
+    @MainActor
     func testGenerateReport_FullInventory_ShowsPreview() throws {
         let fullInventoryCard = app.buttons[AccessibilityIdentifiers.Reports.fullInventoryCard]
         guard fullInventoryCard.waitForExistence(timeout: 3) ||
@@ -89,6 +87,7 @@ final class ReportsUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testGenerateReport_LossList_ShowsItemSelection() throws {
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
         guard lossListCard.waitForExistence(timeout: 3) ||
@@ -114,6 +113,7 @@ final class ReportsUITests: XCTestCase {
 
     // MARK: - Share Tests
 
+    @MainActor
     func testShare_ReportShareButton_ShowsShareSheet() throws {
         // First generate a report
         let fullInventoryCard = app.buttons[AccessibilityIdentifiers.Reports.fullInventoryCard]
@@ -150,6 +150,7 @@ final class ReportsUITests: XCTestCase {
 
     // MARK: - Report History Tests
 
+    @MainActor
     func testReportHistory_ShowsPreviousReports() throws {
         let historySection = app.otherElements[AccessibilityIdentifiers.Reports.reportHistory]
         guard historySection.waitForExistence(timeout: 3) ||
@@ -163,6 +164,7 @@ final class ReportsUITests: XCTestCase {
 
     // MARK: - Format Options Tests
 
+    @MainActor
     func testReportFormat_PDFOptionExists() throws {
         // Navigate to report generation
         let fullInventoryCard = app.buttons[AccessibilityIdentifiers.Reports.fullInventoryCard]
@@ -183,6 +185,7 @@ final class ReportsUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testReportFormat_CSVOptionExists() throws {
         let fullInventoryCard = app.buttons[AccessibilityIdentifiers.Reports.fullInventoryCard]
         guard fullInventoryCard.waitForExistence(timeout: 3) else {
@@ -203,6 +206,7 @@ final class ReportsUITests: XCTestCase {
 
     // MARK: - Pro Features Tests
 
+    @MainActor
     func testReports_ProFeaturesBadge_ShownForFreeUsers() throws {
         // This test checks if Pro features are marked appropriately
         let proBadge = app.staticTexts["Pro"]
@@ -213,6 +217,7 @@ final class ReportsUITests: XCTestCase {
 
     // MARK: - Accessibility Tests
 
+    @MainActor
     func testReports_AccessibilityLabels_ArePresent() throws {
         // Verify main elements have accessibility labels
         let reportsTitle = app.staticTexts["Reports"]
@@ -228,6 +233,7 @@ final class ReportsUITests: XCTestCase {
 
     // MARK: - Performance Tests
 
+    @MainActor
     func testPerformance_ReportsTabLoad() throws {
         // Navigate away first
         app.buttons["Settings"].tap()

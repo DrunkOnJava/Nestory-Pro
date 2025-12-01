@@ -8,34 +8,29 @@
 
 import XCTest
 
-@MainActor
 final class LossListUITests: XCTestCase {
 
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 
-    nonisolated override func setUpWithError() throws {
-        MainActor.assumeIsolated {
-            continueAfterFailure = false
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
+        app.launch()
 
-            app = XCUIApplication()
-            app.launchArguments = ["--uitesting"]
-            app.launch()
-
-            // Navigate to Reports tab
-            app.buttons["Reports"].tap()
-        }
+        // Navigate to Reports tab
+        app.buttons["Reports"].tap()
     }
 
-    nonisolated override func tearDownWithError() throws {
-        MainActor.assumeIsolated {
-            app = nil
-        }
+    override func tearDownWithError() throws {
+        app = nil
     }
 
     // MARK: - Loss List Card Tests
 
+    @MainActor
     func testLossList_CardExists() throws {
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
         let cardExists = lossListCard.waitForExistence(timeout: 3) ||
@@ -45,6 +40,7 @@ final class LossListUITests: XCTestCase {
         XCTAssertTrue(cardExists, "Loss List card should exist on Reports tab")
     }
 
+    @MainActor
     func testLossList_TapCard_ShowsSelectionView() throws {
         // Find and tap the loss list card
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -77,6 +73,7 @@ final class LossListUITests: XCTestCase {
 
     // MARK: - Item Selection Tests
 
+    @MainActor
     func testLossList_ItemSelection_MultiSelectWorks() throws {
         // Navigate to loss list selection
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -112,6 +109,7 @@ final class LossListUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testLossList_SelectAll_SelectsAllItems() throws {
         // Navigate to loss list selection
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -136,6 +134,7 @@ final class LossListUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testLossList_QuickSelectByRoom_Works() throws {
         // Navigate to loss list selection
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -163,6 +162,7 @@ final class LossListUITests: XCTestCase {
 
     // MARK: - Free Tier Limit Tests
 
+    @MainActor
     func testLossList_FreeTierLimit_ShowsWarning() throws {
         // This test verifies the 20-item limit for free users
         // Navigate to loss list selection
@@ -190,6 +190,7 @@ final class LossListUITests: XCTestCase {
 
     // MARK: - Incident Details Tests
 
+    @MainActor
     func testLossList_IncidentDetails_ShowsAfterSelection() throws {
         // Navigate to loss list selection
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -233,6 +234,7 @@ final class LossListUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testLossList_IncidentDatePicker_Works() throws {
         // Navigate to loss list and go to incident details
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -267,6 +269,7 @@ final class LossListUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testLossList_IncidentType_CanBeSelected() throws {
         // Navigate to loss list and go to incident details
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -302,6 +305,7 @@ final class LossListUITests: XCTestCase {
 
     // MARK: - PDF Generation Tests
 
+    @MainActor
     func testLossList_GeneratePDF_ShowsPreview() throws {
         // Navigate to loss list
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -352,6 +356,7 @@ final class LossListUITests: XCTestCase {
 
     // MARK: - Summary Display Tests
 
+    @MainActor
     func testLossList_Summary_ShowsTotalValue() throws {
         // Navigate to loss list
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -377,6 +382,7 @@ final class LossListUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testLossList_Summary_ShowsItemCount() throws {
         // Navigate to loss list
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -404,6 +410,7 @@ final class LossListUITests: XCTestCase {
 
     // MARK: - Accessibility Tests
 
+    @MainActor
     func testLossList_AccessibilityLabels_ArePresent() throws {
         // Navigate to loss list
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]
@@ -430,6 +437,7 @@ final class LossListUITests: XCTestCase {
 
     // MARK: - Performance Tests
 
+    @MainActor
     func testPerformance_LossListSelection() throws {
         // Navigate to loss list
         let lossListCard = app.buttons[AccessibilityIdentifiers.Reports.lossListCard]

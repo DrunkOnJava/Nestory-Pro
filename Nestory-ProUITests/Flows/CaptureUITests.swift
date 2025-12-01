@@ -8,38 +8,34 @@
 
 import XCTest
 
-@MainActor
 final class CaptureUITests: XCTestCase {
 
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 
-    nonisolated override func setUpWithError() throws {
-        MainActor.assumeIsolated {
-            continueAfterFailure = false
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["--uitesting", "--reset-data"]
+        app.launch()
 
-            app = XCUIApplication()
-            app.launchArguments = ["--uitesting", "--reset-data"]
-            app.launch()
-
-            // Navigate to Capture tab
-            app.buttons["Capture"].tap()
-        }
+        // Navigate to Capture tab
+        app.buttons["Capture"].tap()
     }
 
-    nonisolated override func tearDownWithError() throws {
-        MainActor.assumeIsolated {
-            app = nil
-        }
+    override func tearDownWithError() throws {
+        app = nil
     }
 
     // MARK: - Screen Display Tests
 
+    @MainActor
     func testCapture_ScreenDisplays() throws {
         XCTAssertTrue(app.staticTexts["Capture"].exists, "Capture screen should display")
     }
 
+    @MainActor
     func testCapture_SegmentedControl_Exists() throws {
         let segmentedControl = app.segmentedControls["captureTab.segmentedControl"]
         let controlExists = segmentedControl.waitForExistence(timeout: 3) ||
@@ -48,6 +44,7 @@ final class CaptureUITests: XCTestCase {
         XCTAssertTrue(controlExists, "Segmented control should exist")
     }
 
+    @MainActor
     func testCapture_AllModes_ExistInSegmentedControl() throws {
         // Photo mode should exist
         let photoExists = app.buttons["Photo"].exists ||
@@ -68,6 +65,7 @@ final class CaptureUITests: XCTestCase {
 
     // MARK: - Photo Capture Tests (Task 9.2.1)
 
+    @MainActor
     func testPhotoCapture_StartButton_Exists() throws {
         // Ensure we're on Photo segment
         if app.buttons["Photo"].exists {
@@ -82,6 +80,7 @@ final class CaptureUITests: XCTestCase {
         XCTAssertTrue(buttonExists, "Start Photo Capture button should exist")
     }
 
+    @MainActor
     func testPhotoCapture_TapStart_ShowsCapture() throws {
         // Ensure we're on Photo segment
         if app.buttons["Photo"].exists {
@@ -117,6 +116,7 @@ final class CaptureUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testPhotoCapture_RecentCaptures_ShowsForItemsWithPhotos() throws {
         // This test requires items with photos to exist
         // First check if recent captures section exists
@@ -136,6 +136,7 @@ final class CaptureUITests: XCTestCase {
 
     // MARK: - Receipt Capture Tests (Task 9.2.2)
 
+    @MainActor
     func testReceiptCapture_SwitchToReceipt_ShowsReceiptUI() throws {
         // Switch to Receipt segment
         if app.buttons["Receipt"].exists {
@@ -154,6 +155,7 @@ final class CaptureUITests: XCTestCase {
         XCTAssertTrue(receiptUIExists, "Receipt capture UI should display")
     }
 
+    @MainActor
     func testReceiptCapture_TapScanReceipt_ShowsCapture() throws {
         // Switch to Receipt segment
         if app.buttons["Receipt"].exists {
@@ -188,6 +190,7 @@ final class CaptureUITests: XCTestCase {
 
     // MARK: - Barcode Scan Tests
 
+    @MainActor
     func testBarcodeCapture_SwitchToBarcode_ShowsBarcodeUI() throws {
         // Switch to Barcode segment
         if app.buttons["Barcode"].exists {
@@ -210,6 +213,7 @@ final class CaptureUITests: XCTestCase {
         XCTAssertTrue(barcodeUIExists, "Barcode scan UI should display")
     }
 
+    @MainActor
     func testBarcodeCapture_TapStartScan_ShowsScanner() throws {
         // Switch to Barcode segment
         if app.buttons["Barcode"].exists {
@@ -244,6 +248,7 @@ final class CaptureUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testBarcodeCapture_FutureUpdateNotice_Displayed() throws {
         // Switch to Barcode segment
         if app.buttons["Barcode"].exists {
@@ -262,6 +267,7 @@ final class CaptureUITests: XCTestCase {
 
     // MARK: - Mode Switching Tests
 
+    @MainActor
     func testCapture_SwitchBetweenModes_NoErrors() throws {
         // Photo to Receipt
         if app.buttons["Receipt"].exists {
@@ -287,6 +293,7 @@ final class CaptureUITests: XCTestCase {
 
     // MARK: - Accessibility Tests
 
+    @MainActor
     func testCapture_AccessibilityLabels_ArePresent() throws {
         // Verify main elements have accessibility labels
         let captureTitle = app.staticTexts["Capture"]
@@ -302,6 +309,7 @@ final class CaptureUITests: XCTestCase {
 
     // MARK: - Performance Tests
 
+    @MainActor
     func testPerformance_CaptureTabLoad() throws {
         // Navigate away first
         app.buttons["Settings"].tap()

@@ -7,34 +7,29 @@
 
 import XCTest
 
-@MainActor
 final class SettingsUITests: XCTestCase {
 
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 
-    nonisolated override func setUpWithError() throws {
-        MainActor.assumeIsolated {
-            continueAfterFailure = false
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
+        app.launch()
 
-            app = XCUIApplication()
-            app.launchArguments = ["--uitesting"]
-            app.launch()
-
-            // Navigate to Settings
-            app.buttons["Settings"].tap()
-        }
+        // Navigate to Settings
+        app.buttons["Settings"].tap()
     }
 
-    nonisolated override func tearDownWithError() throws {
-        MainActor.assumeIsolated {
-            app = nil
-        }
+    override func tearDownWithError() throws {
+        app = nil
     }
 
     // MARK: - Settings Screen Tests
 
+    @MainActor
     func testSettings_ScreenDisplays_AllSections() throws {
         // Verify settings screen is visible
         XCTAssertTrue(app.staticTexts["Settings"].exists)
@@ -51,6 +46,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - Theme Tests
 
+    @MainActor
     func testTheme_SelectorExists() throws {
         let themeSelector = app.buttons[AccessibilityIdentifiers.Settings.themeSelector]
         guard themeSelector.waitForExistence(timeout: 3) ||
@@ -61,6 +57,7 @@ final class SettingsUITests: XCTestCase {
         XCTAssertTrue(themeSelector.exists)
     }
 
+    @MainActor
     func testTheme_CanSwitchToDark() throws {
         let themeSelector = app.buttons[AccessibilityIdentifiers.Settings.themeSelector]
         guard themeSelector.waitForExistence(timeout: 3) ||
@@ -78,6 +75,7 @@ final class SettingsUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testTheme_CanSwitchToLight() throws {
         let themeSelector = app.buttons[AccessibilityIdentifiers.Settings.themeSelector]
         guard themeSelector.waitForExistence(timeout: 3) ||
@@ -93,6 +91,7 @@ final class SettingsUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testTheme_SystemOption_Exists() throws {
         let themeSelector = app.buttons[AccessibilityIdentifiers.Settings.themeSelector]
         guard themeSelector.waitForExistence(timeout: 3) ||
@@ -108,6 +107,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - iCloud Sync Tests
 
+    @MainActor
     func testICloudSync_ToggleExists() throws {
         let syncToggle = app.switches[AccessibilityIdentifiers.Settings.iCloudSyncToggle]
         guard syncToggle.waitForExistence(timeout: 3) ||
@@ -118,6 +118,7 @@ final class SettingsUITests: XCTestCase {
         XCTAssertTrue(syncToggle.exists)
     }
 
+    @MainActor
     func testICloudSync_CanToggle() throws {
         let syncToggle = app.switches[AccessibilityIdentifiers.Settings.iCloudSyncToggle]
         guard syncToggle.waitForExistence(timeout: 3) ||
@@ -135,6 +136,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - Currency Tests
 
+    @MainActor
     func testCurrency_SelectorExists() throws {
         let currencySelector = app.buttons[AccessibilityIdentifiers.Settings.currencySelector]
         guard currencySelector.waitForExistence(timeout: 3) ||
@@ -145,6 +147,7 @@ final class SettingsUITests: XCTestCase {
         XCTAssertTrue(currencySelector.exists)
     }
 
+    @MainActor
     func testCurrency_CanSelectDifferentCurrency() throws {
         let currencySelector = app.buttons[AccessibilityIdentifiers.Settings.currencySelector]
         guard currencySelector.waitForExistence(timeout: 3) ||
@@ -163,6 +166,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - App Lock Tests
 
+    @MainActor
     func testAppLock_ToggleExists() throws {
         let appLockToggle = app.switches[AccessibilityIdentifiers.Settings.appLockToggle]
         guard appLockToggle.waitForExistence(timeout: 3) ||
@@ -175,6 +179,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - Export/Import Tests
 
+    @MainActor
     func testExport_ButtonExists() throws {
         let exportButton = app.buttons[AccessibilityIdentifiers.Settings.exportDataButton]
         guard exportButton.waitForExistence(timeout: 3) ||
@@ -185,6 +190,7 @@ final class SettingsUITests: XCTestCase {
         XCTAssertTrue(exportButton.exists)
     }
 
+    @MainActor
     func testExport_ShowsShareSheet() throws {
         let exportButton = app.buttons[AccessibilityIdentifiers.Settings.exportDataButton]
         guard exportButton.waitForExistence(timeout: 3) ||
@@ -204,6 +210,7 @@ final class SettingsUITests: XCTestCase {
         }
     }
 
+    @MainActor
     func testImport_ButtonExists() throws {
         let importButton = app.buttons[AccessibilityIdentifiers.Settings.importDataButton]
         guard importButton.waitForExistence(timeout: 3) ||
@@ -216,6 +223,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - Pro Upgrade Tests
 
+    @MainActor
     func testProUpgrade_CellExists() throws {
         let proCell = app.cells[AccessibilityIdentifiers.Settings.proUpgradeCell]
         _ = proCell.waitForExistence(timeout: 3) ||
@@ -228,6 +236,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - About Tests
 
+    @MainActor
     func testAbout_CellExists() throws {
         let aboutCell = app.cells[AccessibilityIdentifiers.Settings.aboutCell]
         guard aboutCell.waitForExistence(timeout: 3) ||
@@ -249,6 +258,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - Accessibility Tests
 
+    @MainActor
     func testSettings_AllElementsAccessible() throws {
         // Verify main settings elements are accessible
         let settingsTitle = app.staticTexts["Settings"]
@@ -257,6 +267,7 @@ final class SettingsUITests: XCTestCase {
 
     // MARK: - Helper Methods
 
+    @MainActor
     @discardableResult
     private func scrollToElement(_ element: XCUIElement) -> Bool {
         let maxScrolls = 5
