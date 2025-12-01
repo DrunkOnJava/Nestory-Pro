@@ -305,6 +305,156 @@ extension View {
     }
 }
 
+// MARK: - Accessibility Support
+
+/// Accessibility convenience modifiers for VoiceOver and inclusive design
+extension View {
+    /// Applies a VoiceOver label and optional hint
+    func accessibilityCard(
+        label: String,
+        hint: String? = nil,
+        traits: AccessibilityTraits = .isButton
+    ) -> some View {
+        self
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(label)
+            .accessibilityHint(hint ?? "")
+            .accessibilityAddTraits(traits)
+    }
+
+    /// Applies accessibility label for a stat card
+    func accessibilityStat(label: String, value: String) -> some View {
+        self
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(label): \(value)")
+    }
+
+    /// Applies accessibility for documentation progress
+    func accessibilityProgress(percentage: Int, label: String = "Documentation") -> some View {
+        self
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(label) \(percentage) percent complete")
+            .accessibilityValue("\(percentage) percent")
+    }
+
+    /// Applies accessibility for item row
+    func accessibilityItemRow(
+        name: String,
+        location: String?,
+        value: String?
+    ) -> some View {
+        var description = name
+        if let location { description += ", in \(location)" }
+        if let value { description += ", valued at \(value)" }
+        return self
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(description)
+            .accessibilityHint("Double-tap to view details")
+            .accessibilityAddTraits(.isButton)
+    }
+
+    /// Conditionally applies animation based on Reduce Motion preference
+    func animateWithMotionPreference<V: Equatable>(
+        value: V,
+        animation: Animation = NestoryTheme.Animation.standard
+    ) -> some View {
+        modifier(ReduceMotionAnimationModifier(value: value, animation: animation))
+    }
+
+    /// Applies transition that respects Reduce Motion
+    func transitionWithMotionPreference(
+        _ transition: AnyTransition = .opacity.combined(with: .scale(scale: 0.95))
+    ) -> some View {
+        modifier(ReduceMotionTransitionModifier(transition: transition))
+    }
+}
+
+// MARK: - Reduce Motion Modifiers
+
+/// Animation modifier that respects Reduce Motion preference
+struct ReduceMotionAnimationModifier<V: Equatable>: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let value: V
+    let animation: Animation
+
+    func body(content: Content) -> some View {
+        if reduceMotion {
+            content
+        } else {
+            content.animation(animation, value: value)
+        }
+    }
+}
+
+/// Transition modifier that respects Reduce Motion preference
+struct ReduceMotionTransitionModifier: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let transition: AnyTransition
+
+    func body(content: Content) -> some View {
+        content.transition(reduceMotion ? .opacity : transition)
+    }
+}
+
+/// Shimmer modifier with Reduce Motion support
+struct AccessibleShimmerModifier: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        if reduceMotion {
+            // Static placeholder without animation
+            content.opacity(0.6)
+        } else {
+            content
+                .overlay(
+                    GeometryReader { geometry in
+                        LinearGradient(
+                            colors: [
+                                .clear,
+                                .white.opacity(0.4),
+                                .clear
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        .frame(width: geometry.size.width * 2)
+                        .offset(x: -geometry.size.width + (geometry.size.width * 2 * phase))
+                    }
+                )
+                .mask(content)
+                .onAppear {
+                    withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                        phase = 1
+                    }
+                }
+        }
+    }
+}
+
+extension View {
+    /// Applies shimmer effect that respects Reduce Motion
+    func accessibleShimmer() -> some View {
+        modifier(AccessibleShimmerModifier())
+    }
+}
+
+// MARK: - Motion-Safe Animations
+
+extension NestoryTheme.Animation {
+    /// Returns appropriate animation based on Reduce Motion setting
+    /// Use this for programmatic animations
+    @MainActor
+    static func motionSafe(
+        _ animation: Animation,
+        reduceMotion: Bool
+    ) -> Animation? {
+        reduceMotion ? nil : animation
+    }
+}
+
+// Note: EmptyStateView, LoadingStateView, ErrorStateView are defined in SharedComponents.swift
+
 // MARK: - Preview
 
 #Preview("Design System Colors") {
@@ -360,4 +510,148 @@ private func colorSwatch(_ color: Color, _ name: String) -> some View {
         Text(name)
             .font(.caption2)
     }
+}
+
+#Preview("State Views") {
+    ScrollView {
+        VStack(spacing: 24) {
+            // Uses EmptyStateView from SharedComponents.swift
+            EmptyStateView(
+                iconName: "archivebox",
+                title: "No Items Yet",
+                message: "Start building your inventory by adding your first item.",
+                buttonTitle: "Add Item",
+                buttonAction: {}
+            )
+            .cardStyle()
+
+            // Loading state placeholder
+            VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+                ProgressView()
+                    .controlSize(.large)
+                Text("Loading inventory...")
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
+            }
+            .frame(height: 150)
+            .frame(maxWidth: .infinity)
+            .cardStyle()
+
+            // Error state placeholder
+            VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: NestoryTheme.Metrics.iconXLarge))
+                    .foregroundStyle(NestoryTheme.Colors.error)
+                Text("Failed to load inventory.")
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
+                Button("Try Again") {}
+                    .buttonStyle(.bordered)
+            }
+            .padding(NestoryTheme.Metrics.paddingXLarge)
+            .errorCard()
+        }
+        .padding()
+    }
+    .background(NestoryTheme.Colors.background)
+}
+
+// MARK: - Button Press Feedback (P2-15-2)
+
+/// Button style that provides press feedback with scale effect
+struct PressableButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let hapticStyle: NestoryHapticStyle
+
+    enum NestoryHapticStyle {
+        case selection
+        case impact
+        case none
+    }
+
+    init(haptic: NestoryHapticStyle = .selection) {
+        self.hapticStyle = haptic
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.96 : 1.0)
+            .animation(reduceMotion ? nil : NestoryTheme.Animation.quick, value: configuration.isPressed)
+            .onChange(of: configuration.isPressed) { _, isPressed in
+                if isPressed {
+                    triggerHaptic()
+                }
+            }
+    }
+
+    private func triggerHaptic() {
+        switch hapticStyle {
+        case .selection:
+            NestoryTheme.Haptics.selection()
+        case .impact:
+            NestoryTheme.Haptics.lightImpact()
+        case .none:
+            break
+        }
+    }
+}
+
+/// Card button style with press feedback and shadow animation
+struct CardButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.98 : 1.0)
+            .shadow(
+                color: configuration.isPressed ? Color.black.opacity(0.04) : NestoryTheme.Shadow.card.color,
+                radius: configuration.isPressed ? 4 : NestoryTheme.Shadow.card.radius,
+                x: 0,
+                y: configuration.isPressed ? 1 : NestoryTheme.Shadow.card.y
+            )
+            .animation(reduceMotion ? nil : NestoryTheme.Animation.quick, value: configuration.isPressed)
+            .onChange(of: configuration.isPressed) { _, isPressed in
+                if isPressed {
+                    NestoryTheme.Haptics.selection()
+                }
+            }
+    }
+}
+
+extension View {
+    /// Applies pressable button style with scale effect and optional haptic
+    func pressableStyle(haptic: PressableButtonStyle.NestoryHapticStyle = .selection) -> some View {
+        buttonStyle(PressableButtonStyle(haptic: haptic))
+    }
+
+    /// Applies card button style for tappable cards
+    func cardButtonStyle() -> some View {
+        buttonStyle(CardButtonStyle())
+    }
+}
+
+#Preview("Button Styles") {
+    VStack(spacing: 24) {
+        Button("Pressable Button") {}
+            .buttonStyle(.borderedProminent)
+            .pressableStyle()
+
+        Button {
+        } label: {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Card Button")
+                    .font(NestoryTheme.Typography.headline)
+                Text("Tap to see press effect")
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(NestoryTheme.Colors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+        }
+        .cardButtonStyle()
+    }
+    .padding()
+    .background(NestoryTheme.Colors.background)
 }
