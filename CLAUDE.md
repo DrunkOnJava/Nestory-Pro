@@ -56,6 +56,67 @@ bundle exec fastlane bump_version type:major   # Major: 1.0.0 -> 2.0.0
 
 Push to `main` branch triggers automatic TestFlight upload via GitHub Actions.
 
+## Test Infrastructure & CI/CD
+
+### Test Plans
+
+Three test plans optimized for Xcode Cloud with parallel execution enabled:
+
+| Test Plan | Purpose | Time | Skipped Tests |
+|-----------|---------|------|---------------|
+| **FastTests** | PR validation | ~5 min | Performance, Snapshots, DataModelHarness, ReportGenerator |
+| **FullTests** | Main branch | ~15 min | Snapshots only |
+| **CriticalPath** | Smoke tests | ~2 min | All except core unit tests |
+
+**Usage:**
+```bash
+# Run specific test plan
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -testPlan FastTests \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
+```
+
+### Test Tagging System
+
+Tests are tagged for selective execution:
+
+```swift
+// TestInfrastructure/TestTags.swift
+enum TestTag: String {
+    case fast, medium, slow           // Speed
+    case unit, integration, performance, snapshot  // Type
+    case model, service, viewModel, ui  // Layer
+    case critical, regression          // Priority
+}
+
+// Example usage in test class
+class ItemTests: XCTestCase {
+    override var tags: [String] {
+        [TestTag.fast.rawValue, TestTag.unit.rawValue, TestTag.model.rawValue]
+    }
+}
+```
+
+### Xcode Cloud Optimization
+
+**Projected Usage:** 7.1 hours/month (71% under 25-hour free tier)
+
+| Workflow | Test Plan | Device | Time | Monthly |
+|----------|-----------|--------|------|---------|
+| PR Validation | FastTests | iPhone 17 Pro Max | 5 min | 1.7 hrs (20 PRs) |
+| Main Branch | FullTests | iPhone 17 Pro Max | 10 min | 5.0 hrs (30 commits) |
+| Pre-Release | FullTests | iPhone 17 Pro Max | 12 min | 0.4 hrs (2 releases) |
+
+**Configuration Scripts:**
+- `Scripts/xc-cloud-create-workflows.sh` - Create workflows via API
+- `Scripts/xc-cloud-usage.sh` - Monitor compute hour budget
+- `Scripts/xc-env.sh` - Load App Store Connect credentials
+
+**Documentation:**
+- [XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md](docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md) - 19 advanced techniques
+- [XCODE_CLOUD_TEST_OPTIMIZATION.md](docs/XCODE_CLOUD_TEST_OPTIMIZATION.md) - Full optimization strategy
+- [IOS_BUILD_OPTIMIZATIONS.md](docs/IOS_BUILD_OPTIMIZATIONS.md) - Local build optimizations
+
 ## Project Configuration (XcodeGen)
 
 **IMPORTANT:** The Xcode project is generated from `project.yml`. DO NOT hand-edit `.xcodeproj`.

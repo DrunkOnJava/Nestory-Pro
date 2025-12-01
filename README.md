@@ -149,19 +149,46 @@ bundle exec fastlane bump_version type:major   # Major: 1.0.0 → 2.0.0
 
 > **Note:** Pushing to `main` branch automatically triggers TestFlight upload via GitHub Actions.
 
-### CI/CD
+### CI/CD & Build Optimization
 
-The project uses GitHub Actions for continuous deployment:
+The project uses **Xcode Cloud** for continuous integration with comprehensive test optimization:
+
+#### Xcode Cloud Workflows
+
+Three optimized workflows targeting 7.1 compute hours/month (71% under free tier):
+
+| Workflow | Test Plan | Time | Trigger | Monthly Usage |
+|----------|-----------|------|---------|---------------|
+| **PR Validation** | FastTests | 5 min | Pull requests | 1.7 hrs (20 PRs) |
+| **Main Branch** | FullTests | 10 min | Push to main | 5.0 hrs (30 commits) |
+| **Pre-Release** | FullTests | 12 min | Version tags | 0.4 hrs (2 releases) |
+
+**Device Target:** iPhone 17 Pro Max only (all workflows)
+
+#### Test Infrastructure
+
+- **Test Plans:** FastTests, FullTests, CriticalPath
+- **Parallel Execution:** Enabled for 50-70% faster test runs
+- **Test Tagging:** `.fast`, `.medium`, `.slow`, `.unit`, `.integration`, `.critical`
+- **Shared Fixtures:** 92% reduction in test setup overhead
+
+#### Build Optimizations
+
+- **Local Builds:** 50% faster with compiler optimizations
+- **Incremental Builds:** 67% faster (15s → 5s)
+- **SPM Caching:** Configured for faster dependency resolution
+
+See [docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md](docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md) and [docs/IOS_BUILD_OPTIMIZATIONS.md](docs/IOS_BUILD_OPTIMIZATIONS.md) for complete details.
+
+#### GitHub Actions (Backup)
 
 - **Workflow:** `.github/workflows/beta.yml`
-- **Trigger:** Push to `main` branch or manual workflow dispatch
+- **Trigger:** Push to `main` branch
 - **Action:** Automatically builds and uploads to TestFlight
 
-Required GitHub Secrets:
-- `FASTLANE_APPLE_ID`
-- `APP_STORE_CONNECT_KEY_ID`
-- `APP_STORE_CONNECT_ISSUER_ID`
-- `APP_STORE_CONNECT_API_KEY_CONTENT`
+Required Secrets:
+- `FASTLANE_APPLE_ID`, `APP_STORE_CONNECT_KEY_ID`
+- `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY_CONTENT`
 
 ## Architecture
 
@@ -278,11 +305,23 @@ Required GitHub Secrets:
 
 Comprehensive project documentation:
 
+### Core Documentation
 - **[CLAUDE.md](CLAUDE.md)** — Agent behavior and collaboration rules (AI agents read this first)
-- **[TODO.md](TODO.md)** — Task management and version roadmap (52 pending tasks)
+- **[TODO.md](TODO.md)** — Task management and version roadmap
 - **[TODO-COMPLETE.md](TODO-COMPLETE.md)** — Completed v1.0 tasks archive (105 tasks)
 - **[PRODUCT-SPEC.md](PRODUCT-SPEC.md)** — Complete product and technical specifications
 - **[WARP.md](WARP.md)** — Extended development guide
+
+### AI Agent Instructions
+- **[AGENTS.md](AGENTS.md)** — Universal AI agent instructions
+- **[GEMINI.md](GEMINI.md)** — Gemini Code Assist specific guidance
+- **[COPILOT.md](COPILOT.md)** — GitHub Copilot specific guidance
+
+### CI/CD & Optimization
+- **[docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md](docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md)** — 19 advanced techniques for Xcode Cloud efficiency
+- **[docs/XCODE_CLOUD_TEST_OPTIMIZATION.md](docs/XCODE_CLOUD_TEST_OPTIMIZATION.md)** — Test optimization strategy (48.8h → 7.1h/month)
+- **[docs/IOS_BUILD_OPTIMIZATIONS.md](docs/IOS_BUILD_OPTIMIZATIONS.md)** — iOS-specific build optimizations
+- **[TestPlans-README.md](TestPlans-README.md)** — Test plan configuration guide
 - **[fastlane/README.md](fastlane/README.md)** — Deployment automation setup and usage
 
 ### Additional Resources

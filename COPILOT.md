@@ -45,6 +45,18 @@ bundle exec fastlane bump_version type:minor   # Minor: 1.0.0 -> 1.1.0
 
 Push to `main` branch triggers automatic TestFlight upload via GitHub Actions.
 
+## Test Infrastructure
+
+### Test Plans
+- **FastTests** - 5 min, PR validation
+- **FullTests** - 15 min, main branch
+- **CriticalPath** - 2 min, smoke tests
+
+### Xcode Cloud
+Optimized for 7.1 hours/month (71% under free tier).
+
+See [docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md](docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md) for details.
+
 ## Architecture
 
 **MVVM with Clean Layers:**

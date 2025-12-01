@@ -34,6 +34,27 @@ bundle exec fastlane bump_version             # Version management
 
 **Simulator:** Always use **iPhone 17 Pro Max**
 
+## Test Infrastructure
+
+### Test Plans
+
+- **FastTests** (5 min) - PR validation, skips performance/snapshots
+- **FullTests** (15 min) - Main branch, all tests except snapshots
+- **CriticalPath** (2 min) - Smoke tests only
+
+**Parallel Execution:** Enabled in all test plans for 50-70% speedup
+
+### Xcode Cloud Optimization
+
+Optimized workflows targeting **7.1 hours/month** (71% under 25-hour free tier):
+- PR: 5 min × 20/month = 1.7 hrs
+- Main: 10 min × 30/month = 5.0 hrs
+- Release: 12 min × 2/month = 0.4 hrs
+
+**Documentation:**
+- [XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md](docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md)
+- [IOS_BUILD_OPTIMIZATIONS.md](docs/IOS_BUILD_OPTIMIZATIONS.md)
+
 ## Critical Governance Rules
 
 > **⚠️ IMPORTANT:** All agents MUST follow these rules before making changes.

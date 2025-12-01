@@ -52,6 +52,29 @@ bundle exec fastlane bump_version type:major   # Major: 1.0.0 -> 2.0.0
 
 Push to `main` branch triggers automatic TestFlight upload via GitHub Actions.
 
+## Test Infrastructure & CI/CD
+
+### Test Plans
+
+| Test Plan | Time | Purpose |
+|-----------|------|---------|
+| FastTests | 5 min | PR validation |
+| FullTests | 15 min | Main branch |
+| CriticalPath | 2 min | Smoke tests |
+
+All plans use iPhone 17 Pro Max with parallel execution enabled.
+
+### Xcode Cloud
+
+**7.1 hours/month usage** (71% under free tier):
+- PR Validation: 1.7 hrs (5 min × 20)
+- Main Branch: 5.0 hrs (10 min × 30)
+- Pre-Release: 0.4 hrs (12 min × 2)
+
+**Optimization Guides:**
+- [XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md](docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md) - 19 techniques
+- [IOS_BUILD_OPTIMIZATIONS.md](docs/IOS_BUILD_OPTIMIZATIONS.md) - Build speedups
+
 ## Architecture
 
 **MVVM with Clean Layers:**

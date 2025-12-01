@@ -53,6 +53,32 @@ bundle exec fastlane bump_version type:major   # Major: 1.0.0 → 2.0.0
 
 **Note:** Pushing to `main` branch triggers automatic TestFlight upload via GitHub Actions.
 
+## Test Infrastructure
+
+### Test Plans
+
+| Test Plan | Time | Use Case |
+|-----------|------|----------|
+| **FastTests** | 5 min | PR validation (skips performance/snapshots) |
+| **FullTests** | 15 min | Main branch (all tests except snapshots) |
+| **CriticalPath** | 2 min | Smoke tests only |
+
+```bash
+# Run specific test plan
+xcodebuild test -project Nestory-Pro.xcodeproj -scheme Nestory-Pro \
+  -testPlan FastTests \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
+```
+
+### Xcode Cloud
+
+**Optimized for 7.1 hours/month** (71% under free tier):
+- PR Validation: 5 min × 20 = 1.7 hrs
+- Main Branch: 10 min × 30 = 5.0 hrs
+- Pre-Release: 12 min × 2 = 0.4 hrs
+
+See [docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md](docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md) for complete optimization guide.
+
 ## Architecture
 
 ### Design Pattern
