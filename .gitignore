@@ -138,3 +138,13 @@ gemini-chat*.md
 # AI Assistant Configuration (contains API keys)
 .gemini/settings.json
 copilot-session-*.md
+
+# Xcode Cloud CLI Tool
+Tools/xcodecloud-cli/.build/
+Tools/xcodecloud-cli/.swiftpm/
+
+# App Store Connect API Keys (NEVER COMMIT!)
+*.p8
+AuthKey_*.p8
+.env
+.env.*
