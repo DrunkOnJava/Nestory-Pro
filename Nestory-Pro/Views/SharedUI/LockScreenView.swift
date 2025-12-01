@@ -32,64 +32,72 @@ struct LockScreenView: View {
     var body: some View {
         ZStack {
             // Blur background
-            Color(.systemBackground)
+            NestoryTheme.Colors.background
                 .ignoresSafeArea()
-            
-            VStack(spacing: 32) {
+
+            VStack(spacing: NestoryTheme.Metrics.spacingXXLarge) {
                 Spacer()
-                
+
                 // App icon
                 Image(systemName: "house.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(Color.accentColor)
-                    .padding()
-                    .background(Color.accentColor.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                
+                    .font(.system(size: NestoryTheme.Metrics.iconHero))
+                    .foregroundStyle(NestoryTheme.Colors.accent)
+                    .padding(NestoryTheme.Metrics.paddingMedium)
+                    .background(NestoryTheme.Colors.accent.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusXLarge))
+                    .accessibilityHidden(true)
+
                 // Title
-                VStack(spacing: 8) {
+                VStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                     Text("Nestory Pro")
-                        .font(.title)
-                        .fontWeight(.bold)
-                    
+                        .font(NestoryTheme.Typography.title)
+
                     Text("Unlock to access your inventory")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(NestoryTheme.Typography.subheadline)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
-                
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Nestory Pro. Unlock to access your inventory.")
+
                 Spacer()
-                
+
                 // Unlock button
-                VStack(spacing: 16) {
+                VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                     Button(action: authenticate) {
-                        HStack(spacing: 12) {
+                        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                             if isAuthenticating {
                                 ProgressView()
                                     .tint(.white)
                             } else {
                                 Image(systemName: biometricIconName)
+                                    .accessibilityIdentifier(AccessibilityIdentifiers.LockScreen.biometricIcon)
                             }
                             Text(unlockButtonText)
                         }
-                        .font(.headline)
+                        .font(NestoryTheme.Typography.headline)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(NestoryTheme.Metrics.paddingMedium)
+                        .background(NestoryTheme.Colors.accent)
+                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                     }
                     .disabled(isAuthenticating)
-                    .padding(.horizontal, 48)
-                    
+                    .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.LockScreen.unlockButton)
+                    .accessibilityLabel(isAuthenticating ? "Authenticating" : unlockButtonText)
+                    .accessibilityHint("Double-tap to unlock with \(biometricTypeDescription)")
+
                     if let error = authError {
                         Text(error)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                            .font(NestoryTheme.Typography.caption)
+                            .foregroundStyle(NestoryTheme.Colors.error)
+                            .accessibilityLabel("Error: \(error)")
                     }
                 }
-                .padding(.bottom, 60)
+                .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge)
             }
         }
+        .accessibilityIdentifier(AccessibilityIdentifiers.LockScreen.screen)
         .task {
             biometricType = await env.appLockService.biometricType
             // Auto-authenticate on appear
@@ -122,6 +130,19 @@ struct LockScreenView: View {
             return "Unlock with Optic ID"
         case .none:
             return "Unlock with Passcode"
+        }
+    }
+
+    private var biometricTypeDescription: String {
+        switch biometricType {
+        case .faceID:
+            return "Face ID"
+        case .touchID:
+            return "Touch ID"
+        case .opticID:
+            return "Optic ID"
+        case .none:
+            return "device passcode"
         }
     }
     

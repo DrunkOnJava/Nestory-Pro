@@ -15,35 +15,34 @@ struct SummaryCard: View {
     let iconName: String
     let color: Color
     var action: (() -> Void)? = nil
-    
+
     var body: some View {
         Button(action: { action?() }) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
                 HStack {
                     Image(systemName: iconName)
                         .font(.title2)
                         .foregroundStyle(color)
                     Spacer()
                 }
-                
+
                 Text(value)
-                    .font(.title)
-                    .fontWeight(.bold)
+                    .font(NestoryTheme.Typography.title)
                     .foregroundStyle(.primary)
-                
+
                 Text(title)
-                    .font(.subheadline)
+                    .font(NestoryTheme.Typography.subheadline)
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
-                
+
                 Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
-            .padding()
-            .frame(minWidth: 140)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(NestoryTheme.Metrics.paddingLarge)
+            .frame(minWidth: NestoryTheme.Metrics.cardMinWidth)
+            .background(NestoryTheme.Colors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
         }
         .buttonStyle(.plain)
     }
@@ -62,31 +61,31 @@ struct DocumentationBadge: View {
         self.compact = compact
         self.weight = weight
     }
-    
+
     private var statusText: String {
         isComplete ? "Complete" : "Missing"
     }
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
             Image(systemName: isComplete ? "checkmark.circle.fill" : "circle")
-                .font(compact ? .caption2 : .caption)
+                .font(compact ? NestoryTheme.Typography.caption2 : NestoryTheme.Typography.caption)
             if !compact {
                 Text(label)
-                    .font(.caption)
+                    .font(NestoryTheme.Typography.caption)
                 if let weight = weight {
                     Text("(\(weight))")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .font(NestoryTheme.Typography.caption2)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
             }
         }
-        .foregroundStyle(isComplete ? .green : .secondary)
-        .padding(.horizontal, compact ? 6 : 8)
-        .padding(.vertical, 4)
+        .foregroundStyle(isComplete ? NestoryTheme.Colors.documented : NestoryTheme.Colors.muted)
+        .padding(.horizontal, compact ? NestoryTheme.Metrics.paddingSmall - 2 : NestoryTheme.Metrics.paddingSmall)
+        .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
         .background(
             Capsule()
-                .fill(isComplete ? Color.green.opacity(0.15) : Color.secondary.opacity(0.1))
+                .fill(isComplete ? NestoryTheme.Colors.documented.opacity(0.15) : NestoryTheme.Colors.missing)
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(label): \(statusText)")
@@ -99,18 +98,18 @@ struct FilterChip: View {
     let label: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.subheadline)
+                .font(NestoryTheme.Typography.subheadline)
                 .fontWeight(isSelected ? .semibold : .regular)
                 .foregroundStyle(isSelected ? .white : .primary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
+                .padding(.vertical, NestoryTheme.Metrics.paddingSmall)
                 .background(
                     Capsule()
-                        .fill(isSelected ? Color.accentColor : Color(.secondarySystemGroupedBackground))
+                        .fill(isSelected ? NestoryTheme.Colors.accent : NestoryTheme.Colors.chipBackground)
                 )
         }
         .buttonStyle(.plain)
@@ -121,7 +120,7 @@ struct FilterChip: View {
 struct ItemListCell: View {
     let item: Item
     let settings: SettingsManager
-    
+
     private var accessibilityDescription: String {
         var parts: [String] = [item.name]
         if let room = item.room {
@@ -130,77 +129,77 @@ struct ItemListCell: View {
         if let price = item.purchasePrice {
             parts.append("valued at \(settings.formatCurrency(price))")
         }
-        let status = item.documentationScore >= 0.8 ? "fully documented" : 
+        let status = item.documentationScore >= 0.8 ? "fully documented" :
                      item.documentationScore >= 0.5 ? "partially documented" : "needs documentation"
         parts.append(status)
         return parts.joined(separator: ", ")
     }
-    
+
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             // Thumbnail
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color(.tertiarySystemGroupedBackground))
-                
+                RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall + 2)
+                    .fill(NestoryTheme.Colors.elevatedBackground)
+
                 if let category = item.category {
                     Image(systemName: category.iconName)
                         .font(.title2)
-                        .foregroundStyle(Color(hex: category.colorHex) ?? .secondary)
+                        .foregroundStyle(Color(hex: category.colorHex) ?? NestoryTheme.Colors.muted)
                 } else {
                     Image(systemName: "cube.fill")
                         .font(.title2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
             }
-            .frame(width: 60, height: 60)
+            .frame(width: NestoryTheme.Metrics.thumbnailMedium, height: NestoryTheme.Metrics.thumbnailMedium)
             .accessibilityHidden(true)
-            
+
             // Content
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
                 Text(item.name)
-                    .font(.headline)
+                    .font(NestoryTheme.Typography.headline)
                     .lineLimit(1)
-                
-                HStack(spacing: 4) {
+
+                HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                     if let room = item.room {
                         Text(room.name)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.caption)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                     }
                     if item.room != nil && item.category != nil {
                         Text("•")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.caption)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                     }
                     if let category = item.category {
                         Text(category.name)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.caption)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                     }
                     if let price = item.purchasePrice {
                         Text("•")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.caption)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                         Text(settings.formatCurrency(price))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.caption)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             // Documentation badges (compact)
-            VStack(alignment: .trailing, spacing: 4) {
-                HStack(spacing: 4) {
+            VStack(alignment: .trailing, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                     DocumentationBadge("Photo", isComplete: item.hasPhoto, compact: true)
                     DocumentationBadge("Value", isComplete: item.hasValue, compact: true)
                 }
             }
             .accessibilityHidden(true)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityDescription)
         .accessibilityHint("Double tap to view details")
@@ -211,7 +210,7 @@ struct ItemListCell: View {
 struct ItemGridCell: View {
     let item: Item
     let settings: SettingsManager
-    
+
     private var accessibilityDescription: String {
         var parts: [String] = [item.name]
         if let room = item.room {
@@ -220,62 +219,62 @@ struct ItemGridCell: View {
         if let price = item.purchasePrice {
             parts.append("valued at \(settings.formatCurrency(price))")
         }
-        let status = item.documentationScore >= 0.8 ? "fully documented" : 
+        let status = item.documentationScore >= 0.8 ? "fully documented" :
                      item.documentationScore >= 0.5 ? "partially documented" : "needs documentation"
         parts.append(status)
         return parts.joined(separator: ", ")
     }
-    
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
             // Thumbnail
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.tertiarySystemGroupedBackground))
-                
+                RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge)
+                    .fill(NestoryTheme.Colors.elevatedBackground)
+
                 if let category = item.category {
                     Image(systemName: category.iconName)
                         .font(.largeTitle)
-                        .foregroundStyle(Color(hex: category.colorHex) ?? .secondary)
+                        .foregroundStyle(Color(hex: category.colorHex) ?? NestoryTheme.Colors.muted)
                 } else {
                     Image(systemName: "cube.fill")
                         .font(.largeTitle)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
             }
             .aspectRatio(1, contentMode: .fit)
             .accessibilityHidden(true)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(item.name)
-                    .font(.subheadline)
+                    .font(NestoryTheme.Typography.subheadline)
                     .fontWeight(.medium)
                     .lineLimit(2)
-                
+
                 if let price = item.purchasePrice {
                     Text(settings.formatCurrency(price))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(NestoryTheme.Typography.caption)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
             }
-            
+
             // Documentation indicators
-            HStack(spacing: 4) {
+            HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                 Circle()
-                    .fill(item.hasPhoto ? .green : .secondary.opacity(0.3))
+                    .fill(item.hasPhoto ? NestoryTheme.Colors.documented : NestoryTheme.Colors.missing)
                     .frame(width: 6, height: 6)
                 Circle()
-                    .fill(item.hasValue ? .green : .secondary.opacity(0.3))
+                    .fill(item.hasValue ? NestoryTheme.Colors.documented : NestoryTheme.Colors.missing)
                     .frame(width: 6, height: 6)
                 Circle()
-                    .fill(item.hasReceipt ? .green : .secondary.opacity(0.3))
+                    .fill(item.hasReceipt ? NestoryTheme.Colors.documented : NestoryTheme.Colors.missing)
                     .frame(width: 6, height: 6)
             }
             .accessibilityHidden(true)
         }
-        .padding(12)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(NestoryTheme.Metrics.paddingMedium)
+        .background(NestoryTheme.Colors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityDescription)
         .accessibilityHint("Double tap to view details")
@@ -309,33 +308,37 @@ struct EmptyStateView: View {
     let message: String
     var buttonTitle: String? = nil
     var buttonAction: (() -> Void)? = nil
-    
+
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
             Image(systemName: iconName)
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
-            
+                .font(.system(size: NestoryTheme.Metrics.iconHero))
+                .foregroundStyle(NestoryTheme.Colors.muted)
+                .accessibilityHidden(true)
+
             Text(title)
-                .font(.title2)
-                .fontWeight(.semibold)
-            
+                .font(NestoryTheme.Typography.title2)
+
             Text(message)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.subheadline)
+                .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-            
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+
             if let buttonTitle, let buttonAction {
                 Button(action: buttonAction) {
                     Text(buttonTitle)
-                        .fontWeight(.semibold)
+                        .font(NestoryTheme.Typography.buttonLabel)
                 }
                 .buttonStyle(.borderedProminent)
-                .padding(.top, 8)
+                .padding(.top, NestoryTheme.Metrics.paddingSmall)
+                .accessibilityIdentifier(AccessibilityIdentifiers.Common.emptyStateButton)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title). \(message)")
+        .accessibilityIdentifier(AccessibilityIdentifiers.Common.emptyStateView)
     }
 }
 
