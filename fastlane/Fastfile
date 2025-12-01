@@ -98,10 +98,10 @@ platform :ios do
       include_all_certificates: true  # Include ALL valid distribution certificates
     )
 
-    # Build and export with Xcode automatic signing
-    # The profile downloaded by sigh is installed, Xcode will find it
+    # Build and export with Beta configuration for TestFlight
+    # Uses Nestory-Pro-Beta scheme (Beta xcconfig: optimized + debug symbols)
     build_app(
-      scheme: "Nestory-Pro",
+      scheme: "Nestory-Pro-Beta",
       export_method: "app-store",
       export_xcargs: "-allowProvisioningUpdates"
     )
