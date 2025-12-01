@@ -65,54 +65,54 @@ struct ContainerDetailView: View {
     
     private var summarySection: some View {
         Section {
-            VStack(spacing: 12) {
+            VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 HStack {
                     Image(systemName: container.iconName)
                         .font(.largeTitle)
                         .foregroundStyle(Color(hex: container.colorHex) ?? .purple)
-                        .frame(width: 60, height: 60)
+                        .frame(width: NestoryTheme.Metrics.iconHero, height: NestoryTheme.Metrics.iconHero)
                         .background(Color(hex: container.colorHex)?.opacity(0.1) ?? Color.purple.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    
-                    VStack(alignment: .leading, spacing: 4) {
+                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+
+                    VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
                         if let notes = container.notes, !notes.isEmpty {
                             Text(notes)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(NestoryTheme.Typography.subheadline)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
                                 .lineLimit(2)
                         }
-                        
+
                         if let room = container.room {
                             Label(room.name, systemImage: room.iconName)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(NestoryTheme.Typography.caption)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
                         }
                     }
-                    
+
                     Spacer()
                 }
-                
+
                 Divider()
-                
+
                 HStack(spacing: 0) {
                     StatCell(
                         value: "\(container.items.count)",
                         label: "Items",
                         iconName: "archivebox.fill"
                     )
-                    
+
                     Divider()
-                        .frame(height: 40)
-                    
+                        .frame(height: NestoryTheme.Metrics.thumbnailSmall)
+
                     StatCell(
                         value: formatCurrency(container.totalValue),
                         label: "Value",
                         iconName: "dollarsign.circle.fill"
                     )
-                    
+
                     Divider()
-                        .frame(height: 40)
-                    
+                        .frame(height: NestoryTheme.Metrics.thumbnailSmall)
+
                     StatCell(
                         value: "\(Int(container.averageDocumentationScore * 100))%",
                         label: "Documented",
@@ -120,7 +120,7 @@ struct ContainerDetailView: View {
                     )
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, NestoryTheme.Metrics.paddingSmall)
         }
     }
     
@@ -150,21 +150,21 @@ struct ContainerDetailView: View {
     }
     
     private var emptyItemsView: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             Image(systemName: "archivebox")
-                .font(.system(size: 32))
-                .foregroundStyle(.secondary)
-            
+                .font(.system(size: NestoryTheme.Metrics.iconLarge))
+                .foregroundStyle(NestoryTheme.Colors.muted)
+
             Text("No Items in Container")
-                .font(.subheadline)
-            
+                .font(NestoryTheme.Typography.subheadline)
+
             Text("Add items to this container from the item detail view.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.caption)
+                .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 24)
+        .padding(.vertical, NestoryTheme.Metrics.spacingXLarge)
     }
     
     // MARK: - Actions
@@ -186,54 +186,54 @@ struct ContainerDetailView: View {
 
 private struct ContainerItemRow: View {
     let item: Item
-    
+
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             // Thumbnail
             if let firstPhoto = item.photos.first {
                 AsyncPhotoThumbnail(identifier: firstPhoto.imageIdentifier)
-                    .frame(width: 48, height: 48)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .frame(width: NestoryTheme.Metrics.thumbnailSmall + 8, height: NestoryTheme.Metrics.thumbnailSmall + 8)
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall + 2))
             } else {
                 Image(systemName: item.category?.iconName ?? "archivebox.fill")
                     .font(.title2)
-                    .foregroundStyle(.secondary)
-                    .frame(width: 48, height: 48)
-                    .background(Color(.systemGray5))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .foregroundStyle(NestoryTheme.Colors.muted)
+                    .frame(width: NestoryTheme.Metrics.thumbnailSmall + 8, height: NestoryTheme.Metrics.thumbnailSmall + 8)
+                    .background(NestoryTheme.Colors.chipBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall + 2))
             }
-            
-            VStack(alignment: .leading, spacing: 4) {
+
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
                 Text(item.name)
-                    .font(.body)
+                    .font(NestoryTheme.Typography.body)
                     .lineLimit(1)
-                
-                HStack(spacing: 8) {
+
+                HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                     if let category = item.category {
                         Label(category.name, systemImage: category.iconName)
                     }
-                    
+
                     // Documentation status
-                    HStack(spacing: 4) {
+                    HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                         Circle()
-                            .fill(item.isDocumented ? Color.green : Color.orange)
+                            .fill(item.isDocumented ? NestoryTheme.Colors.documented : NestoryTheme.Colors.incomplete)
                             .frame(width: 6, height: 6)
                         Text(item.isDocumented ? "Documented" : "Incomplete")
                     }
                 }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.caption)
+                .foregroundStyle(NestoryTheme.Colors.muted)
             }
-            
+
             Spacer()
-            
+
             if let price = item.purchasePrice {
                 Text(formatCurrency(price))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
     }
     
     private func formatCurrency(_ value: Decimal) -> String {
@@ -266,17 +266,17 @@ private struct StatCell: View {
     let value: String
     let label: String
     let iconName: String
-    
+
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
             Image(systemName: iconName)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.caption)
+                .foregroundStyle(NestoryTheme.Colors.muted)
             Text(value)
-                .font(.headline)
+                .font(NestoryTheme.Typography.statValue)
             Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.statLabel)
+                .foregroundStyle(NestoryTheme.Colors.muted)
         }
         .frame(maxWidth: .infinity)
     }

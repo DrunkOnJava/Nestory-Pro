@@ -119,26 +119,26 @@ struct PropertyListView: View {
     
     private var emptyStateSection: some View {
         Section {
-            VStack(spacing: 16) {
+            VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
                 Image(systemName: "house.fill")
-                    .font(.system(size: 48))
-                    .foregroundStyle(.secondary)
-                
+                    .font(.system(size: NestoryTheme.Metrics.iconXLarge))
+                    .foregroundStyle(NestoryTheme.Colors.muted)
+
                 Text("No Properties Yet")
-                    .font(.headline)
-                
+                    .font(NestoryTheme.Typography.headline)
+
                 Text("Add your first property to start organizing your inventory by location.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
                     .multilineTextAlignment(.center)
-                
+
                 Button(action: { showingAddProperty = true }) {
                     Label("Add Property", systemImage: "plus")
                 }
                 .buttonStyle(.borderedProminent)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 32)
+            .padding(.vertical, NestoryTheme.Metrics.spacingXXLarge)
         }
     }
     
@@ -175,45 +175,45 @@ struct PropertyListView: View {
 
 struct PropertyRowView: View {
     let property: Property
-    
+
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             // Icon
             Image(systemName: property.iconName)
                 .font(.title2)
-                .foregroundStyle(Color(hex: property.colorHex) ?? .blue)
-                .frame(width: 44, height: 44)
-                .background(Color(hex: property.colorHex)?.opacity(0.1) ?? Color.blue.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            
+                .foregroundStyle(Color(hex: property.colorHex) ?? NestoryTheme.Colors.accent)
+                .frame(width: NestoryTheme.Metrics.thumbnailSmall + 4, height: NestoryTheme.Metrics.thumbnailSmall + 4)
+                .background(Color(hex: property.colorHex)?.opacity(0.1) ?? NestoryTheme.Colors.accent.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusMedium))
+
             // Info
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
                 HStack {
                     Text(property.name)
-                        .font(.headline)
-                    
+                        .font(NestoryTheme.Typography.headline)
+
                     if property.isDefault {
                         Text("Default")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 6)
+                            .font(NestoryTheme.Typography.caption2)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
+                            .padding(.horizontal, NestoryTheme.Metrics.paddingSmall - 2)
                             .padding(.vertical, 2)
-                            .background(Color(.systemGray5))
+                            .background(NestoryTheme.Colors.chipBackground)
                             .clipShape(Capsule())
                     }
                 }
-                
-                HStack(spacing: 12) {
+
+                HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                     Label("\(property.rooms.count) rooms", systemImage: "door.left.hand.closed")
                     Label("\(property.totalItemCount) items", systemImage: "archivebox.fill")
                 }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.caption)
+                .foregroundStyle(NestoryTheme.Colors.muted)
             }
-            
+
             Spacer()
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
     }
 }
 

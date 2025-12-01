@@ -25,14 +25,14 @@ struct BreadcrumbView: View {
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 4) {
+            HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                 ForEach(Array(components.enumerated()), id: \.element.id) { index, component in
                     if index > 0 {
                         Image(systemName: "chevron.right")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.caption2)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                     }
-                    
+
                     BreadcrumbButton(
                         component: component,
                         isLast: index == components.count - 1,
@@ -40,7 +40,7 @@ struct BreadcrumbView: View {
                     )
                 }
             }
-            .padding(.horizontal, 4)
+            .padding(.horizontal, NestoryTheme.Metrics.paddingXSmall)
         }
     }
 }
@@ -65,23 +65,23 @@ private struct BreadcrumbButton: View {
     let component: BreadcrumbComponent
     let isLast: Bool
     let onTap: ((BreadcrumbComponent) -> Void)?
-    
+
     var body: some View {
         Button(action: { onTap?(component) }) {
-            HStack(spacing: 4) {
+            HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                 Image(systemName: component.iconName)
-                    .font(.caption)
+                    .font(NestoryTheme.Typography.caption)
                 Text(component.name)
-                    .font(.caption)
+                    .font(NestoryTheme.Typography.caption)
                     .lineLimit(1)
             }
-            .foregroundStyle(isLast ? .primary : .secondary)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .foregroundStyle(isLast ? .primary : NestoryTheme.Colors.muted)
+            .padding(.horizontal, NestoryTheme.Metrics.paddingSmall)
+            .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
             .background(
                 isLast
-                    ? Color.accentColor.opacity(0.1)
-                    : Color(.systemGray5)
+                    ? NestoryTheme.Colors.accent.opacity(0.1)
+                    : NestoryTheme.Colors.chipBackground
             )
             .clipShape(Capsule())
         }

@@ -91,39 +91,39 @@ struct PropertyDetailView: View {
     
     private var summarySection: some View {
         Section {
-            VStack(spacing: 12) {
+            VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 // Icon and name
                 HStack {
                     Image(systemName: property.iconName)
                         .font(.largeTitle)
-                        .foregroundStyle(Color(hex: property.colorHex) ?? .blue)
-                        .frame(width: 60, height: 60)
-                        .background(Color(hex: property.colorHex)?.opacity(0.1) ?? Color.blue.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    
-                    VStack(alignment: .leading, spacing: 4) {
+                        .foregroundStyle(Color(hex: property.colorHex) ?? NestoryTheme.Colors.accent)
+                        .frame(width: NestoryTheme.Metrics.iconHero, height: NestoryTheme.Metrics.iconHero)
+                        .background(Color(hex: property.colorHex)?.opacity(0.1) ?? NestoryTheme.Colors.accent.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+
+                    VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
                         if let address = property.address, !address.isEmpty {
                             Text(address)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(NestoryTheme.Typography.subheadline)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
                         }
-                        
+
                         if property.isDefault {
                             Text("Default Property")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color(.systemGray5))
+                                .font(NestoryTheme.Typography.caption)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
+                                .padding(.horizontal, NestoryTheme.Metrics.paddingSmall)
+                                .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
+                                .background(NestoryTheme.Colors.chipBackground)
                                 .clipShape(Capsule())
                         }
                     }
-                    
+
                     Spacer()
                 }
-                
+
                 Divider()
-                
+
                 // Stats grid
                 HStack(spacing: 0) {
                     StatCell(
@@ -131,19 +131,19 @@ struct PropertyDetailView: View {
                         label: "Rooms",
                         iconName: "door.left.hand.closed"
                     )
-                    
+
                     Divider()
-                        .frame(height: 40)
-                    
+                        .frame(height: NestoryTheme.Metrics.thumbnailSmall)
+
                     StatCell(
                         value: "\(property.totalItemCount)",
                         label: "Items",
                         iconName: "archivebox.fill"
                     )
-                    
+
                     Divider()
-                        .frame(height: 40)
-                    
+                        .frame(height: NestoryTheme.Metrics.thumbnailSmall)
+
                     StatCell(
                         value: formatCurrency(property.totalValue),
                         label: "Value",
@@ -151,7 +151,7 @@ struct PropertyDetailView: View {
                     )
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, NestoryTheme.Metrics.paddingSmall)
         }
     }
     
@@ -199,21 +199,21 @@ struct PropertyDetailView: View {
     }
     
     private var emptyRoomsView: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             Image(systemName: "door.left.hand.closed")
-                .font(.system(size: 32))
-                .foregroundStyle(.secondary)
-            
+                .font(.system(size: NestoryTheme.Metrics.iconLarge))
+                .foregroundStyle(NestoryTheme.Colors.muted)
+
             Text("No Rooms Yet")
-                .font(.subheadline)
-            
+                .font(NestoryTheme.Typography.subheadline)
+
             Button(action: { showingAddRoom = true }) {
                 Label("Add Room", systemImage: "plus")
             }
             .buttonStyle(.bordered)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 24)
+        .padding(.vertical, NestoryTheme.Metrics.spacingXLarge)
     }
     
     // MARK: - Actions
@@ -250,38 +250,38 @@ struct PropertyDetailView: View {
 
 struct RoomRowView: View {
     let room: Room
-    
+
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
             Image(systemName: room.iconName)
                 .font(.title3)
-                .foregroundStyle(.blue)
-                .frame(width: 36, height: 36)
-                .background(Color.blue.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            
+                .foregroundStyle(NestoryTheme.Colors.info)
+                .frame(width: NestoryTheme.Metrics.iconLarge + 4, height: NestoryTheme.Metrics.iconLarge + 4)
+                .background(NestoryTheme.Colors.info.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall + 2))
+
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                     Text(room.name)
-                        .font(.body)
-                    
+                        .font(NestoryTheme.Typography.body)
+
                     if room.isDefault {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .font(NestoryTheme.Typography.caption2)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
                     }
                 }
-                
-                HStack(spacing: 8) {
+
+                HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                     if !room.containers.isEmpty {
                         Label("\(room.containers.count)", systemImage: "shippingbox.fill")
                     }
                     Label("\(room.items.count) items", systemImage: "archivebox.fill")
                 }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.caption)
+                .foregroundStyle(NestoryTheme.Colors.muted)
             }
-            
+
             Spacer()
         }
         .padding(.vertical, 2)
@@ -294,17 +294,17 @@ private struct StatCell: View {
     let value: String
     let label: String
     let iconName: String
-    
+
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
             Image(systemName: iconName)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.caption)
+                .foregroundStyle(NestoryTheme.Colors.muted)
             Text(value)
-                .font(.headline)
+                .font(NestoryTheme.Typography.statValue)
             Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.statLabel)
+                .foregroundStyle(NestoryTheme.Colors.muted)
         }
         .frame(maxWidth: .infinity)
     }
