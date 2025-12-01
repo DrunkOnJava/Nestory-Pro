@@ -17,11 +17,13 @@
 // ============================================================================
 
 import SwiftUI
+import Combine
 
 /// First-time user onboarding flow with 3 screens
 struct OnboardingView: View {
     @Environment(AppEnvironment.self) private var appEnv
     @Environment(\.dismiss) private var dismiss
+    var onComplete: (() -> Void)? = nil
 
     @State private var currentPage = 0
     @State private var isAnimating = false
@@ -143,6 +145,7 @@ struct OnboardingView: View {
 
     private func completeOnboarding() {
         appEnv.settings.hasCompletedOnboarding = true
+        onComplete?()
         dismiss()
     }
 }

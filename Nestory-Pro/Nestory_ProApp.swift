@@ -27,21 +27,50 @@
 // ============================================================================
 
 import SwiftUI
+import Combine
 import SwiftData
 import TipKit
+
+@MainActor
+final class OnboardingSheetController: ObservableObject {
+    @Published var isShowing: Bool
+    private let settings: SettingsManager
+
+    init(settings: SettingsManager) {
+        self.settings = settings
+        self.isShowing = !settings.hasCompletedOnboarding
+    }
+
+    func markComplete() {
+        settings.hasCompletedOnboarding = true
+        isShowing = false
+    }
+
+    func refreshFromSettings(hasCompleted: Bool? = nil) {
+        let completed = hasCompleted ?? settings.hasCompletedOnboarding
+        isShowing = !completed
+    }
+}
 
 @main
 struct Nestory_ProApp: App {
 	// Dependency injection container with all services
-	let appEnv = AppEnvironment()
+	let appEnv: AppEnvironment
+	@StateObject private var onboardingController: OnboardingSheetController
 
 	init() {
+		let environment = AppEnvironment()
+		self.appEnv = environment
+		_onboardingController = StateObject(
+			wrappedValue: OnboardingSheetController(settings: environment.settings)
+		)
+
 		// Migrate Pro status from UserDefaults to Keychain (one-time migration)
 		KeychainManager.migrateProStatusFromUserDefaults()
 
 		// Start listening for IAP transactions
 		// Capture validator before Task to avoid capturing self
-		let validator = appEnv.iapValidator
+		let validator = environment.iapValidator
 		Task { @MainActor in
 			validator.startTransactionListener()
 			await validator.updateProStatus()
@@ -70,17 +99,13 @@ struct Nestory_ProApp: App {
 				.onAppear {
 					seedDefaultDataIfNeeded()
 				}
-				.sheet(isPresented: Binding(
-					get: { !appEnv.settings.hasCompletedOnboarding },
-					set: { newValue in
-						// When sheet is dismissed, mark onboarding as complete
-						if !newValue {
-							appEnv.settings.hasCompletedOnboarding = true
-						}
-					}
-				)) {
-					OnboardingView()
-						.environment(appEnv)
+				.sheet(isPresented: $onboardingController.isShowing) {
+				OnboardingView(onComplete: onboardingController.markComplete)
+					.environment(appEnv)
+					.interactiveDismissDisabled() // Prevent swipe-to-dismiss, force intentional completion
+			}
+				.onChange(of: appEnv.settings.hasCompletedOnboarding) { _, newValue in
+					onboardingController.refreshFromSettings(hasCompleted: newValue)
 				}
 		}
 		.modelContainer(sharedModelContainer)
