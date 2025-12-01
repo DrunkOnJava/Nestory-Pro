@@ -11,6 +11,12 @@ import SwiftData
 
 final class ItemTests: XCTestCase {
 
+    // MARK: - Test Tags
+
+    override var tags: Set<TestTag> {
+        [.fast, .unit, .model, .critical]
+    }
+
     // MARK: - Documentation Score Tests
 
     func testDocumentationScore_AllFieldsFilled_Returns1() async throws {

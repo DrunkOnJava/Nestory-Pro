@@ -12,12 +12,15 @@
 //
 // COMPLETED MODEL UPDATES (TODO.md Phase 1):
 // - Task 1.1.1: Added `notes: String?` property (distinct from conditionNotes) ✓
+// - Task P2-02: Added `container: Container?` optional relationship ✓
 //
 // DOCUMENTATION SCORE (Lines ~195-215):
 // - Task 1.4.1 DECIDED: 6-field weighted scoring (2025-11-28)
 // - Photo: 30%, Value: 25%, Room: 15%, Category: 10%, Receipt: 10%, Serial: 10%
 // - Total: 100% when all fields present
 // - isDocumented: requires 4 core fields (Photo, Value, Room, Category)
+//
+// HIERARCHY (P2-02): Property → Room → Container → Item
 //
 // TESTING REQUIREMENTS:
 // - All changes must update TestFixtures.swift
@@ -27,6 +30,7 @@
 // RELATIONSHIP RULES (DO NOT CHANGE):
 // - photos: cascade delete (delete item = delete photos)
 // - receipts: nullify (delete item = unlink receipts, keep them)
+// - container: nullify (delete container = unlink item, keep it in room)
 // - category/room: optional (items can exist without)
 //
 // SEE: TODO.md Phase 1 | TestFixtures.swift | ItemTests.swift
@@ -102,6 +106,11 @@ final class Item {
     /// Product barcode (UPC, EAN, etc.) scanned from the item
     // NOTE: Task 2.7.2 - Stored for future product lookup (v1.1+)
     var barcode: String?
+    
+    /// Optional container within a room (P2-02: Information architecture)
+    /// e.g., "TV Stand", "Dresser", "Storage Bin"
+    @Relationship(inverse: \Container.items)
+    var container: Container?
     
     var createdAt: Date
     var updatedAt: Date
@@ -223,6 +232,23 @@ extension Item {
         if !hasReceipt { missing.append("Receipt") }
         if !hasSerial { missing.append("Serial Number") }
         return missing
+    }
+    
+    /// Full breadcrumb path for navigation (P2-02)
+    /// Format: "Property > Room > Container > Item" (omitting nil levels)
+    var breadcrumbPath: String {
+        var components: [String] = []
+        if let property = room?.property {
+            components.append(property.name)
+        }
+        if let room = room {
+            components.append(room.name)
+        }
+        if let container = container {
+            components.append(container.name)
+        }
+        components.append(name)
+        return components.joined(separator: " > ")
     }
 }
 

@@ -60,7 +60,7 @@ COMMIT RULES:
 
 | Task ID | Agent ID | Checkout Time | Notes |
 |---------|----------|---------------|-------|
-| (none)  | -        | -             | -     |
+| P2-02   | AGENT-opus-20251130 | 2025-11-30 20:15 UTC | Completing remaining subtasks: renaming, tests |
 
 ---
 
@@ -119,9 +119,9 @@ All v1.1 tasks (P1-00 through P1-04) have been completed and moved to TODO-COMPL
 ---
 
 #### [~] P2-02 – Information architecture: Spaces, rooms, containers
-- Checked-out-by: (available)
+- Checked-out-by: AGENT-opus-20251130 (2025-11-30 20:15 UTC)
 - Blocked-by: P1-01 ✓
-- Status: **In Progress** (models complete, views created, needs testing)
+- Status: **In Progress** (completing remaining subtasks: renaming, tests)
 
 **Goal:** Crystal clear mental model: property → room → container → item.
 

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 import SwiftUI
 
 /// Manages user preferences using AppStorage and Keychain

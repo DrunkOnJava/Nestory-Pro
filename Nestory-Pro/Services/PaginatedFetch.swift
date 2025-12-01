@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 import SwiftData
 
 /// Configuration for paginated fetching

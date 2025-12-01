@@ -5,13 +5,51 @@
 //  Created by Griffin on 11/28/25.
 //
 
-import Testing
+import XCTest
 @testable import Nestory_Pro
 
-struct Nestory_ProTests {
+@MainActor
+final class OnboardingSheetControllerTests: XCTestCase {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    override func tearDown() {
+        UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+        super.tearDown()
     }
 
+    func testInitialStateShowsWhenOnboardingNotCompleted() {
+        UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+        let settings = SettingsManager()
+        settings.hasCompletedOnboarding = false
+
+        let controller = OnboardingSheetController(settings: settings)
+
+        XCTAssertTrue(controller.isShowing)
+    }
+
+    func testMarkCompleteSetsFlagAndHidesSheet() {
+        UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+        let settings = SettingsManager()
+        settings.hasCompletedOnboarding = false
+        let controller = OnboardingSheetController(settings: settings)
+
+        controller.markComplete()
+
+        XCTAssertTrue(settings.hasCompletedOnboarding)
+        XCTAssertFalse(controller.isShowing)
+    }
+
+    func testRefreshFromSettingsReflectsReset() {
+        UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+        let settings = SettingsManager()
+        settings.hasCompletedOnboarding = true
+        let controller = OnboardingSheetController(settings: settings)
+
+        controller.refreshFromSettings()
+        XCTAssertFalse(controller.isShowing)
+
+        settings.hasCompletedOnboarding = false
+        controller.refreshFromSettings()
+
+        XCTAssertTrue(controller.isShowing)
+    }
 }

@@ -11,6 +11,12 @@ import SwiftData
 
 final class CategoryTests: XCTestCase {
 
+    // MARK: - Test Tags
+
+    override var tags: Set<TestTag> {
+        [.fast, .unit, .model]
+    }
+
     // MARK: - Initialization Tests
 
     func testCategory_InitWithAllFields_SetsCorrectly() async {

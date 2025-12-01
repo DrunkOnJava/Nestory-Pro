@@ -17,6 +17,7 @@
 // ============================================================================
 
 import Foundation
+import Combine
 import Vision
 import UIKit
 import OSLog

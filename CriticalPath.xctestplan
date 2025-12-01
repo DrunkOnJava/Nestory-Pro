@@ -1,0 +1,46 @@
+{
+  "configurations" : [
+    {
+      "id" : "1A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D",
+      "name" : "Configuration 1",
+      "options" : {
+        "testExecutionOrdering" : "random",
+        "testRepetitionMode" : "none",
+        "maximumTestExecutionTimeAllowance" : 30
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Nestory-Pro.xcodeproj",
+      "identifier" : "09BD34CD822D741EBC31A896",
+      "name" : "Nestory-ProTests"
+    }
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "DocumentationScorePerformanceTests",
+        "ViewSnapshotTests",
+        "InventorySnapshotTests",
+        "ItemDetailSnapshotTests",
+        "PaywallSnapshotTests",
+        "ReportsSnapshotTests",
+        "DataModelHarnessTests",
+        "DataModelInvariantsTests",
+        "PersistenceIntegrationTests",
+        "ConcurrencyTests",
+        "ReportGeneratorOutputTests",
+        "ItemEdgeCaseTests",
+        "BackupServiceTests",
+        "ReportGeneratorServiceTests"
+      ],
+      "target" : {
+        "containerPath" : "container:Nestory-Pro.xcodeproj",
+        "identifier" : "09BD34CD822D741EBC31A896",
+        "name" : "Nestory-ProTests"
+      }
+    }
+  ],
+  "version" : 1
+}

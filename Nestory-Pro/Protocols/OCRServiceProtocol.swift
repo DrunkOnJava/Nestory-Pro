@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 import VisionKit
 
 /// Protocol for OCR text recognition services

@@ -1,4 +1,5 @@
 import SwiftData
+import Combine
 import os.log
 
 /// Extensions for optimizing SwiftData ModelContext operations
