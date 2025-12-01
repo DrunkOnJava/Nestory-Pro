@@ -97,7 +97,11 @@ class ItemTests: XCTestCase {
 }
 ```
 
-### Xcode Cloud Optimization
+### Xcode Cloud Workflows
+
+**Active Workflows:**
+- **PR Fast Tests** (ID: `06d2431c-105b-4d94-87e4-448a4a9f7072`) - Automatic on PRs, runs FastTests plan (~5 min)
+- **Release Builds** (ID: `dd86c07d-9030-4821-a301-64969a23ef6d`) - Tag-triggered (v*), full test + archive (~15 min)
 
 **Projected Usage:** 7.1 hours/month (71% under 25-hour free tier)
 
@@ -107,12 +111,44 @@ class ItemTests: XCTestCase {
 | Main Branch | FullTests | iPhone 17 Pro Max | 10 min | 5.0 hrs (30 commits) |
 | Pre-Release | FullTests | iPhone 17 Pro Max | 12 min | 0.4 hrs (2 releases) |
 
+**CLI Tool:** `Tools/xcodecloud-cli` - Full CLI for workflow management via App Store Connect API
+
+```bash
+# Build CLI (one-time)
+cd Tools/xcodecloud-cli && swift build -c release
+
+# CLI location
+CLI="Tools/xcodecloud-cli/.build/arm64-apple-macosx/release/xcodecloud-cli"
+
+# List workflows
+$CLI list-workflows --product B6CFF695-FAF8-4D64-9C16-8F46A73F76EF
+
+# Monitor latest build for a workflow
+./Tools/xcodecloud-cli/Scripts/xc-watch-latest.sh dd86c07d-9030-4821-a301-64969a23ef6d
+
+# One-command release (tag + monitor)
+./Tools/xcodecloud-cli/Scripts/release.sh 1.0.1
+
+# List recent builds for workflow
+$CLI list-builds --workflow dd86c07d-9030-4821-a301-64969a23ef6d --limit 5
+
+# Monitor specific build
+$CLI monitor-build --build <BUILD_ID> --follow
+
+# Open build in browser
+$CLI open-build --build <BUILD_ID>
+```
+
+**Credentials:** Stored in macOS Keychain (see `Tools/xcodecloud-cli/README.md` for setup)
+
 **Configuration Scripts:**
 - `Scripts/xc-cloud-create-workflows.sh` - Create workflows via API
 - `Scripts/xc-cloud-usage.sh` - Monitor compute hour budget
 - `Scripts/xc-env.sh` - Load App Store Connect credentials
 
 **Documentation:**
+- [Tools/xcodecloud-cli/README.md](Tools/xcodecloud-cli/README.md) - CLI documentation
+- [Tools/xcodecloud-cli/XCODE_CLOUD_STATUS.md](Tools/xcodecloud-cli/XCODE_CLOUD_STATUS.md) - Feature status
 - [XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md](docs/XCODE_CLOUD_ADVANCED_OPTIMIZATIONS.md) - 19 advanced techniques
 - [XCODE_CLOUD_TEST_OPTIMIZATION.md](docs/XCODE_CLOUD_TEST_OPTIMIZATION.md) - Full optimization strategy
 - [IOS_BUILD_OPTIMIZATIONS.md](docs/IOS_BUILD_OPTIMIZATIONS.md) - Local build optimizations
@@ -253,11 +289,24 @@ Available: `.empty()`, `.withBasicData()`, `.withSampleData()`, `.withManyItems(
 
 ## CI/CD
 
-GitHub Actions workflow (`.github/workflows/beta.yml`) requires secrets:
+### Xcode Cloud (Primary)
+
+All tests and builds run on Xcode Cloud:
+- **PR validation**: Automatic via "PR Fast Tests" workflow
+- **Release builds**: Tag-triggered via "Release Builds" workflow (push `v*` tag)
+- **Monitoring**: Use `xcodecloud-cli` or helper scripts in `Tools/xcodecloud-cli/Scripts/`
+
+### GitHub Actions
+
+**`.github/workflows/xcodecloud-proxy.yml`** - Displays Xcode Cloud status on PRs and tags (placeholder for future integration)
+
+**`.github/workflows/beta.yml`** - Legacy Fastlane workflow (requires secrets if used):
 - `FASTLANE_APPLE_ID`
 - `APP_STORE_CONNECT_KEY_ID`
 - `APP_STORE_CONNECT_ISSUER_ID`
 - `APP_STORE_CONNECT_API_KEY_CONTENT` (base64 .p8)
+
+**Recommended workflow**: Use Xcode Cloud for all CI/CD. GitHub Actions provides visibility but actual work happens on Xcode Cloud.
 
 ## Monetization
 

@@ -1,0 +1,95 @@
+name: Xcode Cloud Proxy
+
+# This workflow acts as a "proxy" to Xcode Cloud
+# - For PRs: Validates that Xcode Cloud tests passed
+# - For tags: Waits for Xcode Cloud release build to complete
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  check-xcode-cloud-pr:
+    name: Check PR Tests (Xcode Cloud)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Notify PR Tests Running
+        run: |
+          echo "ℹ️ Xcode Cloud is running tests for this PR"
+          echo "View results: https://appstoreconnect.apple.com/apps/6737385563/ci"
+          echo ""
+          echo "Workflow: PR Fast Tests"
+          echo "Scheme: Nestory-Pro"
+          echo "Device: iPhone 17 Pro Max simulator"
+          echo ""
+          echo "⏳ This is a placeholder job. Full integration coming soon."
+          echo ""
+          echo "To fully integrate:"
+          echo "1. Add ASC credentials as GitHub secrets"
+          echo "2. Use xcodecloud-cli to poll build status"
+          echo "3. Fail this job if Xcode Cloud tests fail"
+
+  check-xcode-cloud-release:
+    name: Monitor Release Build (Xcode Cloud)
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Notify Release Build
+        run: |
+          echo "🚀 Release tag detected: ${{ github.ref_name }}"
+          echo ""
+          echo "Xcode Cloud 'Release Builds' workflow will:"
+          echo "  1. Run full test suite"
+          echo "  2. Create optimized archive"
+          echo "  3. Upload to App Store Connect"
+          echo ""
+          echo "View progress: https://appstoreconnect.apple.com/apps/6737385563/ci/workflows/dd86c07d-9030-4821-a301-64969a23ef6d"
+          echo ""
+          echo "⏳ This is a placeholder job. Full integration coming soon."
+          echo ""
+          echo "To fully integrate:"
+          echo "1. Add ASC credentials as GitHub secrets"
+          echo "2. Use xcodecloud-cli monitor-build to track progress"
+          echo "3. Fail this job if build fails"
+
+# Future enhancement: Full integration
+#
+# Example full integration (requires secrets setup):
+#
+# jobs:
+#   validate-pr-tests:
+#     runs-on: macos-latest
+#     if: github.event_name == 'pull_request'
+#     steps:
+#       - uses: actions/checkout@v4
+#
+#       - name: Setup xcodecloud-cli
+#         run: |
+#           cd Tools/xcodecloud-cli
+#           swift build -c release
+#
+#       - name: Wait for Xcode Cloud PR Tests
+#         env:
+#           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+#           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+#           ASC_PRIVATE_KEY_CONTENT: ${{ secrets.ASC_PRIVATE_KEY_CONTENT }}
+#         run: |
+#           # Write private key to file
+#           echo "$ASC_PRIVATE_KEY_CONTENT" > /tmp/authkey.p8
+#           export ASC_PRIVATE_KEY_PATH=/tmp/authkey.p8
+#
+#           # Find PR workflow build
+#           cd Tools/xcodecloud-cli
+#           CLI=".build/release/xcodecloud-cli"
+#
+#           # Get latest build for PR workflow
+#           BUILD_ID=$($CLI list-builds --workflow 06d2431c-105b-4d94-87e4-448a4a9f7072 --limit 1 | tail -1 | awk '{print $1}')
+#
+#           # Monitor until complete
+#           $CLI monitor-build --build "$BUILD_ID" --follow

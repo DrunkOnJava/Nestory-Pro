@@ -22,9 +22,28 @@ struct XcodeCloudCLI: AsyncParsableCommand {
             ListWorkflows.self,
             CreateWorkflow.self,
             TriggerBuild.self,
-            GetBuild.self
+            GetBuild.self,
+            GetWorkflow.self,
+            ListTestDestinations.self,
+            MonitorBuild.self,
+            ListBuilds.self,
+            OpenBuild.self
         ]
     )
+}
+
+// MARK: - Workflow Configuration Models
+
+enum WorkflowType: String {
+    case pullRequest = "pr"
+    case branch = "branch"
+    case tag = "tag"
+}
+
+enum WorkflowActionType: String {
+    case test = "TEST"
+    case archive = "ARCHIVE"
+    case analyze = "ANALYZE"
 }
 
 // MARK: - List Products
@@ -102,7 +121,19 @@ extension XcodeCloudCLI {
 extension XcodeCloudCLI {
     struct CreateWorkflow: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Create a new Xcode Cloud workflow"
+            abstract: "Create a new Xcode Cloud workflow",
+            discussion: """
+                Create workflows for different CI/CD scenarios:
+
+                PR Validation:
+                  --type pr --scheme Nestory-Pro
+
+                Main Branch with TestFlight:
+                  --type branch --branch main --action test --action archive --scheme Nestory-Pro-Beta
+
+                Release Tag:
+                  --type tag --tag-pattern "v*" --action test --action archive --scheme Nestory-Pro-Release
+                """
         )
 
         @Option(name: .long, help: "Product ID")
@@ -111,22 +142,156 @@ extension XcodeCloudCLI {
         @Option(name: .long, help: "Workflow name")
         var name: String
 
-        @Option(name: .long, help: "Workflow description")
+        @Option(name: .long, help: "Workflow type: pr, branch, or tag")
+        var type: String = "pr"
+
+        @Option(name: .long, help: "Action types: test, archive, analyze")
+        var action: [String] = ["test"]
+
+        @Option(name: .long, help: "Xcode scheme to build")
+        var scheme: String
+
+        @Option(name: .long, help: "Branch pattern (for branch workflows)")
+        var branch: String?
+
+        @Option(name: .long, help: "Tag pattern (for tag workflows)")
+        var tagPattern: String?
+
+        @Option(name: .long, help: "Description")
         var description: String?
 
-        @Flag(name: .long, help: "Enable workflow immediately")
+        @Flag(name: .long, help: "Enable immediately")
         var enabled = true
+
+        @Flag(name: .long, help: "Verbose output")
+        var verbose = false
 
         func run() async throws {
             let client = try AppStoreConnectClient()
+            let isDryRun = ProcessInfo.processInfo.environment["XC_CLOUD_DRY_RUN"] != nil
+
+            // Validate workflow type
+            guard let workflowType = WorkflowType(rawValue: type) else {
+                throw ValidationError("Invalid workflow type '\(type)'. Use: pr, branch, or tag")
+            }
+
+            // Validate actions
+            let actionTypes = try action.map { actionStr -> WorkflowActionType in
+                guard let actionType = WorkflowActionType(rawValue: actionStr.uppercased()) else {
+                    throw ValidationError("Invalid action '\(actionStr)'. Use: test, archive, or analyze")
+                }
+                return actionType
+            }
+
+            guard !actionTypes.isEmpty else {
+                throw ValidationError("At least one action required")
+            }
+
+            // Validate workflow-specific requirements
+            if workflowType == .branch && branch == nil {
+                throw ValidationError("--branch required for branch workflows")
+            }
+            if workflowType == .tag && tagPattern == nil {
+                throw ValidationError("--tag-pattern required for tag workflows")
+            }
 
             print("Creating workflow '\(name)' for product \(product)...")
-            print("Note: Full workflow configuration requires additional API calls.")
-            print("Use the App Store Connect API documentation for complete workflow setup.")
 
-            // This is a simplified example - real workflow creation requires
-            // relationships to repository, macOS version, Xcode version, etc.
-            throw ValidationError("Workflow creation requires additional implementation. Use curl examples in docs/XCODE_CLOUD_CLI_SETUP.md")
+            // Use mock IDs for dry run
+            let repositoryID: String
+            let macOSVersionID: String
+            let macOSVersionName: String
+            let xcodeVersionID: String
+            let xcodeVersionName: String
+
+            if isDryRun {
+                repositoryID = "mock-repository-id"
+                macOSVersionID = "mock-macos-id"
+                macOSVersionName = "macOS 15 (Sequoia)"
+                xcodeVersionID = "mock-xcode-id"
+                xcodeVersionName = "Xcode 16.2"
+                if verbose {
+                    print("→ Using mock IDs for dry run")
+                    print("  Repository ID: \(repositoryID)")
+                    print("  Using: \(macOSVersionName)")
+                    print("  Using: \(xcodeVersionName)")
+                }
+            } else {
+                // Fetch repository
+                if verbose { print("→ Fetching repository...") }
+                let repoData = try await client.getRepositories(productID: product)
+                let repoResponse = try JSONDecoder().decode(RepositoriesResponse.self, from: repoData)
+                guard let repo = repoResponse.data.first else {
+                    throw ValidationError("No repository found. Ensure GitHub repo is linked in App Store Connect.")
+                }
+                repositoryID = repo.id
+                if verbose { print("  Repository ID: \(repositoryID)") }
+
+                // Fetch macOS version
+                if verbose { print("→ Fetching macOS versions...") }
+                let macOSData = try await client.getMacOSVersions()
+                let macOSResponse = try JSONDecoder().decode(MacOSVersionsResponse.self, from: macOSData)
+                guard let macOSVersion = macOSResponse.data.first else {
+                    throw ValidationError("No macOS versions available")
+                }
+                macOSVersionID = macOSVersion.id
+                macOSVersionName = "\(macOSVersion.attributes.name) (\(macOSVersion.attributes.version))"
+                if verbose { print("  Using: \(macOSVersionName)") }
+
+                // Fetch Xcode version
+                if verbose { print("→ Fetching Xcode versions...") }
+                let xcodeData = try await client.getXcodeVersions()
+                let xcodeResponse = try JSONDecoder().decode(XcodeVersionsResponse.self, from: xcodeData)
+                guard let xcodeVersion = xcodeResponse.data.first else {
+                    throw ValidationError("No Xcode versions available")
+                }
+                xcodeVersionID = xcodeVersion.id
+                xcodeVersionName = "\(xcodeVersion.attributes.name) (\(xcodeVersion.attributes.version))"
+                if verbose { print("  Using: \(xcodeVersionName)") }
+            }
+
+            // Build payload
+            let builder = WorkflowPayloadBuilder(
+                name: name,
+                description: description,
+                productID: product,
+                repositoryID: repositoryID,
+                macOSVersionID: macOSVersionID,
+                xcodeVersionID: xcodeVersionID,
+                scheme: scheme,
+                workflowType: workflowType,
+                actionTypes: actionTypes,
+                branchPattern: branch,
+                tagPattern: tagPattern,
+                enabled: enabled
+            )
+
+            let payload = builder.buildPayload()
+
+            if verbose || isDryRun {
+                print("→ Payload:")
+                if let jsonData = try? JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted),
+                   let jsonString = String(data: jsonData, encoding: .utf8) {
+                    print(jsonString)
+                }
+            }
+
+            if isDryRun {
+                print("\n[DRY RUN] Workflow creation skipped")
+                return
+            }
+
+            // Create workflow
+            print("→ Creating workflow via API...")
+            let bodyData = try JSONSerialization.data(withJSONObject: payload)
+            let workflowData = try await client.request(endpoint: "/v1/ciWorkflows", method: "POST", body: bodyData)
+
+            let workflowResponse = try JSONDecoder().decode(WorkflowResponse.self, from: workflowData)
+            let workflowID = workflowResponse.data.id
+
+            print("\n✅ Workflow '\(name)' created successfully!")
+            print("Workflow ID: \(workflowID)")
+            print("\nVerify in: App Store Connect → Apps → Nestory-Pro → Xcode Cloud")
         }
     }
 }
@@ -203,6 +368,214 @@ extension XcodeCloudCLI {
                     print("Finished: \(finished)")
                 }
             }
+        }
+    }
+
+    struct GetWorkflow: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Get workflow details (for debugging)"
+        )
+
+        @Option(name: .long, help: "Workflow ID")
+        var workflow: String
+
+        func run() async throws {
+            let client = try AppStoreConnectClient()
+            let data = try await client.request(endpoint: "/v1/ciWorkflows/\(workflow)", method: "GET")
+
+            // Pretty print JSON
+            if let jsonObject = try? JSONSerialization.jsonObject(with: data),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+                print(prettyString)
+            } else {
+                print(String(data: data, encoding: .utf8) ?? "")
+            }
+        }
+    }
+
+    struct ListTestDestinations: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "List available test destinations for Xcode Cloud"
+        )
+
+        func run() async throws {
+            let client = try AppStoreConnectClient()
+            let data = try await client.request(
+                endpoint: "/v1/ciTestDestinations",
+                method: "GET"
+            )
+
+            // Pretty print JSON
+            if let jsonObject = try? JSONSerialization.jsonObject(with: data),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+                print(prettyString)
+            } else {
+                print(String(data: data, encoding: .utf8) ?? "")
+            }
+        }
+    }
+
+    // MARK: - Monitor Build
+
+    struct MonitorBuild: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Monitor a build in real-time"
+        )
+
+        @Option(name: .long, help: "Build ID to monitor")
+        var build: String
+
+        @Flag(name: .long, help: "Follow build until completion")
+        var follow: Bool = false
+
+        func run() async throws {
+            let client = try AppStoreConnectClient()
+
+            if follow {
+                print("Monitoring build \(build)...\n")
+
+                var lastStatus = ""
+                repeat {
+                    let data = try await client.request(
+                        endpoint: "/v1/ciBuildRuns/\(build)",
+                        method: "GET"
+                    )
+
+                    if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let dataObj = json["data"] as? [String: Any],
+                       let attributes = dataObj["attributes"] as? [String: Any],
+                       let status = attributes["executionProgress"] as? String {
+
+                        if status != lastStatus {
+                            let timestamp = ISO8601DateFormatter().string(from: Date())
+                            print("[\(timestamp)] Status: \(status)")
+                            lastStatus = status
+                        }
+
+                        // Exit conditions
+                        if status == "COMPLETE" {
+                            if let result = attributes["completionStatus"] as? String {
+                                print("\n✅ Build finished: \(result)")
+                                if result != "SUCCEEDED" {
+                                    throw ExitCode(1)
+                                }
+                            }
+                            break
+                        } else if status == "ERROR" {
+                            print("\n❌ Build failed")
+                            throw ExitCode(1)
+                        }
+                    }
+
+                    // Poll every 15 seconds
+                    try await Task.sleep(nanoseconds: 15_000_000_000)
+                } while true
+            } else {
+                // Single status check
+                let data = try await client.request(
+                    endpoint: "/v1/ciBuildRuns/\(build)",
+                    method: "GET"
+                )
+
+                if let jsonObject = try? JSONSerialization.jsonObject(with: data),
+                   let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+                   let prettyString = String(data: prettyData, encoding: .utf8) {
+                    print(prettyString)
+                } else {
+                    print(String(data: data, encoding: .utf8) ?? "")
+                }
+            }
+        }
+    }
+
+    // MARK: - List Builds
+
+    struct ListBuilds: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "List recent builds for a workflow"
+        )
+
+        @Option(name: .long, help: "Workflow ID")
+        var workflow: String
+
+        @Option(name: .long, help: "Number of builds to show")
+        var limit: Int = 10
+
+        func run() async throws {
+            let client = try AppStoreConnectClient()
+
+            print("Recent builds for workflow \(workflow):")
+            print(String(repeating: "=", count: 80))
+
+            let data = try await client.request(
+                endpoint: "/v1/ciWorkflows/\(workflow)/buildRuns?limit=\(limit)",
+                method: "GET"
+            )
+
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let dataArray = json["data"] as? [[String: Any]] {
+
+                if dataArray.isEmpty {
+                    print("No builds found")
+                    return
+                }
+
+                // Print table header
+                print("Build ID".padding(toLength: 40, withPad: " ", startingAt: 0) +
+                      "Status".padding(toLength: 15, withPad: " ", startingAt: 0) +
+                      "Branch/Tag".padding(toLength: 20, withPad: " ", startingAt: 0) +
+                      "Started")
+                print(String(repeating: "-", count: 80))
+
+                for buildData in dataArray {
+                    let id = buildData["id"] as? String ?? "N/A"
+                    if let attributes = buildData["attributes"] as? [String: Any] {
+                        let status = attributes["executionProgress"] as? String ?? "UNKNOWN"
+                        let sourceRef = (attributes["sourceCommit"] as? [String: Any])?["commitSha"] as? String ?? "N/A"
+                        let started = attributes["startedDate"] as? String ?? "N/A"
+
+                        let shortId = String(id.prefix(8))
+                        let shortRef = String(sourceRef.prefix(20))
+                        let shortStarted = String(started.prefix(20))
+
+                        print(shortId.padding(toLength: 40, withPad: " ", startingAt: 0) +
+                              status.padding(toLength: 15, withPad: " ", startingAt: 0) +
+                              shortRef.padding(toLength: 20, withPad: " ", startingAt: 0) +
+                              shortStarted)
+                    }
+                }
+            } else {
+                print("Failed to parse builds")
+            }
+        }
+    }
+
+    // MARK: - Open Build
+
+    struct OpenBuild: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Print App Store Connect URL for a build"
+        )
+
+        @Option(name: .long, help: "Build ID")
+        var build: String
+
+        func run() async throws {
+            // App Store Connect URL format:
+            // https://appstoreconnect.apple.com/teams/<TEAM_ID>/apps/<APP_ID>/ci/builds/<BUILD_ID>
+            //
+            // For now, we'll use the workflow URL format which is more reliable
+            print("🌐 Opening build in App Store Connect...")
+            print("")
+            print("Build ID: \(build)")
+            print("")
+            print("View in App Store Connect:")
+            print("https://appstoreconnect.apple.com")
+            print("")
+            print("Note: Navigate to your app → Xcode Cloud to find this build")
+            print("Or search for build ID: \(build)")
         }
     }
 }
@@ -331,7 +704,7 @@ struct AppStoreConnectClient {
         }
 
         guard (200...299).contains(httpResponse.statusCode) else {
-            let errorMsg = String(data: data, encoding: .utf8) ?? "Unknown error"
+            let errorMsg = AppStoreConnectError.parseAPIError(from: data)
             throw AppStoreConnectError.httpError(httpResponse.statusCode, errorMsg)
         }
 
@@ -375,6 +748,18 @@ struct AppStoreConnectClient {
 
     func getBuild(buildID: String) async throws -> Data {
         try await request(endpoint: "/v1/ciBuildRuns/\(buildID)")
+    }
+
+    func getRepositories(productID: String) async throws -> Data {
+        try await request(endpoint: "/v1/ciProducts/\(productID)/relationships/primaryRepositories")
+    }
+
+    func getMacOSVersions() async throws -> Data {
+        try await request(endpoint: "/v1/ciMacOsVersions")
+    }
+
+    func getXcodeVersions() async throws -> Data {
+        try await request(endpoint: "/v1/ciXcodeVersions")
     }
 }
 
@@ -443,6 +828,55 @@ struct BuildRunAttributes: Codable {
     let finishedDate: String?
 }
 
+struct RepositoriesResponse: Codable {
+    let data: [Repository]
+}
+
+struct Repository: Codable {
+    let id: String
+    let type: String
+}
+
+struct MacOSVersionsResponse: Codable {
+    let data: [MacOSVersion]
+}
+
+struct MacOSVersion: Codable {
+    let id: String
+    let type: String
+    let attributes: MacOSVersionAttributes
+}
+
+struct MacOSVersionAttributes: Codable {
+    let name: String
+    let version: String
+}
+
+struct XcodeVersionsResponse: Codable {
+    let data: [XcodeVersion]
+}
+
+struct XcodeVersion: Codable {
+    let id: String
+    let type: String
+    let attributes: XcodeVersionAttributes
+}
+
+struct XcodeVersionAttributes: Codable {
+    let name: String
+    let version: String
+}
+
+struct WorkflowResponse: Codable {
+    let data: WorkflowData
+}
+
+struct WorkflowData: Codable {
+    let id: String
+    let type: String
+    let attributes: WorkflowAttributes
+}
+
 // MARK: - Errors
 
 enum AppStoreConnectError: LocalizedError {
@@ -465,6 +899,164 @@ enum AppStoreConnectError: LocalizedError {
         case .httpError(let code, let message):
             return "HTTP \(code): \(message)"
         }
+    }
+}
+
+struct ValidationError: LocalizedError {
+    let message: String
+
+    init(_ message: String) {
+        self.message = message
+    }
+
+    var errorDescription: String? {
+        message
+    }
+}
+
+// MARK: - Workflow Payload Builder
+
+struct WorkflowPayloadBuilder {
+    let name: String
+    let description: String?
+    let productID: String
+    let repositoryID: String
+    let macOSVersionID: String
+    let xcodeVersionID: String
+    let scheme: String
+    let workflowType: WorkflowType
+    let actionTypes: [WorkflowActionType]
+    let branchPattern: String?
+    let tagPattern: String?
+    let enabled: Bool
+
+    func buildPayload() -> [String: Any] {
+        var attributes: [String: Any] = [
+            "name": name,
+            "description": description ?? "",
+            "isEnabled": enabled,
+            "isLockedForEditing": false,
+            "clean": true,
+            "containerFilePath": "Nestory-Pro.xcodeproj",
+            "actions": buildActions()
+        ]
+
+        // Add start condition based on workflow type
+        switch workflowType {
+        case .pullRequest:
+            attributes["pullRequestStartCondition"] = [
+                "source": ["isAllMatch": true, "patterns": []],
+                "autoCancel": true
+            ]
+        case .branch:
+            attributes["branchStartCondition"] = [
+                "source": [
+                    "isAllMatch": false,
+                    "patterns": [["pattern": branchPattern ?? "main", "isPrefix": false]]
+                ],
+                "filesAndFoldersRule": ["mode": "START_IF_ANY_FILE_MATCHES", "matchers": []],
+                "autoCancel": true
+            ]
+        case .tag:
+            let pattern = tagPattern ?? "v*"
+            attributes["tagStartCondition"] = [
+                "source": [
+                    "isAllMatch": false,
+                    "patterns": [["pattern": pattern, "isPrefix": pattern.hasSuffix("*")]]
+                ],
+                "autoCancel": true
+            ]
+        }
+
+        return [
+            "data": [
+                "type": "ciWorkflows",
+                "attributes": attributes,
+                "relationships": [
+                    "product": ["data": ["type": "ciProducts", "id": productID]],
+                    "repository": ["data": ["type": "scmRepositories", "id": repositoryID]],
+                    "macOsVersion": ["data": ["type": "ciMacOsVersions", "id": macOSVersionID]],
+                    "xcodeVersion": ["data": ["type": "ciXcodeVersions", "id": xcodeVersionID]]
+                ]
+            ]
+        ]
+    }
+
+    private func buildActions() -> [[String: Any]] {
+        actionTypes.map { actionType in
+            switch actionType {
+            case .test:
+                // Canonical test destination from golden workflow
+                // Using "default" runtime = latest Xcode version
+                let testDestination: [String: Any] = [
+                    "kind": "SIMULATOR",
+                    "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro-Max",
+                    "deviceTypeName": "iPhone 17 Pro Max",
+                    "runtimeIdentifier": "default",
+                    "runtimeName": "Latest from Selected Xcode (iOS 26.1)"
+                ]
+
+                return [
+                    "name": "Test - iOS",
+                    "actionType": "TEST",
+                    "scheme": scheme,
+                    "platform": "IOS",
+                    "isRequiredToPass": true,
+                    "testConfiguration": [
+                        "kind": "USE_SCHEME_SETTINGS",
+                        "testDestinations": [testDestination]
+                    ] as [String: Any]
+                ]
+            case .archive:
+                return [
+                    "name": "Archive - iOS",
+                    "actionType": "ARCHIVE",
+                    "scheme": scheme,
+                    "platform": "IOS",
+                    "isRequiredToPass": true
+                ]
+            case .analyze:
+                return [
+                    "name": "Analyze",
+                    "actionType": "ANALYZE",
+                    "scheme": scheme,
+                    "platform": "IOS",
+                    "isRequiredToPass": false
+                ]
+            }
+        }
+    }
+}
+
+// MARK: - API Error Parsing
+
+struct APIError: Codable {
+    let errors: [ErrorDetail]
+
+    struct ErrorDetail: Codable {
+        let code: String
+        let detail: String
+        let source: Source?
+
+        struct Source: Codable {
+            let pointer: String?
+        }
+    }
+}
+
+extension AppStoreConnectError {
+    static func parseAPIError(from data: Data) -> String {
+        guard let apiError = try? JSONDecoder().decode(APIError.self, from: data) else {
+            return String(data: data, encoding: .utf8) ?? "Unknown error"
+        }
+
+        return apiError.errors.map { error in
+            var msg = "[\(error.code)] \(error.detail)"
+            if let pointer = error.source?.pointer {
+                msg += " (at \(pointer))"
+            }
+            return msg
+        }.joined(separator: "\n")
     }
 }
 
