@@ -200,6 +200,49 @@ targets:
 
 Then regenerate: `xcodegen generate`
 
+### Versioning (CRITICAL)
+
+**Important:** Version numbers are defined in TWO places that MUST stay in sync:
+
+| File | Keys | Purpose |
+|------|------|---------|
+| `project.yml` | `MARKETING_VERSION`, `CURRENT_PROJECT_VERSION` | XcodeGen project generation |
+| `Config/Common.xcconfig` | `MARKETING_VERSION`, `CURRENT_PROJECT_VERSION` | Build settings |
+
+**Problem:** XcodeGen settings in `project.yml` override xcconfig values during project generation. If they differ, the build uses the `project.yml` values.
+
+**Solution - Version Bump Workflow:**
+```bash
+# 1. Update BOTH files (project.yml and Config/Common.xcconfig)
+# In project.yml:
+#   MARKETING_VERSION: "1.2.0"
+#   CURRENT_PROJECT_VERSION: "2"
+# In Config/Common.xcconfig:
+#   MARKETING_VERSION = 1.2.0
+#   CURRENT_PROJECT_VERSION = 2
+
+# 2. Regenerate the project
+xcodegen generate
+
+# 3. Verify version before archiving
+grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION" project.yml Config/Common.xcconfig
+
+# 4. Clean DerivedData to ensure fresh build
+rm -rf ~/Library/Developer/Xcode/DerivedData/Nestory-Pro-*
+```
+
+**iOS Versioning Concepts:**
+- **Version** (`CFBundleShortVersionString` / `MARKETING_VERSION`): User-visible version like "1.2.0"
+- **Build** (`CFBundleVersion` / `CURRENT_PROJECT_VERSION`): Internal build number
+- TestFlight requires unique build numbers per version
+- Build numbers must increment (can't reuse)
+
+**Verify Archive Version:**
+```bash
+# After archiving, verify the version is correct
+plutil -p "path/to/archive.xcarchive/Products/Applications/Nestory-Pro.app/Info.plist" | grep -E "(CFBundleShortVersionString|CFBundleVersion)"
+```
+
 ## Architecture
 
 **MVVM with Clean Layers:**
