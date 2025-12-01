@@ -5,11 +5,12 @@
 //  UI tests for settings screen functionality
 //
 
-@preconcurrency import XCTest
+import XCTest
 
+@MainActor
 final class SettingsUITests: XCTestCase {
 
-    nonisolated(unsafe) var app: XCUIApplication!
+    var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 

@@ -8,9 +8,16 @@ echo "========================================="
 # Auto-increment build number based on commit count
 # This ensures each Xcode Cloud build has a unique build number
 if [ "$CI_WORKFLOW" != "" ]; then
-    echo "📊 Calculating build number from git history..."
-    BUILD_NUMBER=$(git rev-list --count HEAD)
-    echo "📈 Build number: $BUILD_NUMBER"
+    echo "📊 Calculating build number..."
+
+    # Handle shallow clones (Xcode Cloud uses shallow by default)
+    if git rev-parse --is-shallow-repository 2>/dev/null | grep -q true; then
+        BUILD_NUMBER=$(date +%Y%m%d%H%M)
+        echo "📊 Using timestamp for shallow clone: $BUILD_NUMBER"
+    else
+        BUILD_NUMBER=$(git rev-list --count HEAD 2>/dev/null || date +%Y%m%d%H%M)
+        echo "📈 Build number from git history: $BUILD_NUMBER"
+    fi
 
     # Update Info.plist with new build number
     # Note: Xcode Cloud uses Info.plist in project root or target

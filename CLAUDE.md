@@ -4,14 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Nestory Pro** is a native iOS 17+ app for home inventory management designed for insurance documentation. Built with Swift 5 (Swift 6 migration planned for v1.1), SwiftUI, and SwiftData. Core features: fast item capture, receipt OCR via Vision framework, documentation status tracking, and insurance-ready PDF exports.
+**Nestory Pro** is a native iOS 17+ app for home inventory management designed for insurance documentation. Built with Swift 6 with strict concurrency, SwiftUI, and SwiftData. Core features: fast item capture, receipt OCR via Vision framework, documentation status tracking, and insurance-ready PDF exports.
 
-### Swift Version Strategy
-- **Current:** Swift 5.0 language mode (Xcode project setting)
-- **Toolchain:** Swift 6.2.1 (latest Xcode)
-- **v1.0 Launch:** Ship with Swift 5 for stability
-- **v1.1 Target:** Migrate to Swift 6 strict concurrency mode
-- **Reason:** Swift 6's strict concurrency checking surfaces warnings that need careful fixing. Shipping v1.0 with Swift 5 avoids last-minute concurrency bugs while still benefiting from Swift 6 toolchain optimizations.
+### Swift Version
+- **Language Mode:** Swift 6.0 with strict concurrency (`SWIFT_STRICT_CONCURRENCY = complete`)
+- **Toolchain:** Xcode 16+ with Swift 6.2.1
+- **Default Actor Isolation:** `@MainActor` (set in `Common.xcconfig`)
+- **Note:** UI tests use `@MainActor` annotations on test classes to properly access XCUIElement properties.
 
 ## Build & Test Commands
 

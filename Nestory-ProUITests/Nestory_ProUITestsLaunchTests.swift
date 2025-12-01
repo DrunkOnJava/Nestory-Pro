@@ -5,8 +5,9 @@
 //  Created by Griffin on 11/28/25.
 //
 
-@preconcurrency import XCTest
+import XCTest
 
+@MainActor
 final class Nestory_ProUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {

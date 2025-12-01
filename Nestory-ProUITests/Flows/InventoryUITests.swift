@@ -5,11 +5,12 @@
 //  UI tests for inventory management flows
 //
 
-@preconcurrency import XCTest
+import XCTest
 
+@MainActor
 final class InventoryUITests: XCTestCase {
 
-    nonisolated(unsafe) var app: XCUIApplication!
+    var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 

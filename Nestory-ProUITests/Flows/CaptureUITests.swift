@@ -6,11 +6,12 @@
 //  Tasks: 9.2.1, 9.2.2
 //
 
-@preconcurrency import XCTest
+import XCTest
 
+@MainActor
 final class CaptureUITests: XCTestCase {
 
-    nonisolated(unsafe) var app: XCUIApplication!
+    var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 

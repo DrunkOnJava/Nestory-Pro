@@ -6,11 +6,12 @@
 //  Task: 9.2.3
 //
 
-@preconcurrency import XCTest
+import XCTest
 
+@MainActor
 final class LossListUITests: XCTestCase {
 
-    nonisolated(unsafe) var app: XCUIApplication!
+    var app: XCUIApplication!
 
     // MARK: - Setup & Teardown
 
