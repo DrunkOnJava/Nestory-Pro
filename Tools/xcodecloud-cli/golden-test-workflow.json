@@ -1,0 +1,78 @@
+{
+  "links" : {
+    "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/ciWorkflows\/D1323261-315A-4EAA-B614-83C65D39A3F5"
+  },
+  "data" : {
+    "id" : "D1323261-315A-4EAA-B614-83C65D39A3F5",
+    "relationships" : {
+      "buildRuns" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/ciWorkflows\/D1323261-315A-4EAA-B614-83C65D39A3F5\/buildRuns",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/ciWorkflows\/D1323261-315A-4EAA-B614-83C65D39A3F5\/relationships\/buildRuns"
+        }
+      },
+      "repository" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/ciWorkflows\/D1323261-315A-4EAA-B614-83C65D39A3F5\/repository",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/ciWorkflows\/D1323261-315A-4EAA-B614-83C65D39A3F5\/relationships\/repository"
+        }
+      }
+    },
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/ciWorkflows\/D1323261-315A-4EAA-B614-83C65D39A3F5"
+    },
+    "type" : "ciWorkflows",
+    "attributes" : {
+      "description" : "Single TEST-only workflow for CLI JSON reference",
+      "scheduledStartCondition" : null,
+      "actions" : [
+        {
+          "actionType" : "TEST",
+          "destination" : null,
+          "scheme" : "Nestory-Pro",
+          "buildDistributionAudience" : null,
+          "testConfiguration" : {
+            "kind" : "USE_SCHEME_SETTINGS",
+            "testPlanName" : "",
+            "testDestinations" : [
+              {
+                "deviceTypeName" : "iPhone 17 Pro Max",
+                "runtimeIdentifier" : "default",
+                "kind" : "SIMULATOR",
+                "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro-Max",
+                "runtimeName" : "Latest from Selected Xcode (iOS 26.1)"
+              }
+            ]
+          },
+          "platform" : "IOS",
+          "isRequiredToPass" : true,
+          "name" : "Test - iOS"
+        }
+      ],
+      "lastModifiedDate" : "2025-12-01T08:48:26.016Z",
+      "pullRequestStartCondition" : null,
+      "clean" : true,
+      "containerFilePath" : "Nestory-Pro.xcodeproj",
+      "branchStartCondition" : {
+        "filesAndFoldersRule" : null,
+        "autoCancel" : true,
+        "source" : {
+          "patterns" : [
+            {
+              "pattern" : "main",
+              "isPrefix" : false
+            }
+          ],
+          "isAllMatch" : false
+        }
+      },
+      "manualPullRequestStartCondition" : null,
+      "isEnabled" : true,
+      "manualTagStartCondition" : null,
+      "isLockedForEditing" : false,
+      "tagStartCondition" : null,
+      "name" : "Golden Test Workflow",
+      "manualBranchStartCondition" : null
+    }
+  }
+}

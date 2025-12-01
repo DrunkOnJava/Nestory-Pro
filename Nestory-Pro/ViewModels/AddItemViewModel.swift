@@ -185,3 +185,151 @@ final class EditItemViewModel {
         item.updatedAt = Date()
     }
 }
+
+// MARK: - Presentation Models (P2-07)
+
+/// Represents a field in the add/edit item form
+enum AddItemField: String, CaseIterable, Identifiable {
+    case name
+    case brand
+    case modelNumber
+    case serialNumber
+    case purchasePrice
+    case purchaseDate
+    case category
+    case room
+    case condition
+    case warranty
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .name: return "Name"
+        case .brand: return "Brand"
+        case .modelNumber: return "Model Number"
+        case .serialNumber: return "Serial Number"
+        case .purchasePrice: return "Purchase Price"
+        case .purchaseDate: return "Purchase Date"
+        case .category: return "Category"
+        case .room: return "Room"
+        case .condition: return "Condition"
+        case .warranty: return "Warranty"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .name: return "textformat"
+        case .brand: return "tag.fill"
+        case .modelNumber: return "number"
+        case .serialNumber: return "barcode"
+        case .purchasePrice: return "dollarsign.circle.fill"
+        case .purchaseDate: return "calendar"
+        case .category: return "folder.fill"
+        case .room: return "door.left.hand.closed"
+        case .condition: return "star.fill"
+        case .warranty: return "shield.checkered"
+        }
+    }
+
+    var isRequired: Bool {
+        self == .name
+    }
+
+    var placeholder: String {
+        switch self {
+        case .name: return "Item name (required)"
+        case .brand: return "e.g., Apple, Samsung"
+        case .modelNumber: return "e.g., A2141"
+        case .serialNumber: return "e.g., C02XL123"
+        case .purchasePrice: return "0.00"
+        case .purchaseDate: return "Select date"
+        case .category: return "Select category"
+        case .room: return "Select room"
+        case .condition: return "Select condition"
+        case .warranty: return "Warranty expiry date"
+        }
+    }
+}
+
+/// Represents a section in the add/edit item form
+enum AddItemSection: String, CaseIterable, Identifiable {
+    case basicInfo
+    case purchaseInfo
+    case location
+    case status
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .basicInfo: return "Basic Information"
+        case .purchaseInfo: return "Purchase Details"
+        case .location: return "Location"
+        case .status: return "Status & Condition"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .basicInfo: return "info.circle.fill"
+        case .purchaseInfo: return "creditcard.fill"
+        case .location: return "location.fill"
+        case .status: return "checkmark.seal.fill"
+        }
+    }
+
+    var fields: [AddItemField] {
+        switch self {
+        case .basicInfo:
+            return [.name, .brand, .modelNumber, .serialNumber]
+        case .purchaseInfo:
+            return [.purchasePrice, .purchaseDate]
+        case .location:
+            return [.category, .room]
+        case .status:
+            return [.condition, .warranty]
+        }
+    }
+}
+
+/// Validation state for a form field
+enum FieldValidationState: Equatable {
+    case valid
+    case invalid(message: String)
+    case warning(message: String)
+    case pending
+
+    var isValid: Bool {
+        if case .valid = self { return true }
+        return false
+    }
+
+    var message: String? {
+        switch self {
+        case .invalid(let message), .warning(let message):
+            return message
+        default:
+            return nil
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .valid: return "checkmark.circle.fill"
+        case .invalid: return "xmark.circle.fill"
+        case .warning: return "exclamationmark.triangle.fill"
+        case .pending: return "circle.dashed"
+        }
+    }
+
+    var tintColor: String {
+        switch self {
+        case .valid: return "green"
+        case .invalid: return "red"
+        case .warning: return "orange"
+        case .pending: return "gray"
+        }
+    }
+}

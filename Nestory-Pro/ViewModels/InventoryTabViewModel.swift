@@ -415,3 +415,129 @@ enum ItemLimitWarningLevel {
     case approaching
     case limitReached
 }
+
+// MARK: - Presentation Models (P2-07)
+
+/// Represents a section in the inventory list for grouped display
+enum InventorySection: Hashable, Identifiable {
+    case all
+    case room(String)
+    case category(String)
+    case container(String)
+    case uncategorized
+
+    var id: String {
+        switch self {
+        case .all: return "all"
+        case .room(let name): return "room-\(name)"
+        case .category(let name): return "category-\(name)"
+        case .container(let name): return "container-\(name)"
+        case .uncategorized: return "uncategorized"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .all: return "All Items"
+        case .room(let name): return name
+        case .category(let name): return name
+        case .container(let name): return name
+        case .uncategorized: return "Uncategorized"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .all: return "archivebox.fill"
+        case .room: return "door.left.hand.closed"
+        case .category: return "folder.fill"
+        case .container: return "shippingbox.fill"
+        case .uncategorized: return "questionmark.folder.fill"
+        }
+    }
+}
+
+/// Metadata about which parts of an item matched a search query
+struct SearchMatchMetadata: Equatable {
+    let matchedName: Bool
+    let matchedBrand: Bool
+    let matchedNotes: Bool
+    let matchedCategory: Bool
+    let matchedRoom: Bool
+    let matchedTags: Bool
+
+    /// Returns a summary of where matches were found
+    var matchSummary: String {
+        var matches: [String] = []
+        if matchedName { matches.append("name") }
+        if matchedBrand { matches.append("brand") }
+        if matchedNotes { matches.append("notes") }
+        if matchedCategory { matches.append("category") }
+        if matchedRoom { matches.append("room") }
+        if matchedTags { matches.append("tags") }
+        return matches.joined(separator: ", ")
+    }
+
+    /// Returns true if any field matched
+    var hasMatch: Bool {
+        matchedName || matchedBrand || matchedNotes || matchedCategory || matchedRoom || matchedTags
+    }
+
+    static let noMatch = SearchMatchMetadata(
+        matchedName: false,
+        matchedBrand: false,
+        matchedNotes: false,
+        matchedCategory: false,
+        matchedRoom: false,
+        matchedTags: false
+    )
+}
+
+/// Display model for item limit warning banner
+struct ItemLimitWarningDisplay {
+    let level: ItemLimitWarningLevel
+    let currentCount: Int
+    let maxCount: Int
+
+    var title: String {
+        switch level {
+        case .none:
+            return ""
+        case .approaching:
+            return "Approaching Item Limit"
+        case .limitReached:
+            return "Item Limit Reached"
+        }
+    }
+
+    var message: String {
+        switch level {
+        case .none:
+            return ""
+        case .approaching:
+            return "You have \(currentCount) of \(maxCount) items. Upgrade to Pro for unlimited items."
+        case .limitReached:
+            return "Free tier limit of \(maxCount) items reached. Upgrade to Pro to add more."
+        }
+    }
+
+    var iconName: String {
+        switch level {
+        case .none: return ""
+        case .approaching: return "exclamationmark.triangle.fill"
+        case .limitReached: return "xmark.circle.fill"
+        }
+    }
+
+    var tintColor: String {
+        switch level {
+        case .none: return "clear"
+        case .approaching: return "orange"
+        case .limitReached: return "red"
+        }
+    }
+
+    var shouldShow: Bool {
+        level != .none
+    }
+}
