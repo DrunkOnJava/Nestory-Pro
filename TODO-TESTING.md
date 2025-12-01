@@ -122,25 +122,28 @@ COMMIT RULES:
 
 ### T2-01: Fix Async/Await Warnings
 
-- [ ] **T2-01.1** Fix unnecessary `try` expressions in ItemTests.swift
+- [x] **T2-01.1** Fix unnecessary `try` expressions in ItemTests.swift
   - Lines: 17, 71, 104, 158, 237
   - Issue: `try await MainActor.run { }` where closure doesn't throw
   - Fix: Remove `try` keyword from non-throwing MainActor.run calls
   - Verify: No "no calls to throwing functions" warnings
+  - **Completed:** 2025-12-01 (Commit: a56e981)
   - Estimated: 15 min
 
-- [ ] **T2-01.2** Fix BackupServiceTests.swift async warning
+- [x] **T2-01.2** Fix BackupServiceTests.swift async warning
   - Line: 31
   - Issue: `await BackupService.shared` where shared is not async
   - Fix: Remove `await` keyword
   - Verify: No "no 'async' operations occur" warning
+  - **Completed:** 2025-12-01 (Commit: a56e981)
   - Estimated: 5 min
 
-- [ ] **T2-01.3** Fix ConcurrencyTests.swift trailing closure warning
+- [x] **T2-01.3** Fix ConcurrencyTests.swift trailing closure warning
   - Line: 258
   - Issue: Trailing closure confusable with statement body
   - Fix: Use parenthesized argument: `AsyncStream<String>({ continuation in })`
   - Verify: No "trailing closure confusable" warning
+  - **Completed:** 2025-12-01 (Commit: a56e981)
   - Estimated: 5 min
 
 **Blocked-by:** T1-01 (build must work first)
@@ -150,13 +153,22 @@ COMMIT RULES:
 
 ### T2-02: Fix Deprecated API Usage
 
-- [ ] **T2-02.1** Update SnapshotHelpers.swift to use #filePath
+- [x] **T2-02.1** Update SnapshotHelpers.swift to use #filePath
   - Line: 102, 114
   - Issue: Using `#file` (deprecated) instead of `#filePath`
   - Fix: Change parameter default to `#filePath`
   - Verify: No "parameter with default argument '#file'" warning
   - Related: swift-snapshot-testing API changes
+  - **Completed:** 2025-12-01 (Commit: a56e981)
   - Estimated: 10 min
+
+- [x] **T2-02.2** Fix DataModelHarnessTests.swift var→let warning
+  - Line: 521
+  - Issue: `var item` never mutated, should be `let`
+  - Fix: Use initializer parameter instead of mutation
+  - Verify: No "variable was never mutated" warning
+  - **Completed:** 2025-12-01 (Commit: a56e981)
+  - Estimated: 5 min
 
 **Blocked-by:** T1-01
 **Blocks:** None
