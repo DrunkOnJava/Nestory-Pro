@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""
+Block local xcodebuild commands - use Xcode Cloud instead.
+Exit codes:
+  0 = allow
+  2 = block with message
+"""
+import json
+import sys
+
+data = json.load(sys.stdin)
+tool_name = data.get("tool_name", "")
+tool_input = data.get("tool_input", {})
+
+if tool_name == "Bash":
+    command = tool_input.get("command", "")
+
+    # Block xcodebuild test/build commands
+    if "xcodebuild" in command and any(x in command for x in ["test", "build", "-scheme"]):
+        print("BLOCKED: Use Xcode Cloud instead of local xcodebuild.", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Available options:", file=sys.stderr)
+        print("  /xcode-cloud-trigger-build  - Trigger a build", file=sys.stderr)
+        print("  /xcode-cloud-list-builds    - List recent builds", file=sys.stderr)
+        print("  /xcode-cloud-monitor-build  - Monitor build status", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Or create a PR to trigger automatic testing.", file=sys.stderr)
+        sys.exit(2)
+
+sys.exit(0)
