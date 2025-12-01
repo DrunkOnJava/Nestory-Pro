@@ -44,8 +44,12 @@ struct MainTabView: View {
 
     var body: some View {
         ZStack {
-            TabView(selection: $selectedTab) {
-                InventoryTab(deepLinkItemID: $deepLinkItemID)
+            VStack(spacing: 0) {
+                // F7-05: Sync status banner at top of screen
+                AutoSyncStatusBanner()
+
+                TabView(selection: $selectedTab) {
+                    InventoryTab(deepLinkItemID: $deepLinkItemID)
                     .tabItem {
                         Label(AppTab.inventory.rawValue, systemImage: AppTab.inventory.iconName)
                     }
@@ -80,10 +84,11 @@ struct MainTabView: View {
                     .accessibilityIdentifier(AccessibilityIdentifiers.MainTab.settingsTab)
                     .accessibilityLabel("Settings tab")
                     .accessibilityHint("Configure app settings and preferences")
-            }
-            .tint(NestoryTheme.Colors.accent)
-            .toolbarBackground(.visible, for: .tabBar)
-            .toolbarBackground(NestoryTheme.Colors.cardBackground, for: .tabBar)
+                }
+                .tint(NestoryTheme.Colors.accent)
+                .toolbarBackground(.visible, for: .tabBar)
+                .toolbarBackground(NestoryTheme.Colors.cardBackground, for: .tabBar)
+            } // End VStack for F7-05
 
             // App Lock Overlay (Task 6.2.2)
             if isLocked && env.settings.requiresBiometrics {

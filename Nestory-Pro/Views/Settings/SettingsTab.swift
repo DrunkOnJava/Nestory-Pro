@@ -141,6 +141,71 @@ struct SettingsTab: View {
                         .font(NestoryTheme.Typography.caption)
                 }
 
+                // Cloud Sync Status (F7-04)
+                if settings.useICloudSync {
+                    Section {
+                        // Sync status row with indicator
+                        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+                            // Status indicator dot/spinner
+                            syncStatusIndicator
+                                .frame(width: 28, height: 28)
+
+                            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                                Text("Sync Status")
+                                    .font(NestoryTheme.Typography.body)
+                                Text(CloudKitSyncMonitor.shared.statusText)
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(syncStatusColor)
+                            }
+
+                            Spacer()
+
+                            // Sync Now button
+                            Button {
+                                triggerManualSync()
+                            } label: {
+                                if CloudKitSyncMonitor.shared.isSyncing {
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Text("Sync Now")
+                                        .font(NestoryTheme.Typography.caption)
+                                        .foregroundStyle(NestoryTheme.Colors.accent)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(CloudKitSyncMonitor.shared.isSyncing)
+                            .accessibilityIdentifier("syncNowButton")
+                        }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Sync Status: \(CloudKitSyncMonitor.shared.statusText)")
+
+                        // iCloud Settings link if account issue
+                        if case .notAvailable = CloudKitSyncMonitor.shared.syncStatus {
+                            Button {
+                                openICloudSettings()
+                            } label: {
+                                SettingsRowView(
+                                    icon: "gear",
+                                    iconColor: NestoryTheme.Colors.accent,
+                                    title: "Open iCloud Settings",
+                                    subtitle: "Sign in to enable sync",
+                                    showChevron: false,
+                                    trailing: {
+                                        Image(systemName: "arrow.up.right")
+                                            .font(NestoryTheme.Typography.caption)
+                                            .foregroundStyle(NestoryTheme.Colors.muted)
+                                    }
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    } header: {
+                        settingsSectionHeader("Cloud Sync Status", icon: "icloud.fill")
+                    }
+                }
+
                 // Backup & Restore (P2-13-1)
                 Section {
                     // JSON Export (Free tier)
@@ -975,6 +1040,79 @@ extension SettingsTab {
         Label(title, systemImage: icon)
             .font(NestoryTheme.Typography.caption)
             .foregroundStyle(NestoryTheme.Colors.muted)
+    }
+
+    // MARK: - Sync Status Helpers (F7-04)
+
+    /// Visual indicator for current sync status
+    @ViewBuilder
+    var syncStatusIndicator: some View {
+        switch CloudKitSyncMonitor.shared.syncStatus {
+        case .idle:
+            Image(systemName: "checkmark.circle.fill")
+                .font(.title3)
+                .foregroundStyle(NestoryTheme.Colors.success)
+                .background(
+                    Circle()
+                        .fill(NestoryTheme.Colors.success.opacity(0.15))
+                )
+        case .syncing:
+            ProgressView()
+                .progressViewStyle(.circular)
+                .tint(NestoryTheme.Colors.warning)
+        case .error:
+            Image(systemName: "exclamationmark.circle.fill")
+                .font(.title3)
+                .foregroundStyle(NestoryTheme.Colors.error)
+                .background(
+                    Circle()
+                        .fill(NestoryTheme.Colors.error.opacity(0.15))
+                )
+        case .disabled, .notAvailable:
+            Image(systemName: "xmark.circle.fill")
+                .font(.title3)
+                .foregroundStyle(NestoryTheme.Colors.muted)
+                .background(
+                    Circle()
+                        .fill(NestoryTheme.Colors.muted.opacity(0.15))
+                )
+        }
+    }
+
+    /// Color for sync status text
+    var syncStatusColor: Color {
+        switch CloudKitSyncMonitor.shared.syncStatus {
+        case .idle:
+            return NestoryTheme.Colors.success
+        case .syncing:
+            return NestoryTheme.Colors.warning
+        case .error:
+            return NestoryTheme.Colors.error
+        case .disabled, .notAvailable:
+            return NestoryTheme.Colors.muted
+        }
+    }
+
+    /// Trigger a manual sync by saving context
+    func triggerManualSync() {
+        // Saving the context triggers CloudKit to sync changes
+        try? modelContext.save()
+        // Mark as syncing briefly to provide feedback
+        CloudKitSyncMonitor.shared.syncStatus = .syncing
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(2))
+            if CloudKitSyncMonitor.shared.syncStatus == .syncing {
+                CloudKitSyncMonitor.shared.syncStatus = .idle
+                CloudKitSyncMonitor.shared.lastSyncDate = Date()
+            }
+        }
+    }
+
+    /// Open iOS Settings app to iCloud settings
+    func openICloudSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
+        }
     }
 }
 

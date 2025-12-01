@@ -42,6 +42,9 @@ struct ItemDetailView: View {
     @State private var isCheckingValue = false
     @State private var valueLookupError: String?
 
+    // P2-15-3 & P2-17-3: Card expansion state
+    @State private var isDocumentationExpanded = false
+
     init(item: Item) {
         self.item = item
         _viewModel = State(initialValue: ItemDetailViewModel(item: item))
@@ -377,15 +380,14 @@ extension ItemDetailView {
         }
     }
     
-    // MARK: - Documentation Section (6-field scoring per Task 1.4.1)
+    // MARK: - Documentation Section (6-field scoring per Task 1.4.1, P2-15-3 & P2-17-3)
     private var documentationSection: some View {
-        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
-            HStack {
-                Text("Documentation Status")
-                    .font(NestoryTheme.Typography.headline)
-                Spacer()
-
-                // Documentation score percentage with status text
+        ExpandableCard(
+            title: "Documentation Status",
+            isExpanded: $isDocumentationExpanded
+        ) {
+            // Header accessory: score + info button
+            HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                 HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
                     Text("\(Int(item.documentationScore * 100))%")
                         .font(NestoryTheme.Typography.headline)
@@ -397,20 +399,18 @@ extension ItemDetailView {
                         .foregroundStyle(documentationScoreColor)
                 }
 
-                // "What's missing?" info button
                 Button(action: { showingDocumentationInfo = true }) {
                     Image(systemName: "info.circle")
                         .foregroundStyle(NestoryTheme.Colors.muted)
                 }
                 .accessibilityLabel("Documentation score info")
-                .accessibilityHint("Double tap to learn about documentation score weights")
             }
-
-            // Progress bar
+        } summary: {
+            // Summary: Progress bar (always visible)
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall)
-                        .fill(NestoryTheme.Colors.cardBackground)
+                        .fill(NestoryTheme.Colors.chipBackground)
                         .frame(height: 8)
 
                     RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall)
@@ -422,8 +422,8 @@ extension ItemDetailView {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Documentation progress")
             .accessibilityValue("\(Int(item.documentationScore * 100)) percent, \(documentationStatusText)")
-
-            // 6-field badges in two rows
+        } content: {
+            // Expanded content: 6-field badges (P2-17-3: progressive disclosure)
             VStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                 HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                     DocumentationBadge("Photo", isComplete: item.hasPhoto, weight: "30%")
@@ -435,16 +435,15 @@ extension ItemDetailView {
                     DocumentationBadge("Receipt", isComplete: item.hasReceipt, weight: "10%")
                     DocumentationBadge("Serial", isComplete: item.hasSerial, weight: "10%")
                 }
-            }
 
-            if !item.missingDocumentation.isEmpty {
-                Text("Missing: \(item.missingDocumentation.joined(separator: ", "))")
-                    .font(NestoryTheme.Typography.caption)
-                    .foregroundStyle(NestoryTheme.Colors.muted)
+                if !item.missingDocumentation.isEmpty {
+                    Text("Missing: \(item.missingDocumentation.joined(separator: ", "))")
+                        .font(NestoryTheme.Typography.caption)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
+                        .padding(.top, NestoryTheme.Metrics.spacingXSmall)
+                }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .cardStyle()
         .sheet(isPresented: $showingDocumentationInfo) {
             documentationInfoSheet
         }

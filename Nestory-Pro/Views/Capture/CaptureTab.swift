@@ -94,6 +94,40 @@ struct CaptureTab: View {
             }
             .navigationTitle("Capture")
             .animation(NestoryTheme.Animation.quick, value: vm.captureStatus)
+            .toolbar {
+                // Queue badge button (F8-07)
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        if vm.queueCount > 0 {
+                            viewModel.showEditQueue()
+                        } else {
+                            viewModel.startBatchCapture()
+                        }
+                    } label: {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: vm.queueCount > 0 ? "tray.full.fill" : "camera.fill.badge.ellipsis")
+                                .symbolRenderingMode(.hierarchical)
+
+                            // Badge
+                            if vm.queueCount > 0 {
+                                Text("\(vm.queueCount)")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 4)
+                                    .padding(.vertical, 2)
+                                    .background(Color.red)
+                                    .clipShape(Capsule())
+                                    .offset(x: 8, y: -8)
+                            }
+                        }
+                    }
+                    .accessibilityLabel(vm.queueCount > 0 ? "View queue with \(vm.queueCount) items" : "Start batch capture")
+                    .accessibilityIdentifier("captureTab.queueButton")
+                }
+            }
+        }
+        .task {
+            await viewModel.refreshQueueCount()
         }
         // Photo capture sheets
         .sheet(isPresented: $vm.showingPhotoCapture) {
@@ -130,6 +164,29 @@ struct CaptureTab: View {
                     print("Manual entry requested")
                 }
             )
+        }
+        // Batch capture sheet (F8)
+        .fullScreenCover(isPresented: $vm.showingBatchCapture) {
+            BatchCaptureView()
+        }
+        // Edit queue sheet (F8)
+        .sheet(isPresented: $vm.showingEditQueue) {
+            EditQueueView()
+        }
+        // Refresh queue count when batch capture or edit queue is dismissed
+        .onChange(of: vm.showingBatchCapture) { _, isShowing in
+            if !isShowing {
+                Task {
+                    await viewModel.refreshQueueCount()
+                }
+            }
+        }
+        .onChange(of: vm.showingEditQueue) { _, isShowing in
+            if !isShowing {
+                Task {
+                    await viewModel.refreshQueueCount()
+                }
+            }
         }
         // Photo capture state handlers
         .onChange(of: vm.capturedImage) { _, newImage in

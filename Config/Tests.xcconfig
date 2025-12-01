@@ -16,7 +16,9 @@ SWIFT_APPROACHABLE_CONCURRENCY = YES
 SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated
 
 // MARK: - Thread Safety (enabled for tests)
-ENABLE_THREAD_SANITIZER = YES
+// TODO: Re-enable TSan after fixing Swift 6 concurrency compatibility
+// TSan crashes on simulator with "tsan.module_ctor" error
+ENABLE_THREAD_SANITIZER = NO
 ENABLE_MAIN_THREAD_CHECKER = YES
 
 // MARK: - String Catalogs

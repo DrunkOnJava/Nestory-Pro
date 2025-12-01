@@ -29,6 +29,11 @@ final class CaptureTabViewModel {
     // Receipt capture state
     var showingReceiptCapture: Bool = false
 
+    // Batch capture state (F8)
+    var showingBatchCapture: Bool = false
+    var showingEditQueue: Bool = false
+    var queueCount: Int = 0
+
     // Capture status for status banner (P2-11-1)
     var captureStatus: CaptureStatus = .idle
     
@@ -88,6 +93,23 @@ final class CaptureTabViewModel {
     /// Start receipt capture flow
     func startReceiptCapture() {
         showingReceiptCapture = true
+    }
+
+    // MARK: - Batch Capture Actions (F8)
+
+    /// Start batch capture mode
+    func startBatchCapture() {
+        showingBatchCapture = true
+    }
+
+    /// Show the edit queue view
+    func showEditQueue() {
+        showingEditQueue = true
+    }
+
+    /// Refresh the queue count from CaptureQueueService
+    func refreshQueueCount() async {
+        queueCount = await CaptureQueueService.shared.pendingCount
     }
 
     // MARK: - Status Management (P2-11-1)
