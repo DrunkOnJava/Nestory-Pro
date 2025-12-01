@@ -7,18 +7,24 @@
 //
 
 // ============================================================================
-// SNAPSHOT TESTS
+// SNAPSHOT TESTS - DEFERRED TO v1.2
 // ============================================================================
 // These tests capture baseline images of key views to detect unintended
-// visual regressions. Run with recording=true to generate new baselines.
+// visual regressions.
 //
-// TASKS:
-// - 9.3.1: Inventory list snapshot
-// - 9.3.2: Item detail snapshot
+// STATUS: Deferred to v1.2 (P2-02)
+// REASON: Schema changes for Property/Container hierarchy require full
+//         implementation before snapshot baselines can be recorded.
+//         PreviewContainer updated to use v1.2 schema, but views need
+//         v1.2 feature completion for stable baselines.
+//
+// TASKS (v1.2):
+// - 9.3.1: Inventory list snapshot (with Property/Container hierarchy)
+// - 9.3.2: Item detail snapshot (with Container relationships)
 // - 9.3.3: Paywall snapshot
 // - 9.3.4: Reports tab snapshot
 //
-// SEE: TODO.md v1.1 | SnapshotHelpers.swift
+// SEE: TODO.md v1.2 | SnapshotHelpers.swift | PreviewContainer.swift
 // ============================================================================
 
 import XCTest
@@ -31,11 +37,12 @@ import SnapshotTesting
 
 final class InventorySnapshotTests: XCTestCase {
 
-    override func setUp() {
-        super.setUp()
-        // Set to true to record new baselines, false to compare
-        // isRecording = false
-    }
+    // TODO: Re-enable recording mode when implementing v1.2
+    // override func invokeTest() {
+    //     withSnapshotTesting(record: .all) {
+    //         super.invokeTest()
+    //     }
+    // }
 
     /// 9.3.1a - Empty inventory state
     @MainActor func testInventoryList_Empty() {            let container = PreviewContainer.emptyInventory()
@@ -80,6 +87,13 @@ final class InventorySnapshotTests: XCTestCase {
 // MARK: - 9.3.2: Item Detail Snapshots
 
 final class ItemDetailSnapshotTests: XCTestCase {
+
+    // TODO: Re-enable recording mode when implementing v1.2
+    // override func invokeTest() {
+    //     withSnapshotTesting(record: .all) {
+    //         super.invokeTest()
+    //     }
+    // }
 
     /// 9.3.2a - Item with full details
     @MainActor func testItemDetail_FullyDocumented() {            let container = PreviewContainer.withSampleData()
@@ -138,6 +152,13 @@ final class ItemDetailSnapshotTests: XCTestCase {
 // MARK: - 9.3.3: Paywall Snapshots
 
 final class PaywallSnapshotTests: XCTestCase {
+
+    // TODO: Re-enable recording mode when implementing v1.2
+    // override func invokeTest() {
+    //     withSnapshotTesting(record: .all) {
+    //         super.invokeTest()
+    //     }
+    // }
 
     /// 9.3.3a - Item limit paywall (Free user)
     @MainActor func testPaywall_ItemLimit_Free() {            let container = PreviewContainer.empty()
@@ -208,6 +229,13 @@ final class PaywallSnapshotTests: XCTestCase {
 // MARK: - 9.3.4: Reports Tab Snapshots
 
 final class ReportsSnapshotTests: XCTestCase {
+
+    // TODO: Re-enable recording mode when implementing v1.2
+    // override func invokeTest() {
+    //     withSnapshotTesting(record: .all) {
+    //         super.invokeTest()
+    //     }
+    // }
 
     /// 9.3.4a - Reports with items
     @MainActor func testReportsTab_WithItems() {            let container = PreviewContainer.withSampleData()

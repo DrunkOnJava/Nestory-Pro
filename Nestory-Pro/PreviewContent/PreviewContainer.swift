@@ -15,22 +15,10 @@ import SwiftData
 struct PreviewContainer {
     
     /// Creates an in-memory container with no data
+    /// Uses versioned schema from NestoryModelContainer for consistency with production
     static func empty() -> ModelContainer {
-        let schema = Schema([
-            Item.self,
-            ItemPhoto.self,
-            Receipt.self,
-            Category.self,
-            Room.self
-        ])
-        
-        let configuration = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: true
-        )
-        
         do {
-            return try ModelContainer(for: schema, configurations: [configuration])
+            return try NestoryModelContainer.createForTesting()
         } catch {
             fatalError("Failed to create preview container: \(error)")
         }
