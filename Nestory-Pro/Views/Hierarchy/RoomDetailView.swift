@@ -23,6 +23,8 @@ struct RoomDetailView: View {
     @State private var containerToDelete: Container?
     @State private var showingDeleteConfirmation = false
     @State private var showingEditRoom = false
+    @State private var renamingContainer: Container?
+    @State private var renameText: String = ""
     
     var body: some View {
         List {
@@ -84,6 +86,22 @@ struct RoomDetailView: View {
         } message: { _ in
             Text("Items in this container will remain in the room. This action cannot be undone.")
         }
+        .alert("Rename Container", isPresented: .init(
+            get: { renamingContainer != nil },
+            set: { if !$0 { renamingContainer = nil } }
+        )) {
+            TextField("Container Name", text: $renameText)
+            Button("Cancel", role: .cancel) {
+                renamingContainer = nil
+            }
+            Button("Rename") {
+                if let container = renamingContainer {
+                    renameContainer(container, to: renameText)
+                }
+            }
+        } message: {
+            Text("Enter a new name for this container.")
+        }
     }
     
     // MARK: - Summary Section
@@ -134,13 +152,22 @@ struct RoomDetailView: View {
                     } label: {
                         Label("Delete", systemImage: "trash")
                     }
-                    
+
                     Button {
                         editingContainer = container
                     } label: {
                         Label("Edit", systemImage: "pencil")
                     }
                     .tint(.orange)
+                }
+                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                    Button {
+                        renameText = container.name
+                        renamingContainer = container
+                    } label: {
+                        Label("Rename", systemImage: "character.cursor.ibeam")
+                    }
+                    .tint(.blue)
                 }
             }
             .onMove(perform: moveContainers)
@@ -183,6 +210,14 @@ struct RoomDetailView: View {
             item.container = nil
         }
         modelContext.delete(container)
+    }
+
+    private func renameContainer(_ container: Container, to newName: String) {
+        let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return }
+        container.name = trimmedName
+        container.updatedAt = Date()
+        renamingContainer = nil
     }
     
     private func formatCurrency(_ value: Decimal) -> String {

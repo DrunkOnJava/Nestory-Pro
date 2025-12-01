@@ -23,6 +23,8 @@ struct PropertyDetailView: View {
     @State private var roomToDelete: Room?
     @State private var showingDeleteConfirmation = false
     @State private var showingEditProperty = false
+    @State private var renamingRoom: Room?
+    @State private var renameText: String = ""
     
     var body: some View {
         List {
@@ -66,6 +68,22 @@ struct PropertyDetailView: View {
             }
         } message: { room in
             Text("This will delete all containers and items in this room. This action cannot be undone.")
+        }
+        .alert("Rename Room", isPresented: .init(
+            get: { renamingRoom != nil },
+            set: { if !$0 { renamingRoom = nil } }
+        )) {
+            TextField("Room Name", text: $renameText)
+            Button("Cancel", role: .cancel) {
+                renamingRoom = nil
+            }
+            Button("Rename") {
+                if let room = renamingRoom {
+                    renameRoom(room, to: renameText)
+                }
+            }
+        } message: {
+            Text("Enter a new name for this room.")
         }
     }
     
@@ -157,13 +175,22 @@ struct PropertyDetailView: View {
                                 Label("Delete", systemImage: "trash")
                             }
                         }
-                        
+
                         Button {
                             editingRoom = room
                         } label: {
                             Label("Edit", systemImage: "pencil")
                         }
                         .tint(.orange)
+                    }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button {
+                            renameText = room.name
+                            renamingRoom = room
+                        } label: {
+                            Label("Rename", systemImage: "character.cursor.ibeam")
+                        }
+                        .tint(.blue)
                     }
                 }
                 .onMove(perform: moveRooms)
@@ -201,6 +228,13 @@ struct PropertyDetailView: View {
     
     private func deleteRoom(_ room: Room) {
         modelContext.delete(room)
+    }
+
+    private func renameRoom(_ room: Room, to newName: String) {
+        let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return }
+        room.name = trimmedName
+        renamingRoom = nil
     }
     
     private func formatCurrency(_ value: Decimal) -> String {

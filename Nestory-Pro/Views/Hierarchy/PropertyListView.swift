@@ -22,6 +22,8 @@ struct PropertyListView: View {
     @State private var editingProperty: Property?
     @State private var propertyToDelete: Property?
     @State private var showingDeleteConfirmation = false
+    @State private var renamingProperty: Property?
+    @State private var renameText: String = ""
     
     var body: some View {
         List {
@@ -57,6 +59,22 @@ struct PropertyListView: View {
         } message: { property in
             Text("This will delete all rooms and items in this property. This action cannot be undone.")
         }
+        .alert("Rename Property", isPresented: .init(
+            get: { renamingProperty != nil },
+            set: { if !$0 { renamingProperty = nil } }
+        )) {
+            TextField("Property Name", text: $renameText)
+            Button("Cancel", role: .cancel) {
+                renamingProperty = nil
+            }
+            Button("Rename") {
+                if let property = renamingProperty {
+                    renameProperty(property, to: renameText)
+                }
+            }
+        } message: {
+            Text("Enter a new name for this property.")
+        }
         .onAppear {
             ensureDefaultPropertyExists()
         }
@@ -76,13 +94,22 @@ struct PropertyListView: View {
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
-                
+
                 Button {
                     editingProperty = property
                 } label: {
                     Label("Edit", systemImage: "pencil")
                 }
                 .tint(.orange)
+            }
+            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                Button {
+                    renameText = property.name
+                    renamingProperty = property
+                } label: {
+                    Label("Rename", systemImage: "character.cursor.ibeam")
+                }
+                .tint(.blue)
             }
         }
         .onMove(perform: moveProperties)
@@ -133,6 +160,14 @@ struct PropertyListView: View {
     
     private func deleteProperty(_ property: Property) {
         modelContext.delete(property)
+    }
+
+    private func renameProperty(_ property: Property, to newName: String) {
+        let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return }
+        property.name = trimmedName
+        property.updatedAt = Date()
+        renamingProperty = nil
     }
 }
 

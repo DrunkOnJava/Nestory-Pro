@@ -99,6 +99,7 @@
 		A6B579D24DA98B33E6024A27 /* ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA78C5DC75A6040877149036 /* ConcurrencyTests.swift */; };
 		AC33D2CEF331E6AB4A7E4981 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F07069456CD0B035401F92BC /* README.md */; };
 		AED13D59EFBD81D9BFE78F61 /* ReportsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F61902426241554FEA3C5DC /* ReportsUITests.swift */; };
+		B09E7F90F1D20B834BD4DDCF /* SchemaMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F932896E48EAD78549CF096B /* SchemaMigrationTests.swift */; };
 		B45F107818B95BCE002521F0 /* SettingsProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D760CB47B56787C85419092F /* SettingsProviding.swift */; };
 		B5EDE9875D0A69B7B8F59547 /* InventoryTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E45CAC8181A071E6346B31 /* InventoryTab.swift */; };
 		B6E42F69FE9331877A7AA30D /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F42C1ECE2829875FE6D4D69 /* Room.swift */; };
@@ -286,6 +287,7 @@
 		329FD4134C15AA174C2EB2AF /* data.0~gKQLT7FFsbw-2vW8D3aoEQzJL-hcTOUV369n_8DSEnuN_hXy8Ne8l7uTMC8t3ywceKZ_ukK57P_9ravIidrUbA== */ = {isa = PBXFileReference; path = "data.0~gKQLT7FFsbw-2vW8D3aoEQzJL-hcTOUV369n_8DSEnuN_hXy8Ne8l7uTMC8t3ywceKZ_ukK57P_9ravIidrUbA=="; sourceTree = "<group>"; };
 		32D8C19DC6ADD6B680027416 /* refs.0~qGYE6QSb4aDIo8mFiC6n-gDbZZ8HKSLV6kiiVPaufEAj9OHdn0vrM-9NJJHYGg6wptsIzwF8zb78tWdTZ5qUgw== */ = {isa = PBXFileReference; path = "refs.0~qGYE6QSb4aDIo8mFiC6n-gDbZZ8HKSLV6kiiVPaufEAj9OHdn0vrM-9NJJHYGg6wptsIzwF8zb78tWdTZ5qUgw=="; sourceTree = "<group>"; };
 		334B416496D35110D629B8E5 /* refs.0~gKQLT7FFsbw-2vW8D3aoEQzJL-hcTOUV369n_8DSEnuN_hXy8Ne8l7uTMC8t3ywceKZ_ukK57P_9ravIidrUbA== */ = {isa = PBXFileReference; path = "refs.0~gKQLT7FFsbw-2vW8D3aoEQzJL-hcTOUV369n_8DSEnuN_hXy8Ne8l7uTMC8t3ywceKZ_ukK57P_9ravIidrUbA=="; sourceTree = "<group>"; };
+		3390AAAFE3E000E578C88D14 /* xcodecloud-proxy.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "xcodecloud-proxy.yml"; sourceTree = "<group>"; };
 		342C1A2E8FD39F16CA823BFC /* privacy_url.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = privacy_url.txt; sourceTree = "<group>"; };
 		3469918048ECEA06D9E3262E /* data.0~7U-7mjBmtru4Le2WreALNuD_HYPks-hyTPRK5t_0VZJP8xOYRVjYW_yFWM7e08TOBJfoQu9RFwCbtMFve1ar3Q== */ = {isa = PBXFileReference; path = "data.0~7U-7mjBmtru4Le2WreALNuD_HYPks-hyTPRK5t_0VZJP8xOYRVjYW_yFWM7e08TOBJfoQu9RFwCbtMFve1ar3Q=="; sourceTree = "<group>"; };
 		34BE9D09D1D1695B4BD9486B /* refs.0~IzHdCytOYcpGDJszJaZSIhsejcMblV43to2g0e7TmkFmd8Njw9ABPYezFjFHI0sZHhnT6qjmZvZPYZH6xVQEGg== */ = {isa = PBXFileReference; path = "refs.0~IzHdCytOYcpGDJszJaZSIhsejcMblV43to2g0e7TmkFmd8Njw9ABPYezFjFHI0sZHhnT6qjmZvZPYZH6xVQEGg=="; sourceTree = "<group>"; };
@@ -799,6 +801,7 @@
 		F75C77BD0420624ADADBFB42 /* MCP-FIX-SUMMARY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "MCP-FIX-SUMMARY.md"; sourceTree = "<group>"; };
 		F7C66DC9AD1CD0976A3C594E /* PerformanceLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceLogger.swift; sourceTree = "<group>"; };
 		F8FBB1FF1A07BDB4300E0314 /* refs.0~Ka2_lm3qdzj2WzPNWKAVNm5xyQOssKND9knOuCPyzSBAQo1AmW9UDqr-3T5mR6X-gfSDXNKjZ2Re9lUluWGNRQ== */ = {isa = PBXFileReference; path = "refs.0~Ka2_lm3qdzj2WzPNWKAVNm5xyQOssKND9knOuCPyzSBAQo1AmW9UDqr-3T5mR6X-gfSDXNKjZ2Re9lUluWGNRQ=="; sourceTree = "<group>"; };
+		F932896E48EAD78549CF096B /* SchemaMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaMigrationTests.swift; sourceTree = "<group>"; };
 		FA0326F2AE5DF60E470ECEDA /* PhotoStorageServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStorageServiceTests.swift; sourceTree = "<group>"; };
 		FA57A0647D57B571ECBDE50B /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		FA78C5DC75A6040877149036 /* ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyTests.swift; sourceTree = "<group>"; };
@@ -1791,6 +1794,7 @@
 			children = (
 				01C0BE59617B518DFE4FCB54 /* beta.yml */,
 				DB461ACED2B94E55D13D27D6 /* test.yml */,
+				3390AAAFE3E000E578C88D14 /* xcodecloud-proxy.yml */,
 			);
 			path = workflows;
 			sourceTree = "<group>";
@@ -1915,6 +1919,7 @@
 				F05E47D8CA046C70AB8C1764 /* DataModelInvariantsTests.swift */,
 				08F3ECA6B0BBBC35821F2CBB /* PersistenceIntegrationTests.swift */,
 				A82C234AC822F5824F2E33E4 /* ReportGeneratorOutputTests.swift */,
+				F932896E48EAD78549CF096B /* SchemaMigrationTests.swift */,
 			);
 			path = IntegrationTests;
 			sourceTree = "<group>";
@@ -2079,6 +2084,7 @@
 				C92911B5886C8CF7C3D8ABD2 /* ReportGeneratorOutputTests.swift in Sources */,
 				90A3DA41F16613DC2880FD87 /* ReportGeneratorServiceTests.swift in Sources */,
 				C65B8EAB366002700A58CDBC /* RoomTests.swift in Sources */,
+				B09E7F90F1D20B834BD4DDCF /* SchemaMigrationTests.swift in Sources */,
 				2F9AE5CB02364B085DA2F1C9 /* SnapshotHelpers.swift in Sources */,
 				DEC45BA99DDAE6ACBE848804 /* TagTests.swift in Sources */,
 				CA59046AB8D9498E618E09A3 /* TestFixtures.swift in Sources */,
