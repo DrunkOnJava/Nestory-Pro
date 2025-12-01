@@ -31,58 +31,53 @@ struct LockScreenView: View {
     
     var body: some View {
         ZStack {
-            // Blur background
+            // Blur background (P2-09-2)
             NestoryTheme.Colors.background
                 .ignoresSafeArea()
 
             VStack(spacing: NestoryTheme.Metrics.spacingXXLarge) {
                 Spacer()
 
-                // App icon
-                Image(systemName: "house.fill")
-                    .font(.system(size: NestoryTheme.Metrics.iconHero))
+                // Large lock icon in circular material (P2-09-2)
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 56, weight: .medium))
                     .foregroundStyle(NestoryTheme.Colors.accent)
-                    .padding(NestoryTheme.Metrics.paddingMedium)
-                    .background(NestoryTheme.Colors.accent.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusXLarge))
+                    .frame(width: 120, height: 120)
+                    .background(.ultraThinMaterial, in: Circle())
                     .accessibilityHidden(true)
 
-                // Title
+                // Title and subtitle (P2-09-2)
                 VStack(spacing: NestoryTheme.Metrics.spacingSmall) {
-                    Text("Nestory Pro")
+                    Text("Nestory Locked")
                         .font(NestoryTheme.Typography.title)
 
-                    Text("Unlock to access your inventory")
+                    Text("Unlock with \(biometricTypeDescription) to access your inventory.")
                         .font(NestoryTheme.Typography.subheadline)
                         .foregroundStyle(NestoryTheme.Colors.muted)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, NestoryTheme.Metrics.paddingXLarge)
                 }
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("Nestory Pro. Unlock to access your inventory.")
+                .accessibilityLabel("Nestory Locked. Unlock with \(biometricTypeDescription) to access your inventory.")
 
                 Spacer()
 
-                // Unlock button
+                // Unlock button (P2-09-2: .borderedProminent, .controlSize(.large))
                 VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                     Button(action: authenticate) {
-                        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+                        HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                             if isAuthenticating {
                                 ProgressView()
-                                    .tint(.white)
                             } else {
                                 Image(systemName: biometricIconName)
                                     .accessibilityIdentifier(AccessibilityIdentifiers.LockScreen.biometricIcon)
                             }
-                            Text(unlockButtonText)
+                            Text("Unlock")
                         }
-                        .font(NestoryTheme.Typography.headline)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(NestoryTheme.Metrics.paddingMedium)
-                        .background(NestoryTheme.Colors.accent)
-                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                     }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                     .disabled(isAuthenticating)
-                    .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
                     .accessibilityIdentifier(AccessibilityIdentifiers.LockScreen.unlockButton)
                     .accessibilityLabel(isAuthenticating ? "Authenticating" : unlockButtonText)
                     .accessibilityHint("Double-tap to unlock with \(biometricTypeDescription)")

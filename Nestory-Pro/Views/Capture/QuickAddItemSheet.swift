@@ -77,20 +77,23 @@ struct QuickAddItemSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                // Item Name Section
+                // Item Name Section (P2-12-2)
                 Section {
                     TextField("Item Name", text: $itemName)
+                        .font(NestoryTheme.Typography.body)
                         .textInputAutocapitalization(.words)
                         .submitLabel(.done)
                 } header: {
-                    Text("What did you photograph?")
+                    Label("What did you photograph?", systemImage: "camera.fill")
+                        .font(NestoryTheme.Typography.caption)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 } footer: {
                     Text("You can add more details like price and category later.")
-                        .font(.caption)
+                        .font(NestoryTheme.Typography.caption)
                 }
 
-                // Room Selection
-                Section("Location (Optional)") {
+                // Room Selection (P2-12-2)
+                Section {
                     Picker("Room", selection: $selectedRoom) {
                         Text("None").tag(nil as Room?)
                         ForEach(rooms) { room in
@@ -99,19 +102,27 @@ struct QuickAddItemSheet: View {
                         }
                     }
                     .pickerStyle(.navigationLink)
+                } header: {
+                    Label("Location (Optional)", systemImage: "location.fill")
+                        .font(NestoryTheme.Typography.caption)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
 
-                // Photo Preview
-                Section("Captured Photo") {
+                // Photo Preview (P2-12-2)
+                Section {
                     HStack {
                         Spacer()
                         Image(uiImage: capturedImage)
                             .resizable()
                             .scaledToFit()
                             .frame(height: 200)
-                            .cornerRadius(8)
+                            .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                         Spacer()
                     }
+                } header: {
+                    Label("Captured Photo", systemImage: "photo.fill")
+                        .font(NestoryTheme.Typography.caption)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
                 }
             }
             .navigationTitle("Add Item")
@@ -132,6 +143,13 @@ struct QuickAddItemSheet: View {
                     }
                     .disabled(!canSave)
                 }
+                // Keyboard toolbar (P2-12-2)
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
+                }
             }
             .alert("Save Failed", isPresented: $showingError) {
                 Button("OK", role: .cancel) { }
@@ -141,9 +159,11 @@ struct QuickAddItemSheet: View {
                 }
             }
         }
+        .presentationDetents([.medium, .large]) // P2-12-2: Medium detent for minimal form
+        .presentationDragIndicator(.visible)
     }
 
-    // MARK: - Actions
+    // MARK: - Actions (P2-16-1: Haptic feedback)
 
     /// Saves the item with attached photo to SwiftData
     @MainActor
@@ -183,13 +203,17 @@ struct QuickAddItemSheet: View {
             // 6. Save context
             try modelContext.save()
 
-            // 7. Dismiss sheet
+            // 7. Success haptic feedback (P2-16-1)
+            NestoryTheme.Haptics.success()
+
+            // 8. Dismiss sheet
             dismiss()
 
         } catch {
             // Handle errors gracefully
             saveError = error
             showingError = true
+            NestoryTheme.Haptics.error() // P2-16-2: Error haptic
         }
     }
 }

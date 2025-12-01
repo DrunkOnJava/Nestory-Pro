@@ -106,7 +106,24 @@ final class Item {
     /// Product barcode (UPC, EAN, etc.) scanned from the item
     // NOTE: Task 2.7.2 - Stored for future product lookup (v1.1+)
     var barcode: String?
-    
+
+    // MARK: - Market Value Lookup (F4)
+
+    /// Estimated replacement value from market lookup
+    var estimatedReplacementValue: Decimal?
+
+    /// Low end of estimated price range
+    var estimatedValueLow: Decimal?
+
+    /// High end of estimated price range
+    var estimatedValueHigh: Decimal?
+
+    /// Source of the value estimate (e.g., "eBay", "Amazon")
+    var valueLookupSource: String?
+
+    /// When the value was last checked
+    var valueLookupDate: Date?
+
     /// Optional container within a room (P2-02: Information architecture)
     /// e.g., "TV Stand", "Dresser", "Storage Bin"
     @Relationship(inverse: \Container.items)
@@ -234,6 +251,21 @@ extension Item {
         return missing
     }
     
+    // MARK: - Market Value Status (F4)
+
+    /// Whether the item has a recent market value estimate (within 30 days)
+    var hasRecentValueEstimate: Bool {
+        guard let lookupDate = valueLookupDate else { return false }
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        return lookupDate > thirtyDaysAgo
+    }
+
+    /// How many days since the value was last checked
+    var daysSinceValueLookup: Int? {
+        guard let lookupDate = valueLookupDate else { return nil }
+        return Calendar.current.dateComponents([.day], from: lookupDate, to: Date()).day
+    }
+
     /// Full breadcrumb path for navigation (P2-02)
     /// Format: "Property > Room > Container > Item" (omitting nil levels)
     var breadcrumbPath: String {

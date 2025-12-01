@@ -366,6 +366,80 @@ final class InventoryTabViewModel {
     func calculateUniqueRoomCount(_ items: [Item]) -> Int {
         Set(items.compactMap(\.room?.id)).count
     }
+
+    // MARK: - Grouped Sections (P2-07-1)
+
+    /// Group items by room into sections for display
+    /// Returns sections sorted by room name, with uncategorized items last
+    func groupedSections(_ items: [Item]) -> [InventorySectionData] {
+        let processedItems = processItems(items)
+
+        // Group items by room
+        var roomGroups: [String: [Item]] = [:]
+        var uncategorized: [Item] = []
+
+        for item in processedItems {
+            if let room = item.room {
+                roomGroups[room.name, default: []].append(item)
+            } else {
+                uncategorized.append(item)
+            }
+        }
+
+        // Build sections
+        var sections: [InventorySectionData] = []
+
+        // Sort rooms alphabetically
+        for roomName in roomGroups.keys.sorted() {
+            let roomItems = roomGroups[roomName]!
+            let totalValue = roomItems.compactMap(\.purchasePrice).reduce(0, +)
+
+            sections.append(InventorySectionData(
+                section: .room(roomName),
+                items: roomItems,
+                totalValue: totalValue
+            ))
+        }
+
+        // Add uncategorized at the end
+        if !uncategorized.isEmpty {
+            let totalValue = uncategorized.compactMap(\.purchasePrice).reduce(0, +)
+            sections.append(InventorySectionData(
+                section: .uncategorized,
+                items: uncategorized,
+                totalValue: totalValue
+            ))
+        }
+
+        return sections
+    }
+
+    /// Parse active search and return metadata for display chips
+    func activeSearchMetadata() -> SearchMatchMetadata? {
+        guard !searchText.isEmpty else { return nil }
+
+        let query = SearchQuery.parse(searchText)
+        guard query.usesEnhancedSyntax else { return nil }
+
+        return SearchMatchMetadata(
+            matchedName: false,
+            matchedBrand: false,
+            matchedNotes: false,
+            matchedCategory: query.categoryFilter != nil,
+            matchedRoom: query.roomFilter != nil,
+            matchedTags: query.tagFilter != nil
+        )
+    }
+
+    /// Get display information for item limit warning
+    func itemLimitWarningDisplay(itemCount: Int) -> ItemLimitWarningDisplay {
+        let level = itemLimitWarningLevel(itemCount: itemCount)
+        return ItemLimitWarningDisplay(
+            level: level,
+            currentCount: itemCount,
+            maxCount: 100
+        )
+    }
     
     // MARK: - Item Limit Logic
     
@@ -418,7 +492,7 @@ enum ItemLimitWarningLevel {
 
 // MARK: - Presentation Models (P2-07)
 
-/// Represents a section in the inventory list for grouped display
+/// Represents a section type in the inventory list for grouped display
 enum InventorySection: Hashable, Identifiable {
     case all
     case room(String)
@@ -455,6 +529,18 @@ enum InventorySection: Hashable, Identifiable {
         case .uncategorized: return "questionmark.folder.fill"
         }
     }
+}
+
+/// Data for a section in the inventory list including items and statistics
+struct InventorySectionData: Identifiable {
+    let section: InventorySection
+    let items: [Item]
+    let totalValue: Decimal
+
+    var id: String { section.id }
+    var displayName: String { section.displayName }
+    var iconName: String { section.iconName }
+    var itemCount: Int { items.count }
 }
 
 /// Metadata about which parts of an item matched a search query

@@ -4,7 +4,8 @@
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      runPostActionsOnFailure = "NO">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -57,6 +58,18 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       codeCoverageEnabled = "YES"
       onlyGenerateCoverageForSpecifiedTargets = "YES">
+      <TestPlans>
+         <TestPlanReference
+            default = "YES"
+            reference = "container:FastTests.xctestplan">
+         </TestPlanReference>
+         <TestPlanReference
+            reference = "container:FullTests.xctestplan">
+         </TestPlanReference>
+         <TestPlanReference
+            reference = "container:CriticalPath.xctestplan">
+         </TestPlanReference>
+      </TestPlans>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -66,27 +79,6 @@
             ReferencedContainer = "container:Nestory-Pro.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E194CB4F685030542F9BFFBE"
-            BuildableName = "Nestory-Pro.app"
-            BlueprintName = "Nestory-Pro"
-            ReferencedContainer = "container:Nestory-Pro.xcodeproj">
-         </BuildableReference>
-      </CodeCoverageTargets>
-      <TestPlans>
-         <TestPlanReference
-            reference = "container:FastTests.xctestplan"
-            default = "YES">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:FullTests.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:CriticalPath.xctestplan">
-         </TestPlanReference>
-      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO"
@@ -101,7 +93,8 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "NO"
+            parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "99F66FDA9B2DAD80E24D1010"
@@ -111,6 +104,17 @@
             </BuildableReference>
          </TestableReference>
       </Testables>
+      <CommandLineArguments>
+      </CommandLineArguments>
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "E194CB4F685030542F9BFFBE"
+            BuildableName = "Nestory-Pro.app"
+            BlueprintName = "Nestory-Pro"
+            ReferencedContainer = "container:Nestory-Pro.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -155,6 +159,8 @@
             ReferencedContainer = "container:Nestory-Pro.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

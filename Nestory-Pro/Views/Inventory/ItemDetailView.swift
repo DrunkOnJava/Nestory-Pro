@@ -38,6 +38,10 @@ struct ItemDetailView: View {
     @State private var showingDocumentationInfo = false
     @State private var showingTagEditor = false
 
+    // F4: Market Value Lookup state
+    @State private var isCheckingValue = false
+    @State private var valueLookupError: String?
+
     init(item: Item) {
         self.item = item
         _viewModel = State(initialValue: ItemDetailViewModel(item: item))
@@ -61,6 +65,9 @@ struct ItemDetailView: View {
 
                     // Basic Info
                     basicInfoSection
+
+                    // Market Value (F4)
+                    marketValueSection
 
                     // Receipts
                     receiptsSection
@@ -155,26 +162,62 @@ struct ItemDetailView: View {
         }
     }
 
+    // MARK: - Photo Carousel (P2-10-1)
     private var photoCarousel: some View {
-        TabView(selection: $selectedPhotoIndex) {
-            ForEach(Array(sortedPhotos.enumerated()), id: \.element.id) { index, photo in
-                photoView(for: photo)
-                    .tag(index)
+        ZStack(alignment: .bottom) {
+            // Photo pager
+            TabView(selection: $selectedPhotoIndex) {
+                ForEach(Array(sortedPhotos.enumerated()), id: \.element.id) { index, photo in
+                    photoView(for: photo)
+                        .tag(index)
+                }
             }
+            .tabViewStyle(.page(indexDisplayMode: sortedPhotos.count > 1 ? .automatic : .never))
+
+            // Gradient overlay with item name (P2-10-1)
+            LinearGradient(
+                gradient: Gradient(colors: [.clear, .black.opacity(0.5)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 100)
+
+            // Overlaid name and brand (P2-10-1)
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                Text(item.name)
+                    .font(NestoryTheme.Typography.title2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .shadow(radius: 2)
+
+                if let brandModel = viewModel.brandModelText(brand: item.brand, modelNumber: item.modelNumber) {
+                    Text(brandModel)
+                        .font(NestoryTheme.Typography.subheadline)
+                        .foregroundStyle(.white.opacity(0.8))
+                        .shadow(radius: 2)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(NestoryTheme.Metrics.paddingMedium)
         }
-        .tabViewStyle(.page(indexDisplayMode: sortedPhotos.count > 1 ? .automatic : .never))
+        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusXLarge))
         .overlay(alignment: .topTrailing) {
+            // Photo counter badge
             if sortedPhotos.count > 1 {
                 Text("\(selectedPhotoIndex + 1)/\(sortedPhotos.count)")
-                    .font(.caption)
+                    .font(NestoryTheme.Typography.caption)
                     .fontWeight(.medium)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, NestoryTheme.Metrics.paddingSmall)
+                    .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
                     .background(.ultraThinMaterial)
                     .clipShape(Capsule())
-                    .padding(12)
+                    .padding(NestoryTheme.Metrics.paddingMedium)
             }
         }
+        // Accessibility (P2-10-1)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Photo \(selectedPhotoIndex + 1) of \(sortedPhotos.count). \(item.name)")
+        .accessibilityHint("Swipe left or right to view other photos")
     }
 
     private var sortedPhotos: [ItemPhoto] {
@@ -183,6 +226,23 @@ struct ItemDetailView: View {
 
     private func photoView(for photo: ItemPhoto) -> some View {
         PhotoThumbnailView(identifier: photo.imageIdentifier, photoStorage: env.photoStorage)
+    }
+}
+
+// MARK: - Pro Badge View (F4)
+private struct ProBadgeView: View {
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "star.fill")
+            Text("PRO")
+        }
+        .font(.caption2)
+        .fontWeight(.semibold)
+        .foregroundStyle(.white)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(NestoryTheme.Colors.accent)
+        .clipShape(Capsule())
     }
 }
 
@@ -383,10 +443,8 @@ extension ItemDetailView {
                     .foregroundStyle(NestoryTheme.Colors.muted)
             }
         }
-        .padding(NestoryTheme.Metrics.paddingMedium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(NestoryTheme.Colors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+        .cardStyle()
         .sheet(isPresented: $showingDocumentationInfo) {
             documentationInfoSheet
         }
@@ -516,12 +574,167 @@ extension ItemDetailView {
                 }
             }
         }
-        .padding(NestoryTheme.Metrics.paddingMedium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(NestoryTheme.Colors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+        .cardStyle()
     }
-    
+
+    // MARK: - Market Value Section (F4)
+    private var marketValueSection: some View {
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
+            HStack {
+                Text("Market Value")
+                    .font(NestoryTheme.Typography.headline)
+                Spacer()
+
+                // Pro badge if needed
+                if !env.settings.isProUnlocked {
+                    ProBadgeView()
+                }
+            }
+
+            if let estimatedValue = item.estimatedReplacementValue {
+                // Show existing value estimate
+                VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
+                    // Main value
+                    HStack {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .foregroundStyle(NestoryTheme.Colors.success)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Estimated Value")
+                                .font(NestoryTheme.Typography.caption)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
+                            Text(env.settings.formatCurrency(estimatedValue))
+                                .font(NestoryTheme.Typography.title2)
+                                .fontWeight(.semibold)
+                        }
+                    }
+
+                    // Price range
+                    if let lowValue = item.estimatedValueLow, let highValue = item.estimatedValueHigh {
+                        HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
+                            Text("Range:")
+                                .font(NestoryTheme.Typography.caption)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
+                            Text("\(env.settings.formatCurrency(lowValue)) – \(env.settings.formatCurrency(highValue))")
+                                .font(NestoryTheme.Typography.subheadline)
+                        }
+                    }
+
+                    // Source and date
+                    HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
+                        if let source = item.valueLookupSource {
+                            Text("Source: \(source)")
+                                .font(NestoryTheme.Typography.caption)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
+                        }
+
+                        if let lookupDate = item.valueLookupDate {
+                            Text("•")
+                                .foregroundStyle(NestoryTheme.Colors.muted)
+                            if let days = item.daysSinceValueLookup {
+                                Text(days == 0 ? "Updated today" : "Updated \(days) days ago")
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(NestoryTheme.Colors.muted)
+                            }
+                        }
+                    }
+
+                    // Refresh button
+                    Button(action: checkMarketValue) {
+                        HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
+                            if isCheckingValue {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
+                            Text("Refresh Value")
+                        }
+                        .font(NestoryTheme.Typography.subheadline)
+                    }
+                    .disabled(isCheckingValue || !env.settings.isProUnlocked)
+                    .padding(.top, NestoryTheme.Metrics.spacingSmall)
+                }
+            } else {
+                // No value yet - show check button
+                VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
+                    HStack {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .foregroundStyle(NestoryTheme.Colors.muted)
+                        Text("Get market-based price estimate")
+                            .font(NestoryTheme.Typography.subheadline)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
+                    }
+
+                    Button(action: checkMarketValue) {
+                        HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
+                            if isCheckingValue {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
+                                Image(systemName: "magnifyingglass")
+                            }
+                            Text("Check Value")
+                        }
+                        .font(NestoryTheme.Typography.buttonLabel)
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(isCheckingValue || !env.settings.isProUnlocked)
+                }
+            }
+
+            // Error message
+            if let error = valueLookupError {
+                Text(error)
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.error)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardStyle()
+    }
+
+    /// Check market value for this item
+    private func checkMarketValue() {
+        guard env.settings.isProUnlocked else {
+            valueLookupError = "Market value lookup requires Nestory Pro"
+            return
+        }
+
+        isCheckingValue = true
+        valueLookupError = nil
+
+        Task {
+            do {
+                let result = try await env.valueLookupService.lookupValue(
+                    name: item.name,
+                    brand: item.brand,
+                    category: item.category?.name,
+                    condition: item.condition
+                )
+
+                // Update item with results
+                await MainActor.run {
+                    item.estimatedReplacementValue = result.estimatedValue
+                    item.estimatedValueLow = result.lowValue
+                    item.estimatedValueHigh = result.highValue
+                    item.valueLookupSource = result.source
+                    item.valueLookupDate = result.lookupDate
+                    item.updatedAt = Date()
+                    isCheckingValue = false
+                    NestoryTheme.Haptics.success()
+                }
+            } catch {
+                await MainActor.run {
+                    valueLookupError = error.localizedDescription
+                    isCheckingValue = false
+                    NestoryTheme.Haptics.error()
+                }
+            }
+        }
+    }
+
     private func infoRow(label: String, value: String, canCopy: Bool = false) -> some View {
         HStack {
             Text(label)
@@ -597,12 +810,10 @@ extension ItemDetailView {
                 }
             }
         }
-        .padding(NestoryTheme.Metrics.paddingMedium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(NestoryTheme.Colors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+        .cardStyle()
     }
-    
+
     // MARK: - Warranty Section
     private var warrantySection: some View {
         VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingMedium) {
@@ -637,12 +848,10 @@ extension ItemDetailView {
                 }
             }
         }
-        .padding(NestoryTheme.Metrics.paddingMedium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(NestoryTheme.Colors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+        .cardStyle()
     }
-    
+
     // MARK: - Quick Actions Bar
     private var quickActionsBar: some View {
         HStack(spacing: NestoryTheme.Metrics.spacingMedium) {

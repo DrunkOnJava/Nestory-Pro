@@ -7,6 +7,7 @@
 
 // ============================================================================
 // CLAUDE CODE AGENT: Task 3.5.1 - Reports Tab Interface ✓ COMPLETED
+// P2-13-3: Summary Dashboard Retrofit
 // ============================================================================
 // Provides main navigation hub for PDF report generation.
 //
@@ -14,8 +15,8 @@
 // - Task 3.5.1: Report cards UI with navigation to report views ✓
 // - Task 3.2.1: FullInventoryReportView integration ✓
 // - Task 3.3.1: LossListSelectionView integration ✓
-// - Quick stats section showing total items and inventory value
-// - Consistent card-based design with other tabs
+// - P2-13-3: Summary dashboard with 2x2 grid stats from InventorySummary ✓
+// - P2-13-3: Card groups: "Inventory Reports", "Loss Documentation" ✓
 //
 // AVAILABLE REPORTS:
 // 1. Full Inventory Report - Comprehensive PDF of all items (FullInventoryReportView)
@@ -41,6 +42,8 @@ struct ReportsTab: View {
         env.reportsViewModel
     }
 
+    @State private var showingLabelGenerator = false
+
     // MARK: - Body
 
     var body: some View {
@@ -54,26 +57,48 @@ struct ReportsTab: View {
                         quickStatsSection
                     }
 
-                    // Report Cards
-                    VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
-                        // Full Inventory Report Card
-                        ReportCard(
-                            icon: "doc.text.fill",
-                            iconColor: NestoryTheme.Colors.accent,
-                            title: "Full Inventory Report",
-                            description: "Generate a comprehensive PDF of all your items"
-                        ) {
-                            viewModel.showFullInventoryReport()
+                    // Report Cards - Grouped by type (P2-13-3)
+                    VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingLarge) {
+                        // Inventory Reports Group
+                        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
+                            reportSectionHeader("Inventory Reports", icon: "doc.text.fill")
+
+                            ReportCard(
+                                icon: "doc.text.fill",
+                                iconColor: NestoryTheme.Colors.accent,
+                                title: "Full Inventory Report",
+                                description: "Generate a comprehensive PDF of all your items"
+                            ) {
+                                viewModel.showFullInventoryReport()
+                            }
                         }
 
-                        // Loss List Report Card
-                        ReportCard(
-                            icon: "exclamationmark.triangle.fill",
-                            iconColor: NestoryTheme.Colors.warning,
-                            title: "Insurance Loss List",
-                            description: "Create a claim-ready report for lost or damaged items"
-                        ) {
-                            viewModel.showLossListSelection()
+                        // Loss Documentation Group
+                        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
+                            reportSectionHeader("Loss Documentation", icon: "exclamationmark.triangle.fill")
+
+                            ReportCard(
+                                icon: "exclamationmark.triangle.fill",
+                                iconColor: NestoryTheme.Colors.warning,
+                                title: "Insurance Loss List",
+                                description: "Create a claim-ready report for lost or damaged items"
+                            ) {
+                                viewModel.showLossListSelection()
+                            }
+                        }
+
+                        // QR Labels Group (F2)
+                        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingSmall) {
+                            reportSectionHeader("QR Code Labels", icon: "qrcode")
+
+                            ReportCard(
+                                icon: "qrcode",
+                                iconColor: .purple,
+                                title: "Generate Labels",
+                                description: "Create printable QR code labels for your items"
+                            ) {
+                                showingLabelGenerator = true
+                            }
                         }
                     }
                     .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
@@ -89,38 +114,72 @@ struct ReportsTab: View {
             .sheet(isPresented: $vm.showingFullInventoryReport) {
                 FullInventoryReportView()
             }
+            .sheet(isPresented: $showingLabelGenerator) {
+                LabelGeneratorView()
+            }
         }
     }
 
     // MARK: - View Components
 
+    /// Summary dashboard with 2x2 grid stats (P2-13-3)
     private var quickStatsSection: some View {
-        VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+        let summary = viewModel.generateInventorySummary(allItems)
+
+        return VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+            // Row 1: Total Items & Total Value
             HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
-                // Total Items Stat
                 StatCard(
                     title: "Total Items",
-                    value: "\(allItems.count)",
+                    value: "\(summary.totalItems)",
                     icon: "square.stack.3d.up.fill",
                     color: NestoryTheme.Colors.accent
                 )
 
-                // Total Value Stat
                 StatCard(
                     title: "Total Value",
-                    value: env.settings.formatCurrency(viewModel.calculateTotalInventoryValue(allItems)),
+                    value: env.settings.formatCurrency(summary.totalValue),
                     icon: "dollarsign.circle.fill",
                     color: NestoryTheme.Colors.success
                 )
             }
+
+            // Row 2: Categories & Rooms (P2-13-3)
+            HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+                StatCard(
+                    title: "Categories",
+                    value: "\(summary.uniqueCategoryCount)",
+                    icon: "tag.fill",
+                    color: NestoryTheme.Colors.warning
+                )
+
+                StatCard(
+                    title: "Rooms",
+                    value: "\(summary.uniqueRoomCount)",
+                    icon: "house.fill",
+                    color: .purple
+                )
+            }
         }
         .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
+    }
+
+    // MARK: - Section Header Helper (P2-13-3)
+
+    /// Styled section header with icon for report groups
+    private func reportSectionHeader(_ title: String, icon: String) -> some View {
+        Label(title, systemImage: icon)
+            .font(NestoryTheme.Typography.subheadline)
+            .fontWeight(.semibold)
+            .foregroundStyle(NestoryTheme.Colors.muted)
+            .padding(.leading, NestoryTheme.Metrics.spacingSmall)
     }
 }
 
 // MARK: - Supporting Views
 
 /// Reusable report card component with icon, title, description, and tap action
+/// P2-14-1: VoiceOver accessibility, P2-15-2: Press feedback, P2-16-1: Haptics
 private struct ReportCard: View {
     let icon: String
     let iconColor: Color
@@ -128,8 +187,13 @@ private struct ReportCard: View {
     let description: String
     let action: () -> Void
 
+    @State private var isPressed = false
+
     var body: some View {
-        Button(action: action) {
+        Button {
+            NestoryTheme.Haptics.selection() // P2-16-1: Haptic feedback
+            action()
+        } label: {
             HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 // Icon
                 Image(systemName: icon)
@@ -162,12 +226,22 @@ private struct ReportCard: View {
             .background(NestoryTheme.Colors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
             .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+            .scaleEffect(isPressed ? 0.98 : 1.0) // P2-15-2: Press feedback
+            .animation(NestoryTheme.Animation.quick, value: isPressed)
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
+        // P2-14-1: VoiceOver accessibility
+        .accessibilityLabel(title)
+        .accessibilityHint("Double-tap to generate \(title.lowercased())")
     }
 }
 
-/// Quick stats card for overview metrics
+/// Quick stats card for overview metrics (P2-14-1: VoiceOver accessible)
 private struct StatCard: View {
     let title: String
     let value: String
@@ -196,6 +270,9 @@ private struct StatCard: View {
         .background(NestoryTheme.Colors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+        // P2-14-1: VoiceOver - combine title and value for screen reader
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title): \(value)")
     }
 }
 

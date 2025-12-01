@@ -40,24 +40,41 @@ struct AddItemView: View {
     
     init() {
         // ViewModel will be initialized in .task using AppEnvironment.makeAddItemViewModel()
-        _viewModel = State(initialValue: AddItemViewModel(settings: SettingsManager()))
+        // Placeholder with nil reminderService - proper ViewModel created in .task
+        _viewModel = State(initialValue: AddItemViewModel(settings: SettingsManager(), reminderService: nil))
     }
     
     var body: some View {
         @Bindable var vm = viewModel
-        
+
         return NavigationStack {
             Form {
-                // Basic Info
-                Section("Basic Information") {
-                    TextField("Item Name *", text: $vm.name)
-                    TextField("Brand", text: $vm.brand)
-                    TextField("Model Number", text: $vm.modelNumber)
-                    TextField("Serial Number", text: $vm.serialNumber)
+                // Validation error banner (P2-12-1)
+                if !viewModel.validationErrors.isEmpty {
+                    Section {
+                        HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(NestoryTheme.Colors.warning)
+                            Text("Fix errors to save")
+                                .font(NestoryTheme.Typography.subheadline)
+                                .foregroundStyle(NestoryTheme.Colors.warning)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    }
                 }
-                
-                // Location
-                Section("Location") {
+
+                // Basic Info (P2-12-1)
+                Section {
+                    validatedTextField(field: .name, text: $vm.name)
+                    validatedTextField(field: .brand, text: $vm.brand)
+                    validatedTextField(field: .modelNumber, text: $vm.modelNumber)
+                    validatedTextField(field: .serialNumber, text: $vm.serialNumber)
+                } header: {
+                    sectionHeader(AddItemSection.basicInfo)
+                }
+
+                // Location (P2-12-1)
+                Section {
                     Picker("Category", selection: $vm.selectedCategory) {
                         Text("None").tag(nil as Category?)
                         ForEach(categories) { category in
@@ -65,7 +82,7 @@ struct AddItemView: View {
                                 .tag(category as Category?)
                         }
                     }
-                    
+
                     Picker("Room", selection: $vm.selectedRoom) {
                         Text("None").tag(nil as Room?)
                         ForEach(rooms) { room in
@@ -73,50 +90,58 @@ struct AddItemView: View {
                                 .tag(room as Room?)
                         }
                     }
+                } header: {
+                    sectionHeader(AddItemSection.location)
                 }
-                
-                // Value & Date
-                Section("Purchase Information") {
+
+                // Purchase Information (P2-12-1)
+                Section {
                     HStack {
                         Text(env.settings.currencySymbol)
-                            .foregroundStyle(.secondary)
-                        TextField("Purchase Price", text: $vm.purchasePrice)
-                            .keyboardType(.decimalPad)
+                            .font(NestoryTheme.Typography.body)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
+                        validatedTextField(field: .purchasePrice, text: $vm.purchasePrice, keyboardType: .decimalPad)
                     }
-                    
+
                     Toggle("Purchase Date", isOn: $vm.hasPurchaseDate)
-                    
+
                     if vm.hasPurchaseDate {
                         DatePicker(
                             "Date",
                             selection: $vm.purchaseDate,
                             displayedComponents: .date
                         )
+                        validationCaption(for: .purchaseDate)
                     }
+                } header: {
+                    sectionHeader(AddItemSection.purchaseInfo)
                 }
-                
-                // Condition
-                Section("Condition") {
+
+                // Condition (P2-12-1)
+                Section {
                     Picker("Condition", selection: $vm.condition) {
                         ForEach(ItemCondition.allCases, id: \.self) { condition in
                             Text(condition.displayName).tag(condition)
                         }
                     }
-                    
+
                     TextField("Condition Notes", text: $vm.conditionNotes, axis: .vertical)
                         .lineLimit(3...6)
+                } header: {
+                    sectionHeader(AddItemSection.status)
                 }
-                
-                // Warranty
+
+                // Warranty (P2-12-1)
                 Section("Warranty") {
                     Toggle("Has Warranty", isOn: $vm.hasWarranty)
-                    
+
                     if vm.hasWarranty {
                         DatePicker(
                             "Expiry Date",
                             selection: $vm.warrantyExpiryDate,
                             displayedComponents: .date
                         )
+                        validationCaption(for: .warranty)
                     }
                 }
             }
@@ -132,6 +157,13 @@ struct AddItemView: View {
                     }
                     .disabled(!viewModel.canSave)
                 }
+                // Keyboard toolbar (P2-12-1)
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
+                }
             }
             .sheet(isPresented: $vm.showingPaywall) {
                 ProPaywallView()
@@ -143,6 +175,56 @@ struct AddItemView: View {
                 vm.setDefaultRoom(rooms)
                 viewModel = vm
             }
+        }
+    }
+
+    // MARK: - Section Header (P2-12-1)
+
+    private func sectionHeader(_ section: AddItemSection) -> some View {
+        Label(section.displayName, systemImage: section.iconName)
+            .font(NestoryTheme.Typography.caption)
+            .foregroundStyle(NestoryTheme.Colors.muted)
+    }
+
+    // MARK: - Validated TextField (P2-12-1)
+
+    @ViewBuilder
+    private func validatedTextField(
+        field: AddItemField,
+        text: Binding<String>,
+        keyboardType: UIKeyboardType = .default
+    ) -> some View {
+        let state = viewModel.validationState(for: field)
+        let tintColor: Color = {
+            switch state {
+            case .valid: return .primary
+            case .invalid: return NestoryTheme.Colors.warning
+            case .warning: return .orange
+            case .pending: return .primary
+            }
+        }()
+
+        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+            TextField(field.isRequired ? "\(field.displayName) *" : field.displayName, text: text)
+                .keyboardType(keyboardType)
+                .foregroundStyle(tintColor)
+
+            validationCaption(for: field)
+        }
+    }
+
+    // MARK: - Validation Caption (P2-12-1)
+
+    @ViewBuilder
+    private func validationCaption(for field: AddItemField) -> some View {
+        let state = viewModel.validationState(for: field)
+        if let message = state.message {
+            HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
+                Image(systemName: state.iconName)
+                Text(message)
+            }
+            .font(NestoryTheme.Typography.caption)
+            .foregroundStyle(state.tintColor == "red" ? NestoryTheme.Colors.warning : .orange)
         }
     }
 
@@ -158,16 +240,19 @@ struct AddItemView: View {
 struct EditItemView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppEnvironment.self) private var env
-    
+
     @Query(sort: \Category.sortOrder) private var categories: [Category]
     @Query(sort: \Room.sortOrder) private var rooms: [Room]
-    
+
     @State private var viewModel: EditItemViewModel
-    
+    private let item: Item
+
     init(item: Item) {
-        _viewModel = State(initialValue: EditItemViewModel(item: item))
+        self.item = item
+        // Placeholder ViewModel - proper one with reminderService created in .task
+        _viewModel = State(initialValue: EditItemViewModel(item: item, reminderService: nil))
     }
-    
+
     var body: some View {
         @Bindable var vm = viewModel
         
@@ -245,9 +330,13 @@ struct EditItemView: View {
                     .disabled(!viewModel.canSave)
                 }
             }
+            .task {
+                // Initialize with proper AppEnvironment reminderService for warranty notifications
+                viewModel = env.makeEditItemViewModel(for: item)
+            }
         }
     }
-    
+
     private func saveChanges() {
         viewModel.saveChanges()
         dismiss()
@@ -256,5 +345,6 @@ struct EditItemView: View {
 
 #Preview {
     AddItemView()
+        .environment(AppEnvironment())
         .modelContainer(for: [Item.self, Category.self, Room.self], inMemory: true)
 }

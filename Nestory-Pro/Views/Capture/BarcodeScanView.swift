@@ -81,14 +81,14 @@ struct BarcodeScanView: View {
         }
     }
     
-    // MARK: - Scanning Overlay
-    
+    // MARK: - Scanning Overlay (P2-11-3)
+
     private var scanningOverlay: some View {
         VStack {
             Spacer()
-            
-            // Scanning frame
-            RoundedRectangle(cornerRadius: 12)
+
+            // Scanning frame with rounded corners
+            RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge)
                 .stroke(Color.white, lineWidth: 3)
                 .frame(width: 280, height: 150)
                 .overlay(
@@ -96,7 +96,7 @@ struct BarcodeScanView: View {
                     GeometryReader { geo in
                         let size: CGFloat = 30
                         let stroke: CGFloat = 4
-                        
+
                         Path { path in
                             // Top-left
                             path.move(to: CGPoint(x: 0, y: size))
@@ -115,59 +115,68 @@ struct BarcodeScanView: View {
                             path.addLine(to: CGPoint(x: 0, y: geo.size.height))
                             path.addLine(to: CGPoint(x: 0, y: geo.size.height - size))
                         }
-                        .stroke(Color.accentColor, lineWidth: stroke)
+                        .stroke(NestoryTheme.Colors.accent, lineWidth: stroke)
                     }
                 )
-            
+
             Spacer()
-            
-            // Instructions
-            VStack(spacing: 12) {
+
+            // Instructions (P2-11-3: instructional text above preview)
+            VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 if isProcessing {
                     ProgressView()
                         .tint(.white)
                     Text("Processing barcode...")
-                        .font(.headline)
+                        .font(NestoryTheme.Typography.headline)
                         .foregroundStyle(.white)
                 } else {
                     Text("Position barcode within frame")
-                        .font(.headline)
+                        .font(NestoryTheme.Typography.headline)
                         .foregroundStyle(.white)
-                    
+
                     Text("Supports UPC, EAN, QR codes, and more")
-                        .font(.subheadline)
+                        .font(NestoryTheme.Typography.subheadline)
                         .foregroundStyle(.white.opacity(0.8))
                 }
             }
-            .padding()
+            .padding(NestoryTheme.Metrics.paddingMedium)
             .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.bottom, 48)
+            .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+            .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge + NestoryTheme.Metrics.spacingLarge)
         }
     }
     
-    // MARK: - Permission Denied View
-    
+    // MARK: - Permission Denied View (P2-11-3)
+
     private var permissionDeniedView: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
             Image(systemName: "camera.fill")
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
-            
+                .font(.system(size: NestoryTheme.Metrics.iconHero))
+                .foregroundStyle(NestoryTheme.Colors.muted)
+
             Text("Camera Access Required")
-                .font(.title2)
+                .font(NestoryTheme.Typography.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Nestory needs camera access to scan barcodes on your items.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.subheadline)
+                .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-            
-            Button("Enable Camera Access") {
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+
+            Button {
                 showingPermissionAlert = true
+            } label: {
+                Text("Go to Settings")
+                    .font(NestoryTheme.Typography.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(NestoryTheme.Metrics.paddingMedium)
+                    .background(NestoryTheme.Colors.accent)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.plain)
+            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
         }
     }
     
@@ -341,46 +350,78 @@ struct BarcodeCameraView: UIViewRepresentable {
 
 // MARK: - Quick Add Barcode Sheet
 
+/// Lookup state for product information
+enum ProductLookupState: Equatable {
+    case idle
+    case loading
+    case found(ProductInfo)
+    case notFound
+    case error(String)
+
+    static func == (lhs: ProductLookupState, rhs: ProductLookupState) -> Bool {
+        switch (lhs, rhs) {
+        case (.idle, .idle), (.loading, .loading), (.notFound, .notFound):
+            return true
+        case (.found(let a), .found(let b)):
+            return a == b
+        case (.error(let a), .error(let b)):
+            return a == b
+        default:
+            return false
+        }
+    }
+}
+
 struct QuickAddBarcodeSheet: View {
     let scannedBarcode: String
-    
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(AppEnvironment.self) private var env
-    
+
     @Query(sort: \Room.sortOrder) private var rooms: [Room]
-    
+    @Query(sort: \Category.sortOrder) private var categories: [Category]
+
     @State private var name: String = ""
     @State private var brand: String = ""
     @State private var selectedRoom: Room?
+    @State private var selectedCategory: Category?
+    @State private var purchasePrice: String = ""
     @State private var isSaving = false
-    
+    @State private var lookupState: ProductLookupState = .idle
+
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    HStack {
-                        Image(systemName: "barcode")
-                            .foregroundStyle(.secondary)
-                        Text(scannedBarcode)
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundStyle(.secondary)
-                    }
-                } header: {
-                    Text("Scanned Barcode")
-                } footer: {
-                    Text("This barcode will be saved with your item for future reference.")
-                }
-                
+                // Barcode section with lookup status
+                barcodeSection
+
+                // Product info section (auto-filled or manual)
                 Section("Item Details") {
                     TextField("Item Name *", text: $name)
                         .textInputAutocapitalization(.words)
-                    
+
                     TextField("Brand (optional)", text: $brand)
                         .textInputAutocapitalization(.words)
+
+                    HStack {
+                        Text(env.settings.currencySymbol)
+                            .foregroundStyle(.secondary)
+                        TextField("Purchase Price", text: $purchasePrice)
+                            .keyboardType(.decimalPad)
+                    }
                 }
-                
+
+                // Location section
                 Section("Location") {
+                    Picker("Category", selection: $selectedCategory) {
+                        Text("None").tag(nil as Category?)
+                        ForEach(categories) { category in
+                            Label(category.name, systemImage: category.iconName)
+                                .tag(category as Category?)
+                        }
+                    }
+
                     Picker("Room", selection: $selectedRoom) {
                         Text("None").tag(nil as Room?)
                         ForEach(rooms) { room in
@@ -389,11 +430,19 @@ struct QuickAddBarcodeSheet: View {
                         }
                     }
                 }
-                
-                Section {
-                    Text("In v1.0, barcodes are stored for your reference. Automatic product lookup is coming in a future update.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+
+                // Pro tip section
+                if case .notFound = lookupState {
+                    Section {
+                        Label {
+                            Text("Product not in database. Fill in details manually.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        } icon: {
+                            Image(systemName: "info.circle")
+                                .foregroundStyle(.blue)
+                        }
+                    }
                 }
             }
             .navigationTitle("Add Item")
@@ -402,40 +451,140 @@ struct QuickAddBarcodeSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         saveItem()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSaving)
                 }
+
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
+                }
             }
             .task {
-                // Set default room from settings
-                if let defaultRoomId = env.settings.defaultRoomId,
-                   let defaultRoom = rooms.first(where: { $0.id.uuidString == defaultRoomId }) {
-                    selectedRoom = defaultRoom
-                }
+                await setupAndLookup()
             }
         }
     }
-    
+
+    // MARK: - Barcode Section
+
+    @ViewBuilder
+    private var barcodeSection: some View {
+        Section {
+            HStack {
+                Image(systemName: "barcode")
+                    .foregroundStyle(.secondary)
+                Text(scannedBarcode)
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                // Lookup status indicator
+                switch lookupState {
+                case .idle:
+                    EmptyView()
+                case .loading:
+                    ProgressView()
+                        .scaleEffect(0.8)
+                case .found:
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                case .notFound:
+                    Image(systemName: "questionmark.circle")
+                        .foregroundStyle(.orange)
+                case .error:
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundStyle(.red)
+                }
+            }
+        } header: {
+            Text("Scanned Barcode")
+        } footer: {
+            switch lookupState {
+            case .loading:
+                Text("Looking up product information...")
+            case .found:
+                Text("Product found! Details auto-filled below.")
+            case .notFound:
+                Text("Product not in database. Enter details manually.")
+            case .error(let message):
+                Text("Lookup failed: \(message)")
+            case .idle:
+                Text("Barcode will be saved with your item.")
+            }
+        }
+    }
+
+    // MARK: - Setup & Lookup
+
+    private func setupAndLookup() async {
+        // Set default room from settings
+        if let defaultRoomId = env.settings.defaultRoomId,
+           let defaultRoom = rooms.first(where: { $0.id.uuidString == defaultRoomId }) {
+            selectedRoom = defaultRoom
+        }
+
+        // Perform product lookup
+        lookupState = .loading
+
+        let result = await env.productLookupService.lookup(barcode: scannedBarcode)
+
+        switch result {
+        case .success(let product):
+            lookupState = .found(product)
+            // Auto-fill fields
+            if name.isEmpty && !product.name.isEmpty {
+                name = product.name
+            }
+            if brand.isEmpty, let productBrand = product.brand {
+                brand = productBrand
+            }
+            if purchasePrice.isEmpty, let msrp = product.msrp {
+                purchasePrice = "\(msrp)"
+            }
+            // Try to match category from product info
+            if selectedCategory == nil, let productCategory = product.category {
+                selectedCategory = categories.first { cat in
+                    cat.name.lowercased().contains(productCategory.lowercased()) ||
+                    productCategory.lowercased().contains(cat.name.lowercased())
+                }
+            }
+
+        case .notFound:
+            lookupState = .notFound
+
+        case .error(let error):
+            lookupState = .error(error.localizedDescription)
+        }
+    }
+
+    // MARK: - Save Item
+
     private func saveItem() {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return }
-        
+
         isSaving = true
-        
+
         let item = Item(
             name: trimmedName,
             brand: brand.isEmpty ? nil : brand,
+            purchasePrice: Decimal(string: purchasePrice),
             currencyCode: env.settings.preferredCurrencyCode,
+            category: selectedCategory,
             room: selectedRoom
         )
         item.barcode = scannedBarcode
-        
+
         modelContext.insert(item)
-        
+
         dismiss()
     }
 }

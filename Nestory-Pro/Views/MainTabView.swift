@@ -27,18 +27,25 @@ enum AppTab: String, CaseIterable {
 struct MainTabView: View {
     @Environment(AppEnvironment.self) private var env
     @Environment(\.scenePhase) private var scenePhase
-    
+
     // Direct AppStorage observation for theme changes (fixes theme toggle)
     @AppStorage("themePreference") private var themePreference: ThemePreference = .system
-    
+
     @State private var selectedTab: AppTab = .inventory
     @State private var isLocked = false
     @State private var lastBackgroundTime: Date?
-    
+
+    // F2: Deep link navigation from QR code scans
+    @Binding var deepLinkItemID: UUID?
+
+    init(deepLinkItemID: Binding<UUID?> = .constant(nil)) {
+        self._deepLinkItemID = deepLinkItemID
+    }
+
     var body: some View {
         ZStack {
             TabView(selection: $selectedTab) {
-                InventoryTab()
+                InventoryTab(deepLinkItemID: $deepLinkItemID)
                     .tabItem {
                         Label(AppTab.inventory.rawValue, systemImage: AppTab.inventory.iconName)
                     }
@@ -97,6 +104,12 @@ struct MainTabView: View {
             // Check if app lock is enabled on initial launch
             if env.settings.requiresBiometrics {
                 isLocked = true
+            }
+        }
+        // F2: Handle deep link navigation - switch to inventory tab when deep link arrives
+        .onChange(of: deepLinkItemID) { _, newValue in
+            if newValue != nil {
+                selectedTab = .inventory
             }
         }
     }

@@ -655,3 +655,257 @@ extension View {
     .padding()
     .background(NestoryTheme.Colors.background)
 }
+
+// MARK: - P2-06-3: Layout Scaffolding
+
+// ============================================================================
+// Layout Standards Documentation
+// ============================================================================
+//
+// NAVIGATION BAR STANDARDS:
+// - Tab roots (Inventory, Capture, Reports, Settings): Use `.navigationBarTitleDisplayMode(.large)`
+// - Detail views (ItemDetail, PropertyDetail, etc.): Use `.navigationBarTitleDisplayMode(.inline)`
+// - Modal sheets: Use `.inline` with Cancel/Done buttons in toolbar
+//
+// BACKGROUND STANDARDS:
+// - All screens: Use `NestoryTheme.Colors.background` as base
+// - Apply `.standardBackground()` modifier to root view for full coverage
+// - Cards float on top with `.cardStyle()` modifier
+//
+// SCROLL LAYOUT STANDARDS:
+// - Use `StandardScrollLayout` for consistent padding and spacing
+// - Content padding: 16pt horizontal, 16pt vertical
+// - Section spacing: 24pt between major sections
+// - Card spacing: 16pt between cards within a section
+//
+// ============================================================================
+
+/// Standard layout wrapper for scrollable content screens
+///
+/// Provides consistent padding, spacing, and background for tab views
+/// and detail screens. Use this as the root container for most screens.
+///
+/// Example:
+/// ```swift
+/// StandardScrollLayout {
+///     VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
+///         SectionHeader("Items")
+///         ForEach(items) { item in
+///             ItemRow(item: item)
+///                 .cardStyle()
+///         }
+///     }
+/// }
+/// ```
+struct StandardScrollLayout<Content: View>: View {
+    let showsIndicators: Bool
+    let content: Content
+
+    init(
+        showsIndicators: Bool = true,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.showsIndicators = showsIndicators
+        self.content = content()
+    }
+
+    var body: some View {
+        ScrollView(showsIndicators: showsIndicators) {
+            content
+                .padding(.horizontal, NestoryTheme.Metrics.paddingLarge)
+                .padding(.vertical, NestoryTheme.Metrics.paddingLarge)
+        }
+        .standardBackground()
+    }
+}
+
+/// Standard layout wrapper for non-scrollable content screens
+///
+/// Use this for screens that don't need scrolling but need consistent
+/// background treatment.
+struct StandardLayout<Content: View>: View {
+    let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    var body: some View {
+        content
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .standardBackground()
+    }
+}
+
+// MARK: - Background Modifiers
+
+extension View {
+    /// Applies the standard grouped background that extends to safe area edges
+    ///
+    /// Use this on root views to ensure consistent background across all screens.
+    /// The background uses `systemGroupedBackground` which adapts to light/dark mode.
+    func standardBackground() -> some View {
+        self.background(NestoryTheme.Colors.background.ignoresSafeArea())
+    }
+
+    /// Applies navigation bar styling for tab root screens
+    ///
+    /// Tab roots should use large navigation titles for prominent headers.
+    /// Example screens: Inventory, Capture, Reports, Settings
+    func tabRootNavigationStyle(title: String) -> some View {
+        self
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(.visible, for: .navigationBar)
+    }
+
+    /// Applies navigation bar styling for detail screens
+    ///
+    /// Detail screens use inline titles to maximize content space.
+    /// Example screens: ItemDetailView, PropertyDetailView, RoomDetailView
+    func detailNavigationStyle(title: String) -> some View {
+        self
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// Applies navigation bar styling for modal sheets
+    ///
+    /// Sheets use inline titles with Cancel/Done toolbar items.
+    /// Apply this, then add toolbar items separately.
+    func sheetNavigationStyle(title: String) -> some View {
+        self
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - Tab Bar Styling
+
+extension View {
+    /// Applies visible tab bar background for separation from content
+    ///
+    /// Use on tab views to ensure clear separation between content and tabs.
+    func visibleTabBarBackground() -> some View {
+        self.toolbarBackground(.visible, for: .tabBar)
+    }
+}
+
+// MARK: - Layout Preview
+
+#Preview("StandardScrollLayout") {
+    NavigationStack {
+        StandardScrollLayout {
+            VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
+                // Section 1: Summary
+                SectionHeader("Summary", systemImage: "chart.bar.fill")
+                HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+                    VStack {
+                        Text("24")
+                            .font(NestoryTheme.Typography.statValue)
+                        Text("Items")
+                            .font(NestoryTheme.Typography.statLabel)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .cardStyle()
+
+                    VStack {
+                        Text("$4,250")
+                            .font(NestoryTheme.Typography.statValue)
+                        Text("Total Value")
+                            .font(NestoryTheme.Typography.statLabel)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .cardStyle()
+                }
+
+                // Section 2: Recent Items
+                SectionHeader("Recent Items", systemImage: "clock.fill")
+                VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+                    ForEach(1...3, id: \.self) { index in
+                        HStack {
+                            Circle()
+                                .fill(NestoryTheme.Colors.chipBackground)
+                                .frame(width: 44, height: 44)
+                            VStack(alignment: .leading) {
+                                Text("Item \(index)")
+                                    .font(NestoryTheme.Typography.headline)
+                                Text("Living Room")
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(NestoryTheme.Colors.muted)
+                            }
+                            Spacer()
+                            Text("$\(index * 100)")
+                                .font(NestoryTheme.Typography.subheadline)
+                                .foregroundStyle(NestoryTheme.Colors.muted)
+                        }
+                        .padding()
+                        .cardStyle()
+                    }
+                }
+
+                // Section 3: Empty State
+                SectionHeader("Containers", systemImage: "archivebox.fill")
+                EmptyStateView(
+                    iconName: "archivebox",
+                    title: "No Containers",
+                    message: "Add containers to organize items within rooms.",
+                    buttonTitle: "Add Container",
+                    buttonAction: {}
+                )
+                .cardStyle()
+            }
+        }
+        .tabRootNavigationStyle(title: "Inventory")
+    }
+}
+
+#Preview("Navigation Styles") {
+    TabView {
+        // Tab Root Style
+        NavigationStack {
+            StandardScrollLayout {
+                VStack(spacing: 20) {
+                    Text("Tab roots use .large title display mode")
+                        .padding()
+                        .cardStyle()
+
+                    NavigationLink("Go to Detail") {
+                        // Detail Style
+                        StandardScrollLayout {
+                            VStack(spacing: 20) {
+                                Text("Detail screens use .inline title display mode")
+                                    .padding()
+                                    .cardStyle()
+                            }
+                        }
+                        .detailNavigationStyle(title: "Item Detail")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+            .tabRootNavigationStyle(title: "Inventory")
+        }
+        .tabItem {
+            Label("Inventory", systemImage: "archivebox.fill")
+        }
+
+        // Settings Tab
+        NavigationStack {
+            StandardScrollLayout {
+                Text("Settings content")
+                    .padding()
+                    .cardStyle()
+            }
+            .tabRootNavigationStyle(title: "Settings")
+        }
+        .tabItem {
+            Label("Settings", systemImage: "gear")
+        }
+    }
+    .visibleTabBarBackground()
+}

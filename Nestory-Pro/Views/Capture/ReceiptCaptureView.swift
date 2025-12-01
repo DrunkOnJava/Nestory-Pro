@@ -150,24 +150,24 @@ struct ReceiptCaptureView: View {
     // MARK: - Subviews
 
     private var capturePromptView: some View {
-        VStack(spacing: 24) {
-            // Header
-            VStack(spacing: 8) {
+        VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
+            // Header (P2-11-3)
+            VStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                 Image(systemName: "doc.text.viewfinder")
-                    .font(.system(size: 60))
-                    .foregroundStyle(Color.accentColor)
+                    .font(.system(size: NestoryTheme.Metrics.iconHero))
+                    .foregroundStyle(NestoryTheme.Colors.accent)
 
                 Text("Scan Receipt")
-                    .font(.title2)
+                    .font(NestoryTheme.Typography.title2)
                     .fontWeight(.semibold)
 
                 Text("Position the entire receipt within the camera frame for best results")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
-            .padding(.top, 32)
+            .padding(.top, NestoryTheme.Metrics.spacingXXLarge)
 
             Spacer()
 
@@ -176,28 +176,30 @@ struct ReceiptCaptureView: View {
 
             Spacer()
 
-            // Action Buttons
-            VStack(spacing: 16) {
+            // Action Buttons (P2-11-3)
+            VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 Button {
                     checkCameraPermission()
                 } label: {
                     Label("Scan Receipt", systemImage: "camera.fill")
+                        .font(NestoryTheme.Typography.headline)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
+                        .padding(NestoryTheme.Metrics.paddingMedium)
+                        .background(NestoryTheme.Colors.accent)
                         .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("receiptCaptureView.scanButton")
 
                 PhotosPicker(selection: $photoPickerItem, matching: .images) {
                     Label("Choose from Photos", systemImage: "photo.on.rectangle")
+                        .font(NestoryTheme.Typography.headline)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(.secondarySystemGroupedBackground))
+                        .padding(NestoryTheme.Metrics.paddingMedium)
+                        .background(NestoryTheme.Colors.cardBackground)
                         .foregroundStyle(.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                 }
                 .buttonStyle(.plain)
                 .onChange(of: photoPickerItem) { _, newItem in
@@ -211,17 +213,18 @@ struct ReceiptCaptureView: View {
                     onManualEntry()
                 } label: {
                     Label("Enter Manually", systemImage: "keyboard")
+                        .font(NestoryTheme.Typography.subheadline)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(.tertiarySystemGroupedBackground))
-                        .foregroundStyle(.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(NestoryTheme.Metrics.paddingMedium)
+                        .background(NestoryTheme.Colors.elevatedBackground)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
+                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("receiptCaptureView.manualEntryButton")
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 32)
+            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+            .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge)
         }
     }
 

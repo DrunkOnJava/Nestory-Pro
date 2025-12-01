@@ -15,19 +15,22 @@ import Observation
 final class CaptureTabViewModel {
     
     // MARK: - UI State
-    
+
     var selectedSegment: CaptureMode = .photo
     var showingPhotoCapture: Bool = false
     var capturedImage: UIImage?
     var showingQuickAdd: Bool = false
-    
+
     // Barcode scanning state (Task 2.7.1)
     var showingBarcodeScanner: Bool = false
     var scannedBarcode: String?
     var showingBarcodeQuickAdd: Bool = false
-    
+
     // Receipt capture state
     var showingReceiptCapture: Bool = false
+
+    // Capture status for status banner (P2-11-1)
+    var captureStatus: CaptureStatus = .idle
     
     // MARK: - Initialization
     
@@ -81,10 +84,49 @@ final class CaptureTabViewModel {
     }
     
     // MARK: - Receipt Actions
-    
+
     /// Start receipt capture flow
     func startReceiptCapture() {
         showingReceiptCapture = true
+    }
+
+    // MARK: - Status Management (P2-11-1)
+
+    /// Update capture status with optional auto-dismiss for success/error states
+    func updateStatus(_ status: CaptureStatus) {
+        captureStatus = status
+
+        // Auto-dismiss success/error after delay
+        switch status {
+        case .success, .error:
+            Task {
+                try? await Task.sleep(for: .seconds(2))
+                if captureStatus == status {
+                    captureStatus = .idle
+                }
+            }
+        default:
+            break
+        }
+    }
+
+    /// Reset status to idle
+    func clearStatus() {
+        captureStatus = .idle
+    }
+
+    // MARK: - Action Cards (P2-11-1)
+
+    /// Get the action card for the current capture mode
+    var currentActionCard: CaptureActionCard {
+        switch selectedSegment {
+        case .photo:
+            return .photo
+        case .receipt:
+            return .receipt
+        case .barcode:
+            return .barcode
+        }
     }
 }
 
@@ -160,8 +202,8 @@ struct CaptureActionCard: Identifiable, Equatable {
     static let photo = CaptureActionCard(
         id: "photo",
         mode: .photo,
-        title: "Quick Add",
-        subtitle: "Take a photo and add an item",
+        title: "Photo Capture",
+        subtitle: "Take photos of your items to build a visual inventory for insurance documentation.",
         iconName: "camera.fill",
         accentColor: "blue"
     )
@@ -169,8 +211,8 @@ struct CaptureActionCard: Identifiable, Equatable {
     static let receipt = CaptureActionCard(
         id: "receipt",
         mode: .receipt,
-        title: "Scan Receipt",
-        subtitle: "Extract details with OCR",
+        title: "Receipt Capture",
+        subtitle: "Scan receipts to automatically extract purchase details and attach them to items.",
         iconName: "doc.text.viewfinder",
         accentColor: "green"
     )
@@ -178,8 +220,8 @@ struct CaptureActionCard: Identifiable, Equatable {
     static let barcode = CaptureActionCard(
         id: "barcode",
         mode: .barcode,
-        title: "Scan Barcode",
-        subtitle: "Look up product info",
+        title: "Barcode Scan",
+        subtitle: "Scan product barcodes to quickly add items. The barcode is saved for your records.",
         iconName: "barcode.viewfinder",
         accentColor: "purple"
     )

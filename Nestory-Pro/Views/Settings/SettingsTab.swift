@@ -5,6 +5,17 @@
 //  Created by Griffin on 11/28/25.
 //
 
+// ============================================================================
+// P2-13-1: Settings Tab Card-Based Sections Retrofit
+// ============================================================================
+// Updates:
+// - Added SettingsRowView component for consistent row styling
+// - Organized sections with NestoryTheme styling
+// - Added inline state indicators (iCloud sync, backup status)
+// - Added version number in footer
+// - Progress indicators for export/import operations
+// ============================================================================
+
 import SwiftUI
 import StoreKit
 import SwiftData
@@ -22,7 +33,7 @@ struct SettingsTab: View {
     @State private var exportError: Error?
     @State private var showingExportError = false
     @State private var exportedFileURL: URL?
-    
+
     // Import state - Task 6.3.1/6.3.2: Restore from backup
     @State private var showingImportPicker = false
     @State private var showingImportConfirmation = false
@@ -33,7 +44,7 @@ struct SettingsTab: View {
     @State private var restoreResult: RestoreResult?
     @State private var pendingImportURL: URL?
     @State private var restoreStrategy: RestoreStrategy = .merge
-    
+
     // Feedback state (Task P4-07)
     @State private var showingFeedbackSheet = false
     private let feedbackService = FeedbackService()
@@ -51,80 +62,114 @@ struct SettingsTab: View {
         @Bindable var settings = env.settings
         NavigationStack {
             List {
-                // Account & Pro
+                // Account & Pro (P2-13-1)
                 Section {
                     if env.settings.isProUnlocked {
-                        HStack {
-                            Label("Nestory Pro", systemImage: "star.fill")
-                                .foregroundStyle(.orange)
-                            Spacer()
-                            Text("Active")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
+                        SettingsRowView(
+                            icon: "star.fill",
+                            iconColor: .orange,
+                            title: "Nestory Pro",
+                            subtitle: "Active"
+                        )
                     } else {
                         Button(action: { showingProPaywall = true }) {
-                            HStack {
-                                Label("Nestory Pro", systemImage: "star.fill")
-                                    .foregroundStyle(.orange)
-                                Spacer()
-                                Text("Upgrade")
-                                    .font(NestoryTheme.Typography.subheadline)
-                                    .foregroundColor(NestoryTheme.Colors.accent)
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+                            SettingsRowView(
+                                icon: "star.fill",
+                                iconColor: .orange,
+                                title: "Nestory Pro",
+                                subtitle: "Upgrade",
+                                showChevron: true
+                            )
                         }
+                        .buttonStyle(.plain)
                         .accessibilityIdentifier(AccessibilityIdentifiers.Settings.proUpgradeCell)
                     }
                 } header: {
-                    Text("Account")
+                    settingsSectionHeader("Account", icon: "person.circle.fill")
                 }
                 
-                // Data & Sync
+                // Data & Sync (P2-13-1)
                 Section {
-                    Toggle("Use iCloud Sync", isOn: $settings.useICloudSync)
-                        .accessibilityIdentifier(AccessibilityIdentifiers.Settings.iCloudSyncToggle)
-                        .accessibilityLabel("iCloud Sync")
-                        .accessibilityValue(settings.useICloudSync ? "Enabled" : "Disabled")
-                        .accessibilityHint("Double tap to toggle iCloud synchronization")
-                        .onChange(of: settings.useICloudSync) { _, newValue in
-                            // Show iCloud tip when enabled (Task 8.3.2)
-                            if newValue {
-                                iCloudSyncTip.iCloudSyncJustEnabled = true
-                                // Auto-hide after 5 seconds
-                                Task {
-                                    try? await Task.sleep(for: .seconds(5))
-                                    iCloudSyncTip.iCloudSyncJustEnabled = false
-                                }
+                    // iCloud Sync Toggle with inline indicator
+                    HStack {
+                        Image(systemName: "icloud.fill")
+                            .font(.title3)
+                            .foregroundStyle(settings.useICloudSync ? NestoryTheme.Colors.accent : NestoryTheme.Colors.muted)
+                            .frame(width: 28, height: 28)
+                            .background(
+                                Circle()
+                                    .fill(settings.useICloudSync ? NestoryTheme.Colors.accent.opacity(0.15) : Color.secondary.opacity(0.1))
+                            )
+
+                        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                            Text("iCloud Sync")
+                                .font(NestoryTheme.Typography.body)
+                            if settings.useICloudSync {
+                                Text("Syncing across devices")
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(NestoryTheme.Colors.success)
                             }
                         }
-                    
+
+                        Spacer()
+
+                        Toggle("", isOn: $settings.useICloudSync)
+                            .labelsHidden()
+                    }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.iCloudSyncToggle)
+                    .accessibilityLabel("iCloud Sync")
+                    .accessibilityValue(settings.useICloudSync ? "Enabled" : "Disabled")
+                    .accessibilityHint("Double tap to toggle iCloud synchronization")
+                    .onChange(of: settings.useICloudSync) { _, newValue in
+                        // Show iCloud tip when enabled (Task 8.3.2)
+                        if newValue {
+                            iCloudSyncTip.iCloudSyncJustEnabled = true
+                            Task {
+                                try? await Task.sleep(for: .seconds(5))
+                                iCloudSyncTip.iCloudSyncJustEnabled = false
+                            }
+                        }
+                    }
+
                     // iCloud Sync Tip (Task 8.3.2)
                     TipView(iCloudSyncTip())
                         .tipBackground(Color(.secondarySystemGroupedBackground))
+                } header: {
+                    settingsSectionHeader("Data & Sync", icon: "arrow.triangle.2.circlepath.circle.fill")
+                } footer: {
+                    Text("iCloud keeps your inventory synced across your devices.")
+                        .font(NestoryTheme.Typography.caption)
+                }
 
+                // Backup & Restore (P2-13-1)
+                Section {
                     // JSON Export (Free tier)
                     Button {
                         Task {
                             await exportToJSON()
                         }
                     } label: {
-                        HStack {
-                            Text("Export to JSON")
-                            Spacer()
-                            if isExportingJSON {
-                                ProgressView()
+                        SettingsRowView(
+                            icon: "square.and.arrow.up",
+                            iconColor: NestoryTheme.Colors.accent,
+                            title: "Export to JSON",
+                            subtitle: "Backup all inventory data",
+                            showChevron: false,
+                            trailing: {
+                                if isExportingJSON {
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                }
                             }
-                        }
+                        )
                     }
+                    .buttonStyle(.plain)
                     .disabled(isExportingJSON || isExportingCSV)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.exportDataButton)
                     .accessibilityLabel("Export to JSON")
                     .accessibilityHint("Double tap to export all inventory data to JSON format")
 
-                    // CSV Export (Pro only) - Task 4.3.2: Gate CSV export to Pro
+                    // CSV Export (Pro only) - Task 4.3.2
                     Button {
                         if env.settings.isProUnlocked {
                             Task {
@@ -134,55 +179,57 @@ struct SettingsTab: View {
                             showingProPaywall = true
                         }
                     } label: {
-                        HStack {
-                            Text("Export to CSV")
-
-                            if !env.settings.isProUnlocked {
-                                Image(systemName: "lock.fill")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-
-                                Text("Pro")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(.orange)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(Color.orange.opacity(0.15))
-                                    .clipShape(Capsule())
+                        SettingsRowView(
+                            icon: "tablecells",
+                            iconColor: env.settings.isProUnlocked ? NestoryTheme.Colors.success : NestoryTheme.Colors.muted,
+                            title: "Export to CSV",
+                            subtitle: env.settings.isProUnlocked ? "Spreadsheet format" : nil,
+                            showChevron: false,
+                            trailing: {
+                                if isExportingCSV {
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                } else if !env.settings.isProUnlocked {
+                                    ProBadge()
+                                }
                             }
-
-                            Spacer()
-                            if isExportingCSV {
-                                ProgressView()
-                            }
-                        }
+                        )
                     }
+                    .buttonStyle(.plain)
                     .disabled(isExportingCSV || isExportingJSON && env.settings.isProUnlocked)
 
+                    // Import Data
                     Button {
                         showingImportPicker = true
                     } label: {
-                        HStack {
-                            Text("Import Data")
-                            Spacer()
-                            if isImporting {
-                                ProgressView()
+                        SettingsRowView(
+                            icon: "square.and.arrow.down",
+                            iconColor: NestoryTheme.Colors.accent,
+                            title: "Import Data",
+                            subtitle: "Restore from backup",
+                            showChevron: false,
+                            trailing: {
+                                if isImporting {
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                }
                             }
-                        }
+                        )
                     }
+                    .buttonStyle(.plain)
                     .disabled(isImporting)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.importDataButton)
                     .accessibilityLabel("Import Data")
                     .accessibilityHint("Double tap to restore inventory from a JSON backup")
                 } header: {
-                    Text("Data & Sync")
+                    settingsSectionHeader("Backup & Restore", icon: "externaldrive.fill")
                 } footer: {
-                    Text("iCloud keeps your inventory synced across your devices. Export creates a backup of all items and photos.")
+                    Text("Export creates a backup of all items and photos.")
+                        .font(NestoryTheme.Typography.caption)
                 }
                 
-                // Appearance
-                Section("Appearance") {
+                // Appearance (P2-13-1)
+                Section {
                     Picker("Theme", selection: $settings.themePreference) {
                         ForEach(ThemePreference.allCases, id: \.self) { theme in
                             Text(theme.rawValue).tag(theme)
@@ -196,15 +243,42 @@ struct SettingsTab: View {
                         }
                     }
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.currencySelector)
+                } header: {
+                    settingsSectionHeader("Appearance", icon: "paintbrush.fill")
                 }
-                
-                // Security & Privacy
+
+                // Security & Privacy (P2-13-1)
                 Section {
-                    Toggle("Require Face ID / Touch ID", isOn: $settings.requiresBiometrics)
-                        .accessibilityIdentifier(AccessibilityIdentifiers.Settings.appLockToggle)
-                        .accessibilityLabel("Biometric Authentication")
-                        .accessibilityValue(settings.requiresBiometrics ? "Required" : "Not required")
-                        .accessibilityHint("Double tap to toggle biometric lock")
+                    // Biometric toggle with icon
+                    HStack {
+                        Image(systemName: "faceid")
+                            .font(.title3)
+                            .foregroundStyle(settings.requiresBiometrics ? NestoryTheme.Colors.success : NestoryTheme.Colors.muted)
+                            .frame(width: 28, height: 28)
+                            .background(
+                                Circle()
+                                    .fill(settings.requiresBiometrics ? NestoryTheme.Colors.success.opacity(0.15) : Color.secondary.opacity(0.1))
+                            )
+
+                        VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                            Text("Face ID / Touch ID")
+                                .font(NestoryTheme.Typography.body)
+                            if settings.requiresBiometrics {
+                                Text("App is protected")
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(NestoryTheme.Colors.success)
+                            }
+                        }
+
+                        Spacer()
+
+                        Toggle("", isOn: $settings.requiresBiometrics)
+                            .labelsHidden()
+                    }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.appLockToggle)
+                    .accessibilityLabel("Biometric Authentication")
+                    .accessibilityValue(settings.requiresBiometrics ? "Required" : "Not required")
+                    .accessibilityHint("Double tap to toggle biometric lock")
 
                     if env.settings.requiresBiometrics {
                         Toggle("Lock After Inactivity", isOn: $settings.lockAfterInactivity)
@@ -213,12 +287,13 @@ struct SettingsTab: View {
                             .accessibilityHint("Double tap to toggle auto-lock after 1 minute of inactivity")
                     }
                 } header: {
-                    Text("Security & Privacy")
+                    settingsSectionHeader("Security & Privacy", icon: "lock.shield.fill")
                 } footer: {
                     Text("Protect your inventory with biometric authentication.")
+                        .font(NestoryTheme.Typography.caption)
                 }
-                
-                // Notifications
+
+                // Notifications (P2-13-1)
                 Section {
                     Toggle("Documentation Reminders", isOn: $settings.enableDocumentationReminders)
                         .accessibilityIdentifier(AccessibilityIdentifiers.Settings.notificationsToggle)
@@ -234,95 +309,115 @@ struct SettingsTab: View {
                             .accessibilityHint("Double tap to toggle weekly inventory summary notifications")
                     }
                 } header: {
-                    Text("Notifications")
+                    settingsSectionHeader("Notifications", icon: "bell.fill")
                 } footer: {
                     Text("Get reminded to keep your inventory up to date.")
+                        .font(NestoryTheme.Typography.caption)
                 }
-                
-                // About
-                Section("About") {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
-                            .foregroundStyle(.secondary)
-                    }
 
-                    HStack {
-                        Text("Build")
-                        Spacer()
-                        Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
-                            .foregroundStyle(.secondary)
+                // Support & Feedback (P2-13-1)
+                Section {
+                    Button {
+                        showingFeedbackSheet = true
+                    } label: {
+                        SettingsRowView(
+                            icon: "bubble.left.and.bubble.right.fill",
+                            iconColor: NestoryTheme.Colors.accent,
+                            title: "Send Feedback",
+                            subtitle: "Share your thoughts",
+                            showChevron: true
+                        )
                     }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.feedbackButton)
 
+                    Button {
+                        sendSupportEmail(category: .bug)
+                    } label: {
+                        SettingsRowView(
+                            icon: "ladybug.fill",
+                            iconColor: NestoryTheme.Colors.warning,
+                            title: "Report a Problem",
+                            subtitle: "Let us know what's wrong",
+                            showChevron: false,
+                            trailing: {
+                                Image(systemName: "arrow.up.right")
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(NestoryTheme.Colors.muted)
+                            }
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.reportProblemButton)
+                } header: {
+                    settingsSectionHeader("Support", icon: "questionmark.circle.fill")
+                } footer: {
+                    Text("Your feedback helps us improve Nestory.")
+                        .font(NestoryTheme.Typography.caption)
+                }
+
+                // About (P2-13-1)
+                Section {
                     Link(destination: URL(string: "https://nestory-support.netlify.app/terms")!) {
-                        HStack {
-                            Text("Terms of Service")
-                            Spacer()
-                            Image(systemName: "arrow.up.right")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        SettingsRowView(
+                            icon: "doc.text.fill",
+                            iconColor: NestoryTheme.Colors.muted,
+                            title: "Terms of Service",
+                            showChevron: false,
+                            trailing: {
+                                Image(systemName: "arrow.up.right")
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(NestoryTheme.Colors.muted)
+                            }
+                        )
                     }
+                    .buttonStyle(.plain)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
 
                     Link(destination: URL(string: "https://nestory-support.netlify.app/privacy")!) {
-                        HStack {
-                            Text("Privacy Policy")
-                            Spacer()
-                            Image(systemName: "arrow.up.right")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        SettingsRowView(
+                            icon: "hand.raised.fill",
+                            iconColor: NestoryTheme.Colors.muted,
+                            title: "Privacy Policy",
+                            showChevron: false,
+                            trailing: {
+                                Image(systemName: "arrow.up.right")
+                                    .font(NestoryTheme.Typography.caption)
+                                    .foregroundStyle(NestoryTheme.Colors.muted)
+                            }
+                        )
                     }
-                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.aboutCell)
+                    .buttonStyle(.plain)
 
                     #if DEBUG
                     // Reset Onboarding (Debug only - Task P2-01)
                     Button {
                         settings.hasCompletedOnboarding = false
                     } label: {
-                        HStack {
-                            Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
-                                .foregroundStyle(.orange)
-                            Spacer()
-                        }
+                        SettingsRowView(
+                            icon: "arrow.counterclockwise",
+                            iconColor: .orange,
+                            title: "Reset Onboarding",
+                            subtitle: "Debug only"
+                        )
                     }
+                    .buttonStyle(.plain)
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.resetOnboardingButton)
                     #endif
-                }
-                
-                // Support & Feedback (Task P4-07)
-                Section {
-                    Button {
-                        showingFeedbackSheet = true
-                    } label: {
-                        HStack {
-                            Label("Send Feedback", systemImage: "bubble.left.and.bubble.right")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.feedbackButton)
-                    
-                    Button {
-                        sendSupportEmail(category: .bug)
-                    } label: {
-                        HStack {
-                            Label("Report a Problem", systemImage: "ladybug")
-                            Spacer()
-                            Image(systemName: "arrow.up.right")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .accessibilityIdentifier(AccessibilityIdentifiers.Settings.reportProblemButton)
                 } header: {
-                    Text("Support & Feedback")
+                    settingsSectionHeader("About", icon: "info.circle.fill")
                 } footer: {
-                    Text("Your feedback helps us improve Nestory.")
+                    // Version number in footer (P2-13-1)
+                    VStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
+                        Text("Nestory Pro")
+                            .font(NestoryTheme.Typography.caption)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
+                        Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"))")
+                            .font(NestoryTheme.Typography.caption2)
+                            .foregroundStyle(NestoryTheme.Colors.muted)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, NestoryTheme.Metrics.spacingMedium)
                 }
             }
             .navigationTitle("Settings")
@@ -780,6 +875,106 @@ struct FeatureRow: View {
                     .foregroundStyle(NestoryTheme.Colors.muted)
             }
         }
+    }
+}
+
+// MARK: - Settings Row View (P2-13-1)
+
+/// Reusable row component for settings with icon, title, subtitle, and optional trailing content
+struct SettingsRowView<Trailing: View>: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    var subtitle: String?
+    var showChevron: Bool = false
+    @ViewBuilder var trailing: () -> Trailing
+
+    init(
+        icon: String,
+        iconColor: Color,
+        title: String,
+        subtitle: String? = nil,
+        showChevron: Bool = false,
+        @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }
+    ) {
+        self.icon = icon
+        self.iconColor = iconColor
+        self.title = title
+        self.subtitle = subtitle
+        self.showChevron = showChevron
+        self.trailing = trailing
+    }
+
+    var body: some View {
+        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+            // Icon with colored circle background
+            Image(systemName: icon)
+                .font(.body)
+                .foregroundStyle(iconColor)
+                .frame(width: 28, height: 28)
+                .background(
+                    Circle()
+                        .fill(iconColor.opacity(0.15))
+                )
+
+            // Title and subtitle
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                Text(title)
+                    .font(NestoryTheme.Typography.body)
+                    .foregroundStyle(.primary)
+
+                if let subtitle {
+                    Text(subtitle)
+                        .font(NestoryTheme.Typography.caption)
+                        .foregroundStyle(NestoryTheme.Colors.muted)
+                }
+            }
+
+            Spacer()
+
+            // Trailing content
+            trailing()
+
+            // Chevron
+            if showChevron {
+                Image(systemName: "chevron.right")
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
+            }
+        }
+    }
+}
+
+// MARK: - Pro Badge (P2-13-1)
+
+/// Small badge indicating Pro-only feature
+struct ProBadge: View {
+    var body: some View {
+        HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
+            Image(systemName: "lock.fill")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+
+            Text("Pro")
+                .font(NestoryTheme.Typography.caption2)
+                .fontWeight(.semibold)
+                .foregroundStyle(.orange)
+        }
+        .padding(.horizontal, NestoryTheme.Metrics.spacingSmall)
+        .padding(.vertical, NestoryTheme.Metrics.spacingXSmall)
+        .background(Color.orange.opacity(0.15))
+        .clipShape(Capsule())
+    }
+}
+
+// MARK: - Section Header Helper
+
+extension SettingsTab {
+    /// Creates a styled section header with icon (P2-13-1)
+    func settingsSectionHeader(_ title: String, icon: String) -> some View {
+        Label(title, systemImage: icon)
+            .font(NestoryTheme.Typography.caption)
+            .foregroundStyle(NestoryTheme.Colors.muted)
     }
 }
 

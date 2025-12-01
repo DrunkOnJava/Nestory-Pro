@@ -301,6 +301,45 @@ extension Color {
     }
 }
 
+// MARK: - Skeleton Item Card (P2-09-3)
+/// Placeholder card for loading states, designed to match ItemListCell dimensions
+struct SkeletonItemCard: View {
+    var body: some View {
+        HStack(spacing: NestoryTheme.Metrics.spacingMedium) {
+            // Thumbnail placeholder
+            RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusSmall + 2)
+                .fill(NestoryTheme.Colors.elevatedBackground)
+                .frame(width: NestoryTheme.Metrics.thumbnailMedium, height: NestoryTheme.Metrics.thumbnailMedium)
+
+            // Content placeholder
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                // Title placeholder
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(NestoryTheme.Colors.elevatedBackground)
+                    .frame(width: 140, height: 16)
+
+                // Subtitle placeholder
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(NestoryTheme.Colors.elevatedBackground)
+                    .frame(width: 100, height: 12)
+            }
+
+            Spacer()
+
+            // Badge placeholders
+            HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
+                Circle()
+                    .fill(NestoryTheme.Colors.elevatedBackground)
+                    .frame(width: 24, height: 24)
+                Circle()
+                    .fill(NestoryTheme.Colors.elevatedBackground)
+                    .frame(width: 24, height: 24)
+            }
+        }
+        .padding(.vertical, NestoryTheme.Metrics.paddingXSmall)
+    }
+}
+
 // MARK: - Empty State View
 struct EmptyStateView: View {
     let iconName: String

@@ -52,5 +52,16 @@
 	<string>Nestory Pro needs photo library access to select photos of your items for documentation and insurance records.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Nestory Pro uses Face ID to protect your inventory data when app lock is enabled.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.drunkonjava.nestory.item</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>nestory</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

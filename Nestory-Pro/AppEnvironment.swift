@@ -56,7 +56,16 @@ final class AppEnvironment {
     
     /// Local notification reminders (P5-03)
     let reminderService: ReminderService
-    
+
+    /// Notification delegate for handling notification taps (F1)
+    let notificationDelegate: NotificationDelegate
+
+    /// Product lookup service for barcode scanning (F1)
+    nonisolated let productLookupService: ProductLookupService
+
+    /// Market value lookup service (F4)
+    nonisolated let valueLookupService: ValueLookupService
+
     // MARK: - ViewModels
     
     /// Inventory tab view model
@@ -71,7 +80,12 @@ final class AppEnvironment {
     /// Create a new AddItemViewModel instance
     /// Each AddItemView sheet gets its own fresh instance
     func makeAddItemViewModel() -> AddItemViewModel {
-        AddItemViewModel(settings: settings)
+        AddItemViewModel(settings: settings, reminderService: reminderService)
+    }
+
+    /// Create an EditItemViewModel instance for editing an existing item
+    func makeEditItemViewModel(for item: Item) -> EditItemViewModel {
+        EditItemViewModel(item: item, reminderService: reminderService)
     }
     
     // MARK: - Initialization
@@ -87,7 +101,10 @@ final class AppEnvironment {
         reportGenerator: ReportGeneratorService? = nil,
         backupService: BackupService? = nil,
         appLockService: (any AppLockProviding)? = nil,
-        reminderService: ReminderService? = nil
+        reminderService: ReminderService? = nil,
+        notificationDelegate: NotificationDelegate? = nil,
+        productLookupService: ProductLookupService? = nil,
+        valueLookupService: ValueLookupService? = nil
     ) {
         // Use provided services or create defaults
         self.settings = settings ?? SettingsManager()
@@ -98,7 +115,10 @@ final class AppEnvironment {
         self.backupService = backupService ?? BackupService.shared
         self.appLockService = appLockService ?? AppLockService()
         self.reminderService = reminderService ?? ReminderService()
-        
+        self.notificationDelegate = notificationDelegate ?? NotificationDelegate()
+        self.productLookupService = productLookupService ?? ProductLookupService.shared
+        self.valueLookupService = valueLookupService ?? ValueLookupService.shared
+
         // Initialize ViewModels with service dependencies
         self.inventoryViewModel = InventoryTabViewModel(settings: self.settings)
         self.captureViewModel = CaptureTabViewModel()

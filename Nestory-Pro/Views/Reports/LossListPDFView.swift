@@ -9,6 +9,7 @@
 // CLAUDE CODE AGENT: LOSS LIST PDF PREVIEW VIEW
 // ============================================================================
 // Task 3.3.3: SwiftUI view for previewing generated loss list PDFs
+// P2-13-4: State-driven UI with NestoryTheme styling
 //
 // PURPOSE:
 // - Display generated loss list PDF with native PDF viewer
@@ -21,23 +22,6 @@
 // - Accepts URL to pre-generated PDF file
 // - Uses ShareLink for native sharing
 // - Error handling for PDF loading failures
-//
-// FEATURES:
-// - Navigation bar with "Loss List Report" title
-// - Share button in toolbar (exports PDF file)
-// - Close/Done button for dismissal
-// - Pinch-to-zoom support (native PDFView behavior)
-// - Scroll/pan support (native PDFView behavior)
-// - Auto-scales to fit page initially
-//
-// ERROR HANDLING:
-// - Invalid PDF URL
-// - PDF document loading failures
-// - Missing file at URL
-//
-// NAVIGATION:
-// - Presented as sheet or navigation destination from LossListSelectionView
-// - Dismisses after user closes or shares
 //
 // SEE: TODO.md Task 3.3.3 | ReportGeneratorService.swift | LossListSelectionView.swift
 // ============================================================================
@@ -91,36 +75,36 @@ struct LossListPDFView: View {
         }
     }
 
-    // MARK: - View Components
+    // MARK: - Error View (P2-13-4)
 
     private var errorView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 60))
-                .foregroundStyle(.orange)
+                .foregroundStyle(NestoryTheme.Colors.error)
 
             Text("Failed to Load PDF")
-                .font(.title2)
+                .font(NestoryTheme.Typography.title2)
                 .fontWeight(.semibold)
 
             Text(errorMessage ?? "The PDF file could not be loaded. Please try generating the report again.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.subheadline)
+                .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
 
             Button {
                 dismiss()
             } label: {
                 Text("Close")
-                    .fontWeight(.semibold)
+                    .font(NestoryTheme.Typography.headline)
                     .frame(maxWidth: 200)
-                    .padding()
-                    .background(Color.accentColor)
+                    .padding(NestoryTheme.Metrics.paddingMedium)
+                    .background(NestoryTheme.Colors.accent)
                     .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
             }
-            .padding(.top, 8)
+            .padding(.top, NestoryTheme.Metrics.spacingSmall)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

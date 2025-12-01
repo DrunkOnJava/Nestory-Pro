@@ -30,6 +30,7 @@ import SwiftUI
 import Combine
 import SwiftData
 import TipKit
+import UserNotifications
 
 @MainActor
 final class OnboardingSheetController: ObservableObject {
@@ -68,6 +69,9 @@ struct Nestory_ProApp: App {
 		// Migrate Pro status from UserDefaults to Keychain (one-time migration)
 		KeychainManager.migrateProStatusFromUserDefaults()
 
+		// Set up notification delegate for warranty reminders (F1)
+		UNUserNotificationCenter.current().delegate = environment.notificationDelegate
+
 		// Start listening for IAP transactions
 		// Capture validator before Task to avoid capturing self
 		let validator = environment.iapValidator
@@ -75,7 +79,7 @@ struct Nestory_ProApp: App {
 			validator.startTransactionListener()
 			await validator.updateProStatus()
 		}
-		
+
 		// Configure TipKit
 		Task { @MainActor in
 			TipsConfiguration.configure()
@@ -92,9 +96,12 @@ struct Nestory_ProApp: App {
 		}
 	}()
 
+	// Deep link navigation state (F2: QR Code Labels)
+	@State private var deepLinkItemID: UUID?
+
 	var body: some Scene {
 		WindowGroup {
-			MainTabView()
+			MainTabView(deepLinkItemID: $deepLinkItemID)
 				.environment(appEnv)
 				.onAppear {
 					seedDefaultDataIfNeeded()
@@ -107,8 +114,23 @@ struct Nestory_ProApp: App {
 				.onChange(of: appEnv.settings.hasCompletedOnboarding) { _, newValue in
 					onboardingController.refreshFromSettings(hasCompleted: newValue)
 				}
+				// F2: Handle deep links from QR code scans (nestory://item/{uuid})
+				.onOpenURL { url in
+					handleDeepLink(url)
+				}
 		}
 		.modelContainer(sharedModelContainer)
+	}
+
+	/// Parses nestory:// deep links and navigates to the item
+	private func handleDeepLink(_ url: URL) {
+		guard let itemID = QRCodeService.shared.parseDeepLink(url) else {
+			print("[DeepLink] Invalid URL: \(url)")
+			return
+		}
+
+		print("[DeepLink] Opening item: \(itemID)")
+		deepLinkItemID = itemID
 	}
 	
 	private func seedDefaultDataIfNeeded() {

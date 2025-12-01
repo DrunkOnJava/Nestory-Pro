@@ -14,9 +14,9 @@ import Observation
 @MainActor
 @Observable
 final class AddItemViewModel {
-    
+
     // MARK: - Form State
-    
+
     var name: String = ""
     var brand: String = ""
     var modelNumber: String = ""
@@ -31,19 +31,21 @@ final class AddItemViewModel {
     var warrantyExpiryDate: Date = Date()
     var hasWarranty: Bool = false
     var showingPaywall: Bool = false
-    
+
     // MARK: - Private Dependencies
-    
+
     private let settings: any SettingsProviding
-    
+    private let reminderService: ReminderService?
+
     // MARK: - Initialization
-    
-    init(settings: any SettingsProviding) {
+
+    init(settings: any SettingsProviding, reminderService: ReminderService? = nil) {
         self.settings = settings
+        self.reminderService = reminderService
     }
     
     // MARK: - Default Room
-    
+
     /// Set the default room if configured and no room is already selected
     func setDefaultRoom(_ rooms: [Room]) {
         guard selectedRoom == nil,
@@ -52,14 +54,63 @@ final class AddItemViewModel {
         else { return }
         selectedRoom = defaultRoom
     }
-    
+
     // MARK: - Validation
-    
+
     /// Check if form can be saved (name is not empty)
     var canSave: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-    
+
+    /// Get validation state for a specific field (P2-12-1)
+    func validationState(for field: AddItemField) -> FieldValidationState {
+        switch field {
+        case .name:
+            if name.isEmpty {
+                return .pending
+            } else if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return .invalid(message: "Name cannot be empty")
+            }
+            return .valid
+        case .purchasePrice:
+            if purchasePrice.isEmpty {
+                return .valid // Optional field
+            }
+            if Decimal(string: purchasePrice) == nil {
+                return .invalid(message: "Invalid price format")
+            }
+            return .valid
+        case .purchaseDate:
+            if hasPurchaseDate && purchaseDate > Date() {
+                return .warning(message: "Future date selected")
+            }
+            return .valid
+        case .warranty:
+            if hasWarranty && warrantyExpiryDate < Date() {
+                return .warning(message: "Warranty may have expired")
+            }
+            return .valid
+        default:
+            return .valid
+        }
+    }
+
+    /// Get all validation errors (P2-12-1)
+    var validationErrors: [String] {
+        AddItemField.allCases.compactMap { field in
+            let state = validationState(for: field)
+            if case .invalid(let message) = state {
+                return "\(field.displayName): \(message)"
+            }
+            return nil
+        }
+    }
+
+    /// Get all form sections (P2-12-1)
+    var formSections: [AddItemSection] {
+        AddItemSection.allCases
+    }
+
     // MARK: - Save Logic
     
     /// Save new item with free tier limit checking
@@ -71,13 +122,13 @@ final class AddItemViewModel {
     func saveItem(modelContext: ModelContext, itemCount: Int) -> Item? {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return nil }
-        
+
         // Task 4.1.1: Enforce 100-item free tier limit
         if itemCount >= settings.maxFreeItems && !settings.isProUnlocked {
             showingPaywall = true
             return nil // Don't save until user upgrades or dismisses
         }
-        
+
         let item = Item(
             name: trimmedName,
             brand: brand.isEmpty ? nil : brand,
@@ -92,8 +143,16 @@ final class AddItemViewModel {
             conditionNotes: conditionNotes.isEmpty ? nil : conditionNotes,
             warrantyExpiryDate: hasWarranty ? warrantyExpiryDate : nil
         )
-        
+
         modelContext.insert(item)
+
+        // F1: Schedule warranty reminders if item has warranty date
+        if hasWarranty, let service = reminderService {
+            Task {
+                await service.scheduleAllWarrantyRemindersForItem(item)
+            }
+        }
+
         return item
     }
     
@@ -120,9 +179,9 @@ final class AddItemViewModel {
 @MainActor
 @Observable
 final class EditItemViewModel {
-    
+
     // MARK: - Form State
-    
+
     var name: String
     var brand: String
     var modelNumber: String
@@ -136,15 +195,21 @@ final class EditItemViewModel {
     var conditionNotes: String
     var warrantyExpiryDate: Date
     var hasWarranty: Bool
-    
+
     // MARK: - Private State
-    
+
     private let item: Item
-    
+    private let reminderService: ReminderService?
+    private let originalHadWarranty: Bool
+    private let originalWarrantyDate: Date?
+
     // MARK: - Initialization
-    
-    init(item: Item) {
+
+    init(item: Item, reminderService: ReminderService? = nil) {
         self.item = item
+        self.reminderService = reminderService
+        self.originalHadWarranty = item.warrantyExpiryDate != nil
+        self.originalWarrantyDate = item.warrantyExpiryDate
         self.name = item.name
         self.brand = item.brand ?? ""
         self.modelNumber = item.modelNumber ?? ""
@@ -159,16 +224,16 @@ final class EditItemViewModel {
         self.warrantyExpiryDate = item.warrantyExpiryDate ?? Date()
         self.hasWarranty = item.warrantyExpiryDate != nil
     }
-    
+
     // MARK: - Validation
-    
+
     /// Check if form can be saved (name is not empty)
     var canSave: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-    
+
     // MARK: - Save Logic
-    
+
     /// Apply changes to the item
     func saveChanges() {
         item.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -183,6 +248,29 @@ final class EditItemViewModel {
         item.conditionNotes = conditionNotes.isEmpty ? nil : conditionNotes
         item.warrantyExpiryDate = hasWarranty ? warrantyExpiryDate : nil
         item.updatedAt = Date()
+
+        // F1: Update warranty reminders based on changes
+        updateWarrantyReminders()
+    }
+
+    /// Updates warranty reminders based on warranty date changes
+    private func updateWarrantyReminders() {
+        guard let service = reminderService else { return }
+
+        let warrantyChanged = hasWarranty != originalHadWarranty ||
+            (hasWarranty && warrantyExpiryDate != originalWarrantyDate)
+
+        guard warrantyChanged else { return }
+
+        Task {
+            // Cancel existing reminders first
+            service.cancelAllWarrantyReminders(for: item)
+
+            // Schedule new reminders if warranty is set
+            if hasWarranty {
+                await service.scheduleAllWarrantyRemindersForItem(item)
+            }
+        }
     }
 }
 

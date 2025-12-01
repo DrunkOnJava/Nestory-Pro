@@ -22,48 +22,50 @@ struct PhotoCaptureView: View {
     @State private var photoPickerItem: PhotosPickerItem?
 
     var body: some View {
-        VStack(spacing: 24) {
-            // Header
-            VStack(spacing: 8) {
+        VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
+            // Header (P2-11-3)
+            VStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                 Image(systemName: "camera.viewfinder")
-                    .font(.system(size: 60))
-                    .foregroundStyle(Color.accentColor)
+                    .font(.system(size: NestoryTheme.Metrics.iconHero))
+                    .foregroundStyle(NestoryTheme.Colors.accent)
 
                 Text("Add Photo")
-                    .font(.title2)
+                    .font(NestoryTheme.Typography.title2)
                     .fontWeight(.semibold)
 
                 Text("Take a photo or choose from your library")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(NestoryTheme.Typography.subheadline)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
                     .multilineTextAlignment(.center)
             }
-            .padding(.top, 32)
+            .padding(.top, NestoryTheme.Metrics.spacingXXLarge)
 
             Spacer()
 
-            // Action Buttons
-            VStack(spacing: 16) {
+            // Action Buttons (P2-11-3)
+            VStack(spacing: NestoryTheme.Metrics.spacingMedium) {
                 Button {
                     checkCameraPermission()
                 } label: {
                     Label("Take Photo", systemImage: "camera.fill")
+                        .font(NestoryTheme.Typography.headline)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
+                        .padding(NestoryTheme.Metrics.paddingMedium)
+                        .background(NestoryTheme.Colors.accent)
                         .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("photoCaptureView.takePhotoButton")
 
                 PhotosPicker(selection: $photoPickerItem, matching: .images) {
                     Label("Choose from Library", systemImage: "photo.on.rectangle")
+                        .font(NestoryTheme.Typography.headline)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(.secondarySystemGroupedBackground))
+                        .padding(NestoryTheme.Metrics.paddingMedium)
+                        .background(NestoryTheme.Colors.cardBackground)
                         .foregroundStyle(.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
                 }
                 .buttonStyle(.plain)
                 .onChange(of: photoPickerItem) { _, newItem in
@@ -73,7 +75,7 @@ struct PhotoCaptureView: View {
                 }
                 .accessibilityIdentifier("photoCaptureView.chooseFromLibraryButton")
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
 
             Spacer()
 
@@ -81,8 +83,9 @@ struct PhotoCaptureView: View {
             Button("Cancel") {
                 isPresented = false
             }
-            .foregroundStyle(.secondary)
-            .padding(.bottom, 32)
+            .font(NestoryTheme.Typography.subheadline)
+            .foregroundStyle(NestoryTheme.Colors.muted)
+            .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge)
             .accessibilityIdentifier("photoCaptureView.cancelButton")
         }
         .sheet(isPresented: $showingCamera) {

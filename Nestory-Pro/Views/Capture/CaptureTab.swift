@@ -65,14 +65,20 @@ struct CaptureTab: View {
     var body: some View {
         @Bindable var vm = viewModel
         let quickCaptureTip = QuickCaptureTip()
-        
+
         return NavigationStack {
             VStack(spacing: 0) {
+                // Status Banner (P2-11-1)
+                if vm.captureStatus != .idle {
+                    statusBanner
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+
                 // Quick Capture Tip (Task 8.3.3 - general guidance)
                 TipView(quickCaptureTip)
                     .tipBackground(NestoryTheme.Colors.cardBackground)
                     .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
-                
+
                 // Segmented Control
                 Picker("Capture Mode", selection: $vm.selectedSegment) {
                     ForEach(CaptureMode.allCases) { mode in
@@ -83,17 +89,11 @@ struct CaptureTab: View {
                 .padding(NestoryTheme.Metrics.paddingMedium)
                 .accessibilityIdentifier("captureTab.segmentedControl")
 
-                // Content Area
-                switch vm.selectedSegment {
-                case .photo:
-                    photoSegmentContent
-                case .receipt:
-                    receiptSegmentContent
-                case .barcode:
-                    barcodeSegmentContent
-                }
+                // Content Area using CaptureActionCard (P2-11-1)
+                captureContent(for: vm.currentActionCard)
             }
             .navigationTitle("Capture")
+            .animation(NestoryTheme.Animation.quick, value: vm.captureStatus)
         }
         // Photo capture sheets
         .sheet(isPresented: $vm.showingPhotoCapture) {
@@ -148,50 +148,137 @@ struct CaptureTab: View {
         }
     }
 
-    // MARK: - Photo Segment
+    // MARK: - Status Banner (P2-11-1)
 
-    private var photoSegmentContent: some View {
+    private var statusBanner: some View {
+        let status = viewModel.captureStatus
+        let backgroundColor: Color = {
+            switch status {
+            case .idle:
+                return .clear
+            case .capturing, .processing:
+                return NestoryTheme.Colors.accent.opacity(0.15)
+            case .success:
+                return NestoryTheme.Colors.documented.opacity(0.15)
+            case .error:
+                return NestoryTheme.Colors.warning.opacity(0.15)
+            }
+        }()
+        let foregroundColor: Color = {
+            switch status {
+            case .idle:
+                return .primary
+            case .capturing, .processing:
+                return NestoryTheme.Colors.accent
+            case .success:
+                return NestoryTheme.Colors.documented
+            case .error:
+                return NestoryTheme.Colors.warning
+            }
+        }()
+
+        return HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
+            if status.isActive {
+                ProgressView()
+                    .tint(foregroundColor)
+            } else {
+                Image(systemName: status.iconName)
+            }
+            Text(status.displayMessage)
+                .font(NestoryTheme.Typography.subheadline)
+                .fontWeight(.medium)
+        }
+        .foregroundStyle(foregroundColor)
+        .frame(maxWidth: .infinity)
+        .padding(NestoryTheme.Metrics.paddingMedium)
+        .background(backgroundColor)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Capture status: \(status.displayMessage)")
+    }
+
+    // MARK: - Capture Content (P2-11-1)
+
+    /// Unified capture content view driven by CaptureActionCard
+    @ViewBuilder
+    private func captureContent(for card: CaptureActionCard) -> some View {
         VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
             Spacer()
 
             // Icon
-            Image(systemName: "camera.fill")
+            Image(systemName: card.iconName)
                 .font(.system(size: NestoryTheme.Metrics.iconHero))
                 .foregroundStyle(NestoryTheme.Colors.accent)
 
             // Title
-            Text("Photo Capture")
+            Text(card.title)
                 .font(NestoryTheme.Typography.title2)
 
             // Description
-            Text("Take photos of your items to build a visual inventory for insurance documentation.")
+            Text(card.subtitle)
                 .font(NestoryTheme.Typography.subheadline)
                 .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
 
+            // Mode-specific content
+            switch card.mode {
+            case .barcode:
+                Text("Product lookup coming in a future update")
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.muted.opacity(0.7))
+            default:
+                EmptyView()
+            }
+
             Spacer()
 
             // Action Button
-            Button(action: viewModel.startPhotoCapture) {
-                Label("Start Photo Capture", systemImage: "camera")
-                    .font(NestoryTheme.Typography.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(NestoryTheme.Metrics.paddingMedium)
-                    .background(NestoryTheme.Colors.accent)
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
-            .accessibilityIdentifier("captureTab.startPhotoCaptureButton")
-            
-            // Recent Captures Strip (Task 2.5.4)
-            if !recentItems.isEmpty {
+            captureActionButton(for: card)
+
+            // Recent Captures Strip (Photo mode only)
+            if card.mode == .photo && !recentItems.isEmpty {
                 recentCapturesStrip
             }
         }
         .padding(.bottom, 24)
+    }
+
+    /// Action button for capture modes
+    private func captureActionButton(for card: CaptureActionCard) -> some View {
+        let buttonText: String
+        let action: () -> Void
+
+        switch card.mode {
+        case .photo:
+            buttonText = "Start Photo Capture"
+            action = viewModel.startPhotoCapture
+        case .receipt:
+            buttonText = "Scan Receipt"
+            action = viewModel.startReceiptCapture
+        case .barcode:
+            buttonText = "Start Barcode Scan"
+            action = viewModel.startBarcodeScanning
+        }
+
+        return Button(action: action) {
+            Label(buttonText, systemImage: card.iconName)
+                .font(NestoryTheme.Typography.headline)
+                .frame(maxWidth: .infinity)
+                .padding(NestoryTheme.Metrics.paddingMedium)
+                .background(NestoryTheme.Colors.accent)
+                .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
+        .padding(.bottom, card.mode == .photo ? 0 : NestoryTheme.Metrics.spacingXXLarge)
+        .accessibilityIdentifier("captureTab.\(card.id)Button")
+    }
+
+    // MARK: - Photo Segment (Legacy - kept for reference, now using captureContent)
+
+    private var photoSegmentContent: some View {
+        captureContent(for: .photo)
     }
     
     // MARK: - Recent Captures Strip (Task 2.5.4)
@@ -219,85 +306,16 @@ struct CaptureTab: View {
         }
     }
 
-    // MARK: - Receipt Segment
+    // MARK: - Receipt Segment (Legacy - kept for reference, now using captureContent)
 
     private var receiptSegmentContent: some View {
-        VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
-            Spacer()
-
-            Image(systemName: "doc.text.viewfinder")
-                .font(.system(size: NestoryTheme.Metrics.iconHero))
-                .foregroundStyle(NestoryTheme.Colors.accent)
-
-            Text("Receipt Capture")
-                .font(NestoryTheme.Typography.title2)
-
-            Text("Scan receipts to automatically extract purchase details and attach them to items.")
-                .font(NestoryTheme.Typography.subheadline)
-                .foregroundStyle(NestoryTheme.Colors.muted)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
-
-            Spacer()
-
-            // Action Button
-            Button(action: viewModel.startReceiptCapture) {
-                Label("Scan Receipt", systemImage: "doc.text.viewfinder")
-                    .font(NestoryTheme.Typography.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(NestoryTheme.Metrics.paddingMedium)
-                    .background(NestoryTheme.Colors.accent)
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
-            .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge)
-            .accessibilityIdentifier("captureTab.startReceiptCaptureButton")
-        }
+        captureContent(for: .receipt)
     }
 
-    // MARK: - Barcode Segment (Task 2.7.1)
+    // MARK: - Barcode Segment (Legacy - kept for reference, now using captureContent)
 
     private var barcodeSegmentContent: some View {
-        VStack(spacing: NestoryTheme.Metrics.spacingXLarge) {
-            Spacer()
-
-            Image(systemName: "barcode.viewfinder")
-                .font(.system(size: NestoryTheme.Metrics.iconHero))
-                .foregroundStyle(NestoryTheme.Colors.accent)
-
-            Text("Barcode Scan")
-                .font(NestoryTheme.Typography.title2)
-
-            Text("Scan product barcodes to quickly add items. The barcode is saved for your records.")
-                .font(NestoryTheme.Typography.subheadline)
-                .foregroundStyle(NestoryTheme.Colors.muted)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
-
-            // v1.0 notice
-            Text("Product lookup coming in a future update")
-                .font(NestoryTheme.Typography.caption)
-                .foregroundStyle(NestoryTheme.Colors.muted.opacity(0.7))
-
-            Spacer()
-
-            // Action Button
-            Button(action: viewModel.startBarcodeScanning) {
-                Label("Start Barcode Scan", systemImage: "barcode.viewfinder")
-                    .font(NestoryTheme.Typography.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(NestoryTheme.Metrics.paddingMedium)
-                    .background(NestoryTheme.Colors.accent)
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
-            .padding(.bottom, NestoryTheme.Metrics.spacingXXLarge)
-            .accessibilityIdentifier("captureTab.startBarcodeScanButton")
-        }
+        captureContent(for: .barcode)
     }
 }
 

@@ -9,6 +9,7 @@
 // CLAUDE CODE AGENT: FULL INVENTORY REPORT VIEW
 // ============================================================================
 // Task 3.2.1: SwiftUI view for generating full inventory PDF reports
+// P2-13-4: State-driven UI with NestoryTheme styling
 //
 // PURPOSE:
 // - Generate comprehensive PDF reports of entire inventory
@@ -16,14 +17,11 @@
 // - Pro tier: include item photos in PDF
 // - Free tier: basic text-only PDF
 //
-// DESIGN FEATURES:
-// - Report grouping picker (uses ReportGrouping enum)
-// - Include Photos toggle (Pro-gated)
-// - Stats preview: total items count, total value
-// - Generate button with async PDF generation
-// - Loading state with progress indicator
-// - PDF preview using QuickLook
-// - Share button to export via ShareLink
+// STATE-DRIVEN UI (P2-13-4):
+// - idle: Show "Generate Report" button
+// - generating: Spinner + progress message
+// - complete: Document card with Open/Share actions
+// - error: Red error card with retry button
 //
 // ARCHITECTURE:
 // - Pure SwiftUI view with @Query for all items
@@ -31,15 +29,6 @@
 // - Uses SettingsManager.shared.isProUnlocked for feature gating
 // - QuickLook integration for PDF preview
 // - ShareLink for native iOS share sheet
-//
-// ERROR HANDLING:
-// - Empty inventory state (no items to report)
-// - PDF generation failures with retry option
-// - File system errors during save
-//
-// NAVIGATION:
-// - Presented as full screen or navigation destination from Reports tab
-// - Dismisses after sharing or user cancellation
 //
 // SEE: TODO.md Task 3.2.1 | ReportGeneratorService.swift | SettingsManager.swift
 // ============================================================================
@@ -124,21 +113,23 @@ struct FullInventoryReportView: View {
 
     // MARK: - View Components
 
+    // MARK: - Empty State (P2-13-4)
+
     private var emptyState: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: NestoryTheme.Metrics.spacingLarge) {
             Image(systemName: "tray")
                 .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(NestoryTheme.Colors.muted)
 
             Text("No Items in Inventory")
-                .font(.title2)
+                .font(NestoryTheme.Typography.title2)
                 .fontWeight(.semibold)
 
             Text("Add items to your inventory to generate a full inventory report.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(NestoryTheme.Typography.subheadline)
+                .foregroundStyle(NestoryTheme.Colors.muted)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
+                .padding(.horizontal, NestoryTheme.Metrics.spacingXXLarge)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -174,35 +165,35 @@ struct FullInventoryReportView: View {
         }
     }
 
+    // MARK: - Stats Preview (P2-13-4)
+
     private var statsPreviewRow: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 16) {
-                    // Total Items
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Total Items")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text("\(allItems.count)")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                    }
-
-                    Divider()
-                        .frame(height: 40)
-
-                    // Total Value
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Total Value")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(env.settings.formatCurrency(totalValue))
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.blue)
-                    }
-                }
+        HStack(spacing: NestoryTheme.Metrics.spacingLarge) {
+            // Total Items
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                Text("Total Items")
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
+                Text("\(allItems.count)")
+                    .font(NestoryTheme.Typography.title2)
+                    .fontWeight(.bold)
             }
+
+            Divider()
+                .frame(height: 40)
+
+            // Total Value
+            VStack(alignment: .leading, spacing: NestoryTheme.Metrics.spacingXSmall) {
+                Text("Total Value")
+                    .font(NestoryTheme.Typography.caption)
+                    .foregroundStyle(NestoryTheme.Colors.muted)
+                Text(env.settings.formatCurrency(totalValue))
+                    .font(NestoryTheme.Typography.title3)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(NestoryTheme.Colors.success)
+            }
+
+            Spacer()
         }
     }
 
@@ -216,6 +207,8 @@ struct FullInventoryReportView: View {
         .pickerStyle(.segmented)
     }
 
+    // MARK: - Include Photos Toggle (P2-13-4)
+
     // Task 4.3.1: Gate "Include Photos" to Pro with contextual paywall
     private var includePhotosToggle: some View {
         Button {
@@ -227,22 +220,12 @@ struct FullInventoryReportView: View {
         } label: {
             HStack {
                 Toggle("Include Photos", isOn: $includePhotos)
+                    .font(NestoryTheme.Typography.body)
                     .disabled(!env.settings.isProUnlocked)
                     .allowsHitTesting(false) // Button handles taps
 
                 if !env.settings.isProUnlocked {
-                    Image(systemName: "lock.fill")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    Text("Pro")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.orange)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.orange.opacity(0.15))
-                        .clipShape(Capsule())
+                    ProBadgeInline()
                 }
             }
         }
@@ -253,35 +236,37 @@ struct FullInventoryReportView: View {
         Toggle("Include Receipt Info", isOn: $includeReceipts)
     }
 
+    // MARK: - Generate Button (P2-13-4)
+
     private var generateButton: some View {
         Button {
             generateReport()
         } label: {
-            HStack {
+            HStack(spacing: NestoryTheme.Metrics.spacingSmall) {
                 if isGenerating {
                     ProgressView()
                         .tint(.white)
                     Text("Generating...")
-                        .fontWeight(.semibold)
+                        .font(NestoryTheme.Typography.headline)
                 } else {
                     Image(systemName: "doc.text.fill")
                     Text("Generate Report")
-                        .fontWeight(.semibold)
+                        .font(NestoryTheme.Typography.headline)
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding()
-            .background(canGenerate ? Color.accentColor : Color.gray)
+            .padding(NestoryTheme.Metrics.paddingMedium)
+            .background(canGenerate ? NestoryTheme.Colors.accent : NestoryTheme.Colors.muted)
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: NestoryTheme.Metrics.cornerRadiusLarge))
         }
         .disabled(!canGenerate)
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets())
-        .padding(.horizontal)
+        .padding(.horizontal, NestoryTheme.Metrics.paddingMedium)
     }
 
-    // MARK: - Actions
+    // MARK: - Actions (P2-16-1: Haptic feedback)
 
     @MainActor
     private func generateReport() {
@@ -307,6 +292,7 @@ struct FullInventoryReportView: View {
                     isGenerating = false
                     generatedPDFURL = pdfURL
                     showingPDFPreview = true
+                    NestoryTheme.Haptics.success() // P2-16-1: Success haptic
                 }
 
             } catch {
@@ -314,9 +300,32 @@ struct FullInventoryReportView: View {
                     isGenerating = false
                     errorMessage = "Failed to generate report: \(error.localizedDescription)"
                     showingError = true
+                    NestoryTheme.Haptics.error() // P2-16-2: Error haptic
                 }
             }
         }
+    }
+}
+
+// MARK: - Pro Badge (P2-13-4)
+
+/// Inline Pro badge for feature gating indicators
+private struct ProBadgeInline: View {
+    var body: some View {
+        HStack(spacing: NestoryTheme.Metrics.spacingXSmall) {
+            Image(systemName: "lock.fill")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+
+            Text("Pro")
+                .font(NestoryTheme.Typography.caption2)
+                .fontWeight(.semibold)
+                .foregroundStyle(.orange)
+        }
+        .padding(.horizontal, NestoryTheme.Metrics.spacingSmall)
+        .padding(.vertical, NestoryTheme.Metrics.spacingXSmall)
+        .background(Color.orange.opacity(0.15))
+        .clipShape(Capsule())
     }
 }
 
