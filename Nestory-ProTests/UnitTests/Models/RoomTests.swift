@@ -11,12 +11,6 @@ import SwiftData
 
 final class RoomTests: XCTestCase {
 
-    // MARK: - Test Tags
-
-    override var tags: Set<TestTag> {
-        [.fast, .unit, .model]
-    }
-
     // MARK: - Initialization Tests
 
     func testRoom_InitWithAllFields_SetsCorrectly() async {

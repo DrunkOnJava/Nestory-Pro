@@ -44,6 +44,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       codeCoverageEnabled = "YES"
       onlyGenerateCoverageForSpecifiedTargets = "YES">
+      <TestPlans>
+         <TestPlanReference
+            default = "YES"
+            reference = "container:FullTests.xctestplan">
+         </TestPlanReference>
+         <TestPlanReference
+            reference = "container:CriticalPath.xctestplan">
+         </TestPlanReference>
+      </TestPlans>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"

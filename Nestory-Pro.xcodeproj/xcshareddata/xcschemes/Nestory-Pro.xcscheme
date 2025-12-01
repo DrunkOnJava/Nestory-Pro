@@ -60,11 +60,11 @@
       onlyGenerateCoverageForSpecifiedTargets = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:FullTests.xctestplan"
-            default = "YES">
+            default = "YES"
+            reference = "container:FastTests.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:FastTests.xctestplan">
+            reference = "container:FullTests.xctestplan">
          </TestPlanReference>
          <TestPlanReference
             reference = "container:CriticalPath.xctestplan">
@@ -79,6 +79,31 @@
             ReferencedContainer = "container:Nestory-Pro.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "09BD34CD822D741EBC31A896"
+               BuildableName = "Nestory-ProTests.xctest"
+               BlueprintName = "Nestory-ProTests"
+               ReferencedContainer = "container:Nestory-Pro.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "99F66FDA9B2DAD80E24D1010"
+               BuildableName = "Nestory-ProUITests.xctest"
+               BlueprintName = "Nestory-ProUITests"
+               ReferencedContainer = "container:Nestory-Pro.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
       <CommandLineArguments>
       </CommandLineArguments>
       <CodeCoverageTargets>

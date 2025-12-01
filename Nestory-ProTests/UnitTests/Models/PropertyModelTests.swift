@@ -11,12 +11,6 @@ import SwiftData
 
 final class PropertyModelTests: XCTestCase {
 
-    // MARK: - Test Tags
-
-    override var tags: Set<TestTag> {
-        [.medium, .unit, .model, .critical]
-    }
-
     // MARK: - Initialization Tests
 
     func testProperty_InitWithRequiredFields_SetsCorrectly() async {

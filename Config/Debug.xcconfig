@@ -8,9 +8,13 @@
 DEBUG_INFORMATION_FORMAT = dwarf
 GCC_OPTIMIZATION_LEVEL = 0
 SWIFT_OPTIMIZATION_LEVEL = -Onone
+SWIFT_COMPILATION_MODE = singlefile
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG $(inherited)
 ENABLE_TESTABILITY = YES
 ONLY_ACTIVE_ARCH = YES
+
+// MARK: - Compiler Performance Warnings
+OTHER_SWIFT_FLAGS = $(inherited) -Xfrontend -warn-long-function-bodies=100 -Xfrontend -warn-long-expression-type-checking=100
 
 // MARK: - Debug Assertions
 ENABLE_NS_ASSERTIONS = YES

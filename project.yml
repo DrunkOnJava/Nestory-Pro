@@ -169,6 +169,11 @@ schemes:
       gatherCoverageData: true
       coverageTargets:
         - Nestory-Pro
+      testPlans:
+        - path: FastTests.xctestplan
+          defaultPlan: true
+        - path: FullTests.xctestplan
+        - path: CriticalPath.xctestplan
       targets:
         - name: Nestory-ProTests
           parallelizable: true
@@ -195,6 +200,10 @@ schemes:
       gatherCoverageData: true
       coverageTargets:
         - Nestory-Pro
+      testPlans:
+        - path: FullTests.xctestplan
+          defaultPlan: true
+        - path: CriticalPath.xctestplan
       targets:
         - name: Nestory-ProTests
           parallelizable: true
@@ -214,6 +223,9 @@ schemes:
       config: Release
     test:
       config: Release
+      testPlans:
+        - path: FullTests.xctestplan
+          defaultPlan: true
       targets:
         - name: Nestory-ProTests
     profile:

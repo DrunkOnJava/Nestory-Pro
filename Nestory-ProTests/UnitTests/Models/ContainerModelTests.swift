@@ -11,12 +11,6 @@ import SwiftData
 
 final class ContainerModelTests: XCTestCase {
 
-    // MARK: - Test Tags
-
-    override var tags: Set<TestTag> {
-        [.medium, .unit, .model]
-    }
-
     // MARK: - Initialization Tests
 
     func testContainer_InitWithRequiredFields_SetsCorrectly() async {
