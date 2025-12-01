@@ -31,6 +31,7 @@
 		2FE2BEDF749B94EFEFC52319 /* ReportGeneratorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327267283BFF718A45EC5CE6 /* ReportGeneratorService.swift */; };
 		322BDC085471594B9F0FF744 /* ImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82485E7348C260CFB704EFB6 /* ImportService.swift */; };
 		32301D679EFB3CE5B14C5D03 /* LossListUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578190F8881B5359642E4B1A /* LossListUITests.swift */; };
+		329C358CF7A745CC9C9F5F04 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CD67FFFE43E702D741476D /* DesignSystem.swift */; };
 		32DA401A0AB39D241E582AA2 /* BackgroundTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2570E3498A23B43BD087E6 /* BackgroundTaskManager.swift */; };
 		32E7D0FB05806905FE0D6353 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C2F8F8F47295603B6C8487 /* Container.swift */; };
 		33C0B8BC65702DCFA7576500 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B77FDFA4D5F13BE3B7F27F8 /* MainTabView.swift */; };
@@ -104,6 +105,7 @@
 		B5EDE9875D0A69B7B8F59547 /* InventoryTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E45CAC8181A071E6346B31 /* InventoryTab.swift */; };
 		B6E42F69FE9331877A7AA30D /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F42C1ECE2829875FE6D4D69 /* Room.swift */; };
 		B8767C75E3D9CCBCBDF06488 /* FullInventoryReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6465FE38D9A42742BA25A049 /* FullInventoryReportView.swift */; };
+		B87F7BB9C10AC4C28A90AF50 /* ImageCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3B8D07669A4AD1F9AFCC66 /* ImageCacheService.swift */; };
 		B9437A7C7E3EE465704A82ED /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F1A9480C41DB315188E832 /* Item.swift */; };
 		BF5AB99EA9CD75C96BBE5C97 /* PreviewFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB8EBDE3D962AB372DC0F37C /* PreviewFixtures.swift */; };
 		C1E1905D4BD7FB57BEE66D7E /* PhotoCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B641EEA46BA1B2E29EBA9EB /* PhotoCaptureView.swift */; };
@@ -406,6 +408,7 @@
 		5EDBE58809D42510308FDDCD /* data.0~frzLr5TGlmmIqeLtqsphJS_k2LtMaYDYJTKWaMXel4vj5mKlDbdTNkiqwtgGL7oa4FRxYR07Sx-uxNYKGZ3zyA== */ = {isa = PBXFileReference; path = "data.0~frzLr5TGlmmIqeLtqsphJS_k2LtMaYDYJTKWaMXel4vj5mKlDbdTNkiqwtgGL7oa4FRxYR07Sx-uxNYKGZ3zyA=="; sourceTree = "<group>"; };
 		5F1982A9E628FCD51D399BBD /* refs.0~oyZxKvmH4nqxV9lhxzb4pzQKb1wjNJCeRRJ1DcZlVlTwCzzMLgMuE-aobPpLJKsIQN-CXKYqDWHOpfgk4qAm2g== */ = {isa = PBXFileReference; path = "refs.0~oyZxKvmH4nqxV9lhxzb4pzQKb1wjNJCeRRJ1DcZlVlTwCzzMLgMuE-aobPpLJKsIQN-CXKYqDWHOpfgk4qAm2g=="; sourceTree = "<group>"; };
 		5F242D783222882595A09753 /* refs.0~SJti2vbwwqqZcAv--HIZEVc9TIsULCrbTdHARdmxNwHbaJSAygXXkSk8Bk43nHKvhKykPIkfv_zA3Ab_Lleomw== */ = {isa = PBXFileReference; path = "refs.0~SJti2vbwwqqZcAv--HIZEVc9TIsULCrbTdHARdmxNwHbaJSAygXXkSk8Bk43nHKvhKykPIkfv_zA3Ab_Lleomw=="; sourceTree = "<group>"; };
+		5F3B8D07669A4AD1F9AFCC66 /* ImageCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheService.swift; sourceTree = "<group>"; };
 		5FBB3E8D018EE93EB2A66D79 /* data.0~3FBOX-tiKDsw7rzRKE9xGVA1E_HS7g6pfPoA-YKAPwsvPA1EO-1cLqj7wZQziEX-nlUk5QDJRNfDI_S2ptUX8w== */ = {isa = PBXFileReference; path = "data.0~3FBOX-tiKDsw7rzRKE9xGVA1E_HS7g6pfPoA-YKAPwsvPA1EO-1cLqj7wZQziEX-nlUk5QDJRNfDI_S2ptUX8w=="; sourceTree = "<group>"; };
 		5FF2B5CBC65DBA8B692DC350 /* SnapshotHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelpers.swift; sourceTree = "<group>"; };
 		6045213A4A18336C7247624B /* data.0~JNL7sgcfpaZ_jDqsQpAkjfJEBX0OrkWe2cL5Ia9AKe136FS69fbgbrwwUPZWq7i6qLqJkh67BtMDa-dNl59Kwg== */ = {isa = PBXFileReference; path = "data.0~JNL7sgcfpaZ_jDqsQpAkjfJEBX0OrkWe2cL5Ia9AKe136FS69fbgbrwwUPZWq7i6qLqJkh67BtMDa-dNl59Kwg=="; sourceTree = "<group>"; };
@@ -542,6 +545,7 @@
 		93695144650DA95383A702A7 /* refs.0~xPVKX1wdlrHwNGYYeFI64oFBGUYbt75Wmzlnoo1tJOc05OoSJjmjwvHF_4P1088XmqZGBs2hIB7NdFdnLKEc0g== */ = {isa = PBXFileReference; path = "refs.0~xPVKX1wdlrHwNGYYeFI64oFBGUYbt75Wmzlnoo1tJOc05OoSJjmjwvHF_4P1088XmqZGBs2hIB7NdFdnLKEc0g=="; sourceTree = "<group>"; };
 		939050E11A856C8992B15626 /* refs.0~XkzbEbqCo73WLGjFqPhO3rbEH2W7A9QQFSN3dIRp3d04DlnTYTlDXfUbFyiRqcEouVB-kaKpy5FK7LdAHhGs3g== */ = {isa = PBXFileReference; path = "refs.0~XkzbEbqCo73WLGjFqPhO3rbEH2W7A9QQFSN3dIRp3d04DlnTYTlDXfUbFyiRqcEouVB-kaKpy5FK7LdAHhGs3g=="; sourceTree = "<group>"; };
 		939B7F9B90E425D01B635892 /* data.0~woL7KuH8ihBZPO6PmYzmoLF7yATBpZPWW7x5__F6EAO5BPW-BksVnuMalk4F1SrzK41q53DL1ziXX6xProGYAQ== */ = {isa = PBXFileReference; path = "data.0~woL7KuH8ihBZPO6PmYzmoLF7yATBpZPWW7x5__F6EAO5BPW-BksVnuMalk4F1SrzK41q53DL1ziXX6xProGYAQ=="; sourceTree = "<group>"; };
+		93CD67FFFE43E702D741476D /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		94AFD0358E07F0D9E067489D /* refs.0~_J6uecXt04kyoHoiHMbqkuW3dX6tsFh3qrGuMisIq2HhkXlnoYRlJiGuvye_2MPDn2ZS7L4UPMqpNXq-Io-zNw== */ = {isa = PBXFileReference; path = "refs.0~_J6uecXt04kyoHoiHMbqkuW3dX6tsFh3qrGuMisIq2HhkXlnoYRlJiGuvye_2MPDn2ZS7L4UPMqpNXq-Io-zNw=="; sourceTree = "<group>"; };
 		94C0E92B15B924E981EEDF31 /* QuickAddItemSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAddItemSheet.swift; sourceTree = "<group>"; };
 		94E45CAC8181A071E6346B31 /* InventoryTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryTab.swift; sourceTree = "<group>"; };
@@ -934,6 +938,7 @@
 			isa = PBXGroup;
 			children = (
 				1C37771B2E2B900F207DF71B /* AccessibilityIdentifiers.swift */,
+				93CD67FFFE43E702D741476D /* DesignSystem.swift */,
 				595B22268E358E854501860E /* LockScreenView.swift */,
 				664D8D6AC00620F73F9AF5F4 /* SharedComponents.swift */,
 				183A9054338E26E5544BC6EC /* Tips.swift */,
@@ -967,6 +972,7 @@
 				E5564D39A0C20442E873CAF5 /* HapticManager.swift */,
 				37A9140EE071B48193812C1B /* IAPValidator.swift */,
 				FA57A0647D57B571ECBDE50B /* ImageCache.swift */,
+				5F3B8D07669A4AD1F9AFCC66 /* ImageCacheService.swift */,
 				82485E7348C260CFB704EFB6 /* ImportService.swift */,
 				12B5ECB7E89727798B58ABE1 /* KeychainManager.swift */,
 				92EF52A27F13FE4C18093684 /* NetworkMonitor.swift */,
@@ -2135,12 +2141,14 @@
 				DC04339610C996A38F51E7D4 /* ContainerDetailView.swift in Sources */,
 				89EF0B354730EBBC98752F94 /* ContainerEditorSheet.swift in Sources */,
 				10193AD6F5D84CD7DE0F8C91 /* ContextualPaywallSheet.swift in Sources */,
+				329C358CF7A745CC9C9F5F04 /* DesignSystem.swift in Sources */,
 				47D64458E0A568CFB907B78E /* FeedbackService.swift in Sources */,
 				8CD2511B902C0F6D94BF100C /* FeedbackSheet.swift in Sources */,
 				B8767C75E3D9CCBCBDF06488 /* FullInventoryReportView.swift in Sources */,
 				6B76E11AE622BA0A32654562 /* HapticManager.swift in Sources */,
 				FC0C7935C77BD18E902B1EB8 /* IAPValidator.swift in Sources */,
 				458CD34D3AE83E0A091E7C3E /* ImageCache.swift in Sources */,
+				B87F7BB9C10AC4C28A90AF50 /* ImageCacheService.swift in Sources */,
 				322BDC085471594B9F0FF744 /* ImportService.swift in Sources */,
 				48327A6B597688B6209194F8 /* IncidentDetailsSheet.swift in Sources */,
 				B5EDE9875D0A69B7B8F59547 /* InventoryTab.swift in Sources */,

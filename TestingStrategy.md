@@ -204,36 +204,47 @@ final class PersistenceIntegrationTests: XCTestCase {
 - ❌ Business logic (use unit tests)
 - ❌ Visual appearance (use snapshot tests)
 
-**Example: UI Test**
+**Example: UI Test (Swift 6 Pattern)**
+
+> **Important:** Swift 6 strict concurrency requires careful actor isolation for UI tests.
+> See "Swift 6 Concurrency in UI Tests" section below for details.
+
 ```swift
 final class MainTabViewUITests: XCTestCase {
-    
-    var app: XCUIApplication!
-    
+
+    // IMPORTANT: Use nonisolated(unsafe) for app property in Swift 6
+    nonisolated(unsafe) var app: XCUIApplication!
+
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments = ["--uitesting"]
         app.launch()
     }
-    
+
+    override func tearDownWithError() throws {
+        app = nil
+    }
+
+    // Test methods that use XCUIApplication need @MainActor
+    @MainActor
     func testTabNavigation_AllTabsAccessible() throws {
         // Verify all tabs exist
         XCTAssertTrue(app.tabBars.buttons["Inventory"].exists)
         XCTAssertTrue(app.tabBars.buttons["Capture"].exists)
         XCTAssertTrue(app.tabBars.buttons["Reports"].exists)
         XCTAssertTrue(app.tabBars.buttons["Settings"].exists)
-        
+
         // Navigate to each tab
         app.tabBars.buttons["Capture"].tap()
         XCTAssertTrue(app.staticTexts["Capture"].exists)
-        
+
         app.tabBars.buttons["Reports"].tap()
         XCTAssertTrue(app.staticTexts["Reports"].exists)
-        
+
         app.tabBars.buttons["Settings"].tap()
         XCTAssertTrue(app.staticTexts["Settings"].exists)
-        
+
         app.tabBars.buttons["Inventory"].tap()
         XCTAssertTrue(app.staticTexts["Inventory"].exists)
     }
@@ -344,6 +355,111 @@ func testMainActorAsync() async {
         XCTAssertNotNil(viewModel)
     }
 }
+```
+
+## Swift 6 Concurrency in UI Tests
+
+> **Updated: 2025-12-01** - This section documents the correct pattern for UI tests with Swift 6 strict concurrency.
+
+### The Problem
+
+Swift 6 with `SWIFT_STRICT_CONCURRENCY = complete` and `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` causes conflicts with XCTestCase:
+
+```
+error: main actor-isolated initializer 'init(invocation:)' has different actor isolation
+from nonisolated overridden declaration
+```
+
+This happens because:
+1. XCTestCase lifecycle methods (`init`, `setUp`, `tearDown`) are `nonisolated`
+2. If the class or xcconfig defaults to `@MainActor`, the implicit init becomes MainActor-isolated
+3. Swift 6 enforces actor isolation consistency for overrides
+
+### The Solution
+
+**UITests.xcconfig** should use `nonisolated` default (not `MainActor`):
+
+```xcconfig
+// Config/UITests.xcconfig
+SWIFT_VERSION = 6.0
+SWIFT_STRICT_CONCURRENCY = complete
+SWIFT_APPROACHABLE_CONCURRENCY = YES
+SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated
+```
+
+**Test classes** follow this pattern:
+
+```swift
+final class MyUITests: XCTestCase {
+
+    // 1. Use nonisolated(unsafe) for shared mutable state
+    nonisolated(unsafe) var app: XCUIApplication!
+
+    // 2. setUp/tearDown are plain overrides (no @MainActor)
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
+        app.launch()
+    }
+
+    override func tearDownWithError() throws {
+        app = nil
+    }
+
+    // 3. Test methods that use XCUIApplication need @MainActor
+    @MainActor
+    func testSomething() throws {
+        XCTAssertTrue(app.buttons["MyButton"].exists)
+        app.buttons["MyButton"].tap()
+    }
+
+    // 4. Helper methods using app also need @MainActor
+    @MainActor
+    private func tapButton(_ name: String) {
+        app.buttons[name].tap()
+    }
+}
+```
+
+### Why `nonisolated(unsafe)`?
+
+The `nonisolated(unsafe)` modifier tells Swift:
+- This property can be accessed from any isolation context
+- You (the developer) guarantee thread-safety
+
+This is safe for UI tests because:
+- Tests run sequentially on the main thread
+- `setUp` runs before each test, `tearDown` after
+- No concurrent access to `app` occurs
+
+### Pattern Summary
+
+| Element | Annotation | Reason |
+|---------|------------|--------|
+| `var app: XCUIApplication!` | `nonisolated(unsafe)` | Accessed from setUp (nonisolated) and tests (@MainActor) |
+| `setUpWithError()` | Plain override | Must match XCTestCase's nonisolated signature |
+| `tearDownWithError()` | Plain override | Must match XCTestCase's nonisolated signature |
+| `func testXxx()` | `@MainActor` | XCUIApplication APIs require main thread |
+| Helper methods using `app` | `@MainActor` | Consistency with test methods |
+
+### Common Mistakes
+
+❌ **Don't do this:**
+```swift
+@MainActor  // Conflicts with XCTestCase lifecycle
+final class MyUITests: XCTestCase { ... }
+```
+
+❌ **Don't do this:**
+```swift
+@MainActor  // Conflicts with nonisolated override
+override func setUpWithError() throws { ... }
+```
+
+❌ **Don't do this:**
+```swift
+var app: XCUIApplication!  // Without nonisolated(unsafe), causes data race errors
 ```
 
 ## Mocking & Dependency Injection
