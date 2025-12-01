@@ -20,7 +20,7 @@ extension XCTestCase {
     ///   - block: Test code to execute
     func testWithTimeout(
         _ customTimeout: TimeInterval? = nil,
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line,
         _ block: () throws -> Void
     ) rethrows {
@@ -56,7 +56,7 @@ extension XCTestCase {
     @MainActor
     func testWithTimeoutAsync(
         _ customTimeout: TimeInterval? = nil,
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line,
         _ block: () async throws -> Void
     ) async rethrows {
@@ -151,7 +151,7 @@ extension XCTestCase {
     func assertPerformance(
         lessThan threshold: TimeInterval,
         named name: String = "Operation",
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line,
         _ block: () throws -> Void
     ) rethrows {
@@ -173,7 +173,7 @@ extension XCTestCase {
     func assertPerformanceAsync(
         lessThan threshold: TimeInterval,
         named name: String = "Operation",
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line,
         _ block: () async throws -> Void
     ) async rethrows {

@@ -26,5 +26,5 @@ MTL_FAST_MATH = YES
 
 // MARK: - Thread Safety
 // TODO: Re-enable after fixing OnboardingSheetControllerTests concurrency bug
-// ENABLE_THREAD_SANITIZER = YES
+ENABLE_THREAD_SANITIZER = NO
 ENABLE_MAIN_THREAD_CHECKER = YES
