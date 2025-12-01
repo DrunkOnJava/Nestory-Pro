@@ -69,8 +69,8 @@ COMMIT RULES:
 | Version | Theme | Tasks | Target | Pricing Tier |
 |---------|-------|-------|--------|--------------|
 | **v1.0** | Launch | ✅ 105 done | ✅ Shipped | Free / Pro |
-| **v1.1** | Stability & Swift 6 | 9 tasks | Q1 2026 | Pro |
-| **v1.2** | UX Polish & Onboarding | 5 tasks | Q1 2026 | Pro |
+| **v1.1** | Stability & Swift 6 | ✅ 9 done | ✅ Complete | Pro |
+| **v1.2** | UX Polish & Onboarding | 1 active, 78 Phase 12, 4 deferred | Q1 2026 | Pro |
 | **v1.3** | Pro Features v2 | 5 tasks | Q2 2026 | Pro |
 | **v1.4** | Automation & Extensions | 5 tasks | Q2 2026 | Pro |
 | **v1.5** | Platform Expansion | 4 tasks | Q3 2026 | Pro |
@@ -78,7 +78,7 @@ COMMIT RULES:
 | **v2.1** | Professional Features | 8 tasks | Q1 2027 | Business ($9.99/mo) |
 | **v3.0** | Enterprise | 8 tasks | Q2 2027 | Enterprise (Contact) |
 
-**Total: 52 pending tasks** (approximate; excludes 15 strikethrough tasks already done in v1.0)
+**Total: 117 pending tasks** (1 active + 78 Phase 12 + 4 deferred snapshots + 34 future work; v1.2-v3.0)
 
 ---
 
@@ -86,50 +86,9 @@ COMMIT RULES:
 
 > **Theme:** Technical foundation, Swift 6 migration, CloudKit readiness
 > **Goal:** Rock-solid stability before adding new features
-> **Tasks:** 9 | **Dependencies:** Minimal (P1-00 package setup first)
-> **STATUS:** ✅ **COMPLETE** (2025-11-30)
+> **STATUS:** ✅ **COMPLETE** (2025-11-30) - **Archived to TODO-COMPLETE.md**
 
-### v1.1 Completion Summary
-
-**Completed Work:**
-- ✅ Swift 6 strict concurrency migration (zero warnings)
-- ✅ XcodeGen project generation (single source of truth)
-- ✅ xcconfig-based build settings (Debug/Beta/Release)
-- ✅ CloudKit sync monitoring
-- ✅ swift-snapshot-testing package integration
-- ✅ Fastlane Beta scheme configuration validated
-- ✅ Onboarding sheet dismissal flow improved
-- ✅ PreviewContainer schema compatibility fix (v1.2 support)
-
-**Deferred to v1.2:**
-- Snapshot test baselines (9.3.1-9.3.4) - Waiting for Property/Container feature completion
-
-**Commits:**
-- f2f13b5: fix(onboarding): improve sheet dismissal flow
-- d9a1271: chore(fastlane): use Nestory-Pro-Beta scheme for TestFlight
-- 25d4b97: fix(tests): update PreviewContainer for v1.2 schema, defer snapshots
-
----
-
-### Snapshot Testing (Unblock 9.3.x)
-
-#### [x] P1-00 – Add swift-snapshot-testing package ✓ 2025-11-29
-- Checked-out-by: Claude (v1.1 session)
-- Blocked-by: —
-- Status: **Complete** (via XcodeGen project.yml)
-
-**Goal:** Unblock deferred snapshot tests from v1.0.
-
-**Subtasks:**
-- [x] Add `swift-snapshot-testing` package dependency to Xcode project ✓ 2025-11-29
-  - Added via `project.yml` packages section (XcodeGen)
-  - Version: 1.17.0+ (resolved to 1.18.7)
-- [x] Configure snapshot test directories and helpers ✓ 2025-11-29
-  - Created `Nestory-ProTests/SnapshotTests/SnapshotHelpers.swift`
-  - Defined `SnapshotDevice` enum with standard configurations
-- [x] Verify package builds on all test targets ✓ 2025-11-29
-  - Build succeeded with swift-snapshot-testing dependency
-- [x] Document snapshot testing workflow in CLAUDE.md ✓ 2025-11-29
+All v1.1 tasks (P1-00 through P1-04) have been completed and moved to TODO-COMPLETE.md for reference.
 
 ### Snapshot Tests - DEFERRED TO v1.2
 
@@ -147,131 +106,6 @@ COMMIT RULES:
 - [ ] **9.3.4** Add Reports tab snapshot → **Moved to v1.2**
   - Blocked-by: P2-02
 
-### Foundation Tasks
-
-#### [x] P1-01 – Wire xcconfig-based build settings ✓ 2025-11-29
-- Checked-out-by: Claude (v1.1 session)
-- Blocked-by: —
-- Status: **Complete** (via XcodeGen project.yml)
-
-**Goal:** Move all build settings to `Config/*.xcconfig` for maintainability.
-
-**Subtasks:**
-- [x] Create `Config/Common.xcconfig`, `Debug.xcconfig`, `Beta.xcconfig`, `Release.xcconfig` ✓ 2025-11-29
-  - Also created `Config/Tests.xcconfig` for test targets
-  - Common.xcconfig: team, versioning, Swift 6, strict concurrency
-  - Debug.xcconfig: thread sanitizer, main thread checker
-  - Beta.xcconfig: optimized with debug symbols, main thread checker
-  - Release.xcconfig: full optimization, no sanitizers
-- [x] Populate with strict warnings, concurrency, optimization settings ✓ 2025-11-29
-  - `SWIFT_STRICT_CONCURRENCY = complete`
-  - `SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full`
-  - `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`
-- [x] Attach configs to all configurations in project (app + tests) ✓ 2025-11-29
-  - Wired via `project.yml` configFiles section (XcodeGen)
-  - Debug → Config/Debug.xcconfig
-  - Release → Config/Release.xcconfig
-  - Beta → Config/Beta.xcconfig
-  - Tests → Config/Tests.xcconfig
-- [x] Build each config (Debug/Beta/Release) and fix any errors ✓ 2025-11-29
-  - Debug build succeeded (13.988 sec)
-  - Swift 6 mode active with strict concurrency
-
----
-
-#### [x] P1-02 – Create "Nestory-Pro Beta" configuration and scheme ✓ 2025-11-29
-- Checked-out-by: Claude (v1.1 session)
-- Blocked-by: ~~P1-01~~ ✓
-- Status: **Complete** (via XcodeGen project.yml)
-
-**Goal:** Clean separation between Debug, Beta (TestFlight), and Release.
-
-**Subtasks:**
-- [x] Duplicate Release → create `Beta` configuration for all targets ✓ 2025-11-29
-  - Created via `project.yml` configs section (XcodeGen)
-  - Beta: release type with Beta.xcconfig
-- [x] Create `Nestory-Pro Beta` scheme bound to `Beta` config ✓ 2025-11-29
-  - Created via `project.yml` schemes section (XcodeGen)
-  - Scheme name: Nestory-Pro-Beta
-- [x] Confirm Fastlane builds Beta with new scheme/config ✓ 2025-11-30
-  - Updated beta lane to use "Nestory-Pro-Beta" scheme
-  - Validated against Fastlane best practices (Context7)
-
----
-
-#### [x] P1-03 – Swift 6 migration & strict concurrency ✓ 2025-11-30
-- Checked-out-by: Claude (v1.1 session)
-- Blocked-by: ~~P1-01~~ ✓
-- Status: **Complete** (Swift 6 mode active, all tests passing)
-
-**Goal:** Upgrade to Swift 6 strict concurrency; eliminate data races.
-
-**Subtasks:**
-- [x] Set `SWIFT_STRICT_CONCURRENCY = complete` in Common config ✓ 2025-11-29
-  - Active via project.yml → Config/Common.xcconfig
-- [x] Set `SWIFT_ENFORCE_EXCLUSIVE_ACCESS = full` ✓ 2025-11-29
-  - Active via project.yml → Config/Common.xcconfig
-- [x] Enable Thread Sanitizer + Main Thread Checker for Debug Run ✓ 2025-11-29
-  - Active via Config/Debug.xcconfig
-- [x] Enable same for Test actions (unit + UI tests) ✓ 2025-11-29
-  - Active via Config/Tests.xcconfig
-- [x] Fix app module Sendable warnings (value types marked nonisolated) ✓ 2025-11-30
-- [x] Fix OCRServiceTests.swift (~40 property access errors) ✓ 2025-11-30
-- [x] Fix ViewSnapshotTests.swift (16 data race errors) ✓ 2025-11-30
-- [x] Use `@ModelActor` for background SwiftData operations ✓ 2025-11-30
-  - Architecture uses @MainActor for all SwiftData ops (simpler, avoids races)
-  - @ModelActor reserved for future heavy batch operations if needed
-- [x] Update `@Observable` classes for strict isolation ✓ 2025-11-30
-  - All ViewModels use @MainActor @Observable pattern
-- [x] Run test suite and fix remaining concurrency warnings ✓ 2025-11-30
-- [x] Switch language mode Swift 5.0 → Swift 6.0 ✓ 2025-11-29
-  - Active via project.yml: `SWIFT_VERSION: 6.0`
-
----
-
-#### [x] P1-04 – Background modes & entitlements cleanup ✓ 2025-11-29
-- Checked-out-by: Claude (v1.1 session)
-- Blocked-by: —
-- Status: **Complete**
-
-**Goal:** Ship only capabilities we use; reduce signing/validation risk.
-
-**Subtasks:**
-- [x] Audit push notifications / background modes usage ✓ 2025-11-29
-  - Found: `UIBackgroundModes: remote-notification` (unused - CloudKit disabled)
-  - Found: `aps-environment: development` (unused - no push notifications)
-- [x] If unused, remove `UIBackgroundModes` from Info.plist ✓ 2025-11-29
-  - Removed entire `UIBackgroundModes` array from Info.plist
-- [x] Remove unused capabilities from Signing & Capabilities ✓ 2025-11-29
-  - Removed `aps-environment` from entitlements
-  - Kept iCloud entitlements (needed for v1.1 CloudKit)
-- [x] Confirm archive + validation still pass ✓ 2025-11-29
-  - Build succeeded with modified entitlements
-
----
-
-### v1.1 Release Checklist
-
-**STATUS: ✅ COMPLETE (2025-11-30)**
-
-All v1.1 foundation tasks completed:
-- [x] Swift 6 strict concurrency enabled, all tests passing ✓ 2025-11-30
-- [x] CloudKit sync monitoring in place (CloudKitSyncMonitor.swift) ✓ 2025-11-29
-- [x] Build configurations via xcconfig files attached to project ✓ 2025-11-29
-  - Wired via XcodeGen project.yml
-- [x] TestFlight beta validated with Nestory-Pro-Beta scheme ✓ 2025-11-30
-  - Fastlane configuration validated against best practices (Context7)
-- [-] Snapshot tests (9.3.x) → **Deferred to v1.2** (P2-02)
-  - Reason: v1.2 schema changes require full Property/Container implementation first
-  - Test scaffolding complete, baselines deferred until UI features stable
-
-### Infrastructure Fixes (Discovered During v1.1)
-
-- [x] **TestFixtures.swift crash** - Fixed TestContainer.empty() ✓ 2025-11-29
-  - Root cause: TestContainer was creating Schema directly instead of using NestoryModelContainer
-  - Fix: Changed to use `NestoryModelContainer.createForTesting()` for VersionedSchema consistency
-  - ConcurrencyTests now pass (12 tests, 52.957 sec)
-
 ---
 
 ## v1.2 – UX Polish & Onboarding
@@ -280,40 +114,7 @@ All v1.1 foundation tasks completed:
 > **Goal:** Reduce time-to-value for new users
 > **Tasks:** 5 | **Dependencies:** v1.1 foundation
 
-#### [x] P2-01 – First-time user onboarding flow ✓ 2025-11-30
-- Checked-out-by: Claude (session-2025-11-30)
-- Blocked-by: P1-01 ✓
-- Status: **Complete**
-
-**Goal:** Smooth path from install → first item → "Aha!" moment.
-
-**Subtasks:**
-- [x] Design 3-screen lightweight onboarding ✓ 2025-11-30
-  - Screen 1: Welcome to Nestory (app introduction)
-  - Screen 2: How It Works (3 features: Capture, Organize, Export)
-  - Screen 3: Get Started (tips for first item, swipe actions, documentation score)
-- [x] Wire onboarding into app launch flow ✓ 2025-11-30
-  - Shows automatically when `!hasCompletedOnboarding`
-  - Sheet presentation with .interactiveDismissDisabled()
-- [x] Track `hasCompletedOnboarding` in SettingsManager ✓ 2025-11-30
-  - Already existed at line 57 of SettingsManager.swift
-  - Uses @AppStorage for persistence
-- [x] Add FirstItemCaptureTip for TipKit integration ✓ 2025-11-30
-  - Shows after onboarding when item count == 0
-  - Includes SwipeActions hint in message
-- [x] Re-trigger option in Settings ✓ 2025-11-30
-  - "Reset Onboarding" button in About section (DEBUG only)
-  - Resets hasCompletedOnboarding flag
-
-**Files Created:**
-- `Nestory-Pro/Views/Onboarding/OnboardingView.swift` (404 lines)
-
-**Code Quality:**
-- Nested enum structure for AccessibilityIdentifiers.Onboarding
-- Smooth animations with .spring() and .easeOut()
-- Page indicators with scaleEffect
-- Skip button, Back/Next navigation
-- Proper @Environment injection for AppEnvironment
+**Completed:** P2-01, P2-05, P4-07, P5-03 → **Archived to TODO-COMPLETE.md**
 
 ---
 
@@ -373,122 +174,985 @@ All v1.1 foundation tasks completed:
 
 ---
 
-#### [x] P2-05 – Tags & quick categorization ✓ 2025-11-30
-- Checked-out-by: Claude (session-2025-11-30)
-- Blocked-by: P2-03 ✓
-- Status: **Complete**
+## v1.2 – Phase 12: Visual Polish & Presentation Layer
 
-**Goal:** Flexible tagging that doesn't feel like a database UI.
+> **Theme:** Transform functional UI into a cohesive, professionally designed app experience
+> **Goal:** Build new hierarchy views with polish from day 1, then retrofit existing views
+> **Strategy:** Design system → ViewModels → Views → Cross-cutting concerns
+> **Tasks:** 78 subtasks across 15 major sections (P2-06 through P2-20)
+> **Dependencies:** P2-02 (Property/Container hierarchy) MUST be complete
+> **Target:** Q1 2026
 
-**Subtasks:**
-- [x] Define `Tag` model with Item relationship ✓ 2025-11-30
-  - Tag.swift with id, name, colorHex, isFavorite, createdAt
-  - Many-to-many relationship with Item via tagObjects
-  - Validation for name and colorHex format
-- [x] Implement pill-style tag UI on item detail ✓ 2025-11-30
-  - TagPillView: Single capsule with color and optional remove button
-  - TagFlowView: Horizontal wrapping layout using FlowLayout
-  - TagEditorSheet: Full-featured tag management
-- [x] Tag favorites: "Essential", "High value", "Electronics", "Insurance-critical" ✓ 2025-11-30
-  - Predefined in Tag.defaultFavorites
-  - Tag.createDefaultTags(in:) for new user setup
-- [x] Add tag-based filtering view ✓ 2025-11-30
-  - Tags section added to ItemDetailView
-  - Inline tag removal with "x" button
-  - "+" button to open TagEditorSheet
+### Phase 12 Overview
 
-**Files Created:**
-- `Nestory-Pro/Models/Tag.swift` (148 lines)
-- `Nestory-Pro/Views/Tags/TagPillView.swift` (372 lines)
+**What This Phase Delivers:**
+- Unified design system (colors, typography, metrics, animations, haptics)
+- Rich presentation models in ViewModels (keeps views lean)
+- Card-based, modern layouts across all screens
+- Comprehensive accessibility support (VoiceOver, Dynamic Type, Reduce Motion)
+- Loading states, error states, empty states for all views
+- Smooth animations and haptic feedback
+- Performance optimizations for large inventories
 
----
+**Implementation Order:**
+1. **Foundation** (P2-06, P2-07): Design system + presentation models
+2. **New Views** (P2-08): Polish new hierarchy views (Property/Container/Room detail)
+3. **Retrofit Existing** (P2-09 to P2-13): Inventory, Item Detail, Capture, Forms, Settings, Reports
+4. **Cross-Cutting** (P2-14 to P2-18): Accessibility, Animations, Haptics, Performance
+5. **Testing & Integration** (P2-19, P2-20): Comprehensive testing, project integration
 
-#### [x] P4-07 – In-app feedback & support ✓ 2025-11-30
-- Checked-out-by: Claude (v1.1 session)
-- Blocked-by: P2-06 ✓
-- Status: **Complete**
-
-**Goal:** Channel user feedback directly to you.
-
-**Subtasks:**
-- [x] Add "Send feedback" and "Report a problem" in Settings ✓ 2025-11-30
-  - Added FeedbackSheet with category selection
-  - Added "Report a Problem" button in Settings
-- [x] Pre-fill device/app info in message body ✓ 2025-11-30
-  - FeedbackService generates device model, iOS version, app version, storage info
-  - Email body includes formatted device info section
-- [x] Optional email inbox or ticketing integration ✓ 2025-11-30
-  - Uses mailto: URLs to open system email client
-  - Support email: support@nestory.app
-- [x] Track feedback categories for roadmap ✓ 2025-11-30
-  - FeedbackCategory enum with logging
-  - logFeedbackEvent() for future analytics integration
-
-**Files Created:**
-- `Nestory-Pro/Services/FeedbackService.swift` (234 lines) - Device info, email URL generation, error handling
-- `Nestory-Pro/Views/Settings/FeedbackSheet.swift` (134 lines) - Category selection UI with error alerts
-
-**Code Quality Improvements Applied:**
-- Refactored FeedbackService to Sendable struct (Swift 6 strict concurrency)
-- Added comprehensive error logging (URL creation, email opening, disk space)
-- Added user-facing error alerts with UIPasteboard fallback
-- Consolidated duplicate email-opening logic
-- Simplified FeedbackCategory enum (24 → 3 lines)
-- Added comprehensive API documentation
-- Improved disk space error messages with detailed logging
-
-**Support Site Deployed:**
-- URL: https://nestory-support.netlify.app
-- Source: `/Users/griffin/Projects/Nestory/nestory-support-site`
-- Pages: FAQ (index.html), Privacy Policy, Terms of Service
-- Netlify project: nestory-support
-
-**PR Review Completed:**
-- 4 specialized agents: comment-analyzer, type-design-analyzer, silent-failure-hunter, code-simplifier
-- All critical and important issues resolved
-- Build verified: SUCCESS (9.2s)
+**Architectural Principles:**
+- Business logic stays in ViewModels (no SF Symbols, colors, or layout in VMs)
+- Views stay declarative and lean (driven by VM presentation models)
+- Reusable components in `SharedUI/`
+- State-driven UI (enum states, not boolean flags)
+- Accessibility-first (VoiceOver labels, Dynamic Type, semantic colors)
 
 ---
 
-#### [x] P5-03 – Quick actions: inventory tasks & reminders ✓ 2025-11-30
-- Checked-out-by: Claude (session-2025-11-30)
-- Blocked-by: P2-06 ✓
-- Status: **Complete**
+### P2-06 – Design System Foundation
 
-**Goal:** Transform static database into ongoing companion.
+> **Goal:** Create a unified design language that scales across the entire app
+> **Blocked-by:** P2-02 ✓
+> **Files:** `SharedUI/DesignSystem.swift`, `Assets.xcassets`, `SharedUI/SharedComponents.swift`
+
+#### [ ] P2-06-1 – Define NestoryTheme design tokens
+- Checked-out-by: (available)
+- Blocked-by: P2-02
+- Status: Pending
+
+**Goal:** Create complete design token set (colors, typography, metrics, shadows, animations, haptics)
 
 **Subtasks:**
-- [x] Add warranty expiry reminders ✓ 2025-11-30
-  - ReminderService schedules notifications 7 days before expiry
-  - UNUserNotificationCenter integration with categories
-  - Request authorization flow
-- [x] Implement reminders list view ("Things to review this month") ✓ 2025-11-30
-  - RemindersView with 3 categories: Warranty Expiring, Needs Review, Missing Info
-  - Expandable category cards with item lists
-  - Summary header showing total items needing attention
-- [x] Integrate local notifications ✓ 2025-11-30
-  - scheduleWarrantyReminder(for:) schedules at 9 AM
-  - scheduleAllWarrantyReminders(context:) bulk scheduling
-  - Notification actions: View Item, Dismiss
-- [x] Respect feature flags for Pro reminder features ✓ 2025-11-30
-  - NotificationSettingsSheet for managing preferences
-  - Clear all reminders option
+- [ ] Create `SharedUI/DesignSystem.swift` with `NestoryTheme` enum
+- [ ] Define `NestoryTheme.Colors` (background, cardBackground, accent, border, muted, chipBackground, success, warning, error, info)
+- [ ] Define `NestoryTheme.Metrics` (corner radii, padding, spacing, icon sizes, shadow properties)
+- [ ] Define `NestoryTheme.Typography` (sectionTitle, cardTitle, label, value, caption, footnote)
+- [ ] Define `NestoryTheme.Shadow` struct (card, elevated, none)
+- [ ] Define `NestoryTheme.Animation.Duration` (quick: 0.2s, standard: 0.35s, slow: 0.5s)
+- [ ] Define `NestoryTheme.Haptics.Pattern` enum (success, error, warning, selection, impact)
+- [ ] Add color assets to `Assets.xcassets` with light + dark variants
+- [ ] Add unit tests for design token accessibility (contrast ratios)
+- [ ] Document usage in code comments
 
-**Files Created:**
-- `Nestory-Pro/Services/ReminderService.swift` (238 lines)
-- `Nestory-Pro/Views/Reminders/RemindersView.swift` (421 lines)
+**Implementation:** See CLAUDE.md Phase 12 section for complete code example
 
-**Navigation:**
-- Bell icon in Inventory tab toolbar links to RemindersView
+---
+
+#### [ ] P2-06-2 – Create reusable card modifiers
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Goal:** Consistent card styling across all views
+
+**Subtasks:**
+- [ ] Implement `CardBackgroundModifier` (standard card with padding, rounded corners, shadow)
+- [ ] Implement `LoadingCardModifier` (skeleton placeholder with `.redacted(reason: .placeholder)`)
+- [ ] Implement `ErrorCardModifier` (red-tinted error state)
+- [ ] Implement `EmptyStateCardModifier` (centered content for empty states)
+- [ ] Create View extensions: `.cardStyle()`, `.loadingCard()`, `.errorCard()`, `.emptyStateCard()`
+- [ ] Create `.sectionHeader(_:systemImage:)` extension for consistent section titles
+- [ ] Add preview examples showing all card variants
+- [ ] Test in light + dark mode
+
+**Files:** `SharedUI/SharedComponents.swift`
+
+---
+
+#### [ ] P2-06-3 – Standardize backgrounds & layout scaffolding
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Goal:** Consistent layout patterns for all screens
+
+**Subtasks:**
+- [ ] Define standard background: `NestoryTheme.Colors.background.ignoresSafeArea()`
+- [ ] Create `StandardScrollLayout` wrapper component (ScrollView + VStack + padding)
+- [ ] Document navigation bar appearance standards (`.large` for tabs, `.inline` for detail)
+- [ ] Add layout preview examples
+
+---
+
+### P2-07 – ViewModel Presentation Models
+
+> **Goal:** Rich, presentation-ready models in ViewModels (keeps views declarative and lean)
+> **Blocked-by:** P2-06-1 ✓
+> **Files:** All existing ViewModels
+
+#### [ ] P2-07-1 – InventoryTabViewModel: Sections & metadata
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Goal:** Group items into sections, provide search metadata, item limit warnings
+
+**Presentation Models to Add:**
+- `InventorySection` (id, kind, title, subtitle, items, totalValue, itemCount)
+- `SearchMatchMetadata` (matchedRoomName, matchedCategoryName, valueFilterDescription, plainTextTerms)
+- `ItemLimitWarningDisplay` (style: .none/.soft/.hard, message, detail, actionTitle)
+
+**Computed Properties:**
+- [ ] `groupedSections: [InventorySection]` - Group `filteredItems` by room/property
+- [ ] `activeSearchMetadata: SearchMatchMetadata` - Parse search text for filter chips
+- [ ] `itemLimitWarningDisplay: ItemLimitWarningDisplay` - Map from `ItemLimitWarningLevel`
+
+**Tests:**
+- [ ] Unit tests for grouping logic (empty, single room, multiple rooms)
+- [ ] Unit tests for search metadata parsing
+- [ ] Unit tests for warning display mapping
+
+---
+
+#### [ ] P2-07-2 – CaptureTabViewModel: Modes & statuses
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Goal:** Replace boolean flags with semantic state enums
+
+**Presentation Models to Add:**
+- `CaptureMode` enum (.idle, .receipt, .barcode, .itemPhotos, .manual)
+- `CaptureStatus` enum (.ready, .scanning, .processing(String), .success(String), .error(String))
+- `CaptureActionCard` struct (kind, title, subtitle, systemImage, isPrimary)
+
+**State Management:**
+- [ ] Add `@Published private(set) var mode: CaptureMode = .idle`
+- [ ] Add `@Published private(set) var status: CaptureStatus = .ready`
+- [ ] Implement `captureCards: [CaptureActionCard]` computed property
+- [ ] Add mode transition methods: `startReceiptCapture()`, `startBarcodeScanner()`, etc.
+- [ ] Add `finishCapture(success:)`, `failCapture(error:)` with auto-reset
+
+**Tests:**
+- [ ] Unit tests for mode transitions
+- [ ] Unit tests for status updates
+
+---
+
+#### [ ] P2-07-3 – AddItemViewModel: Form metadata & validation
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Goal:** Drive form layout and validation from ViewModel
+
+**Presentation Models to Add:**
+- `AddItemField` enum (all form fields with `displayName`, `isRequired`)
+- `AddItemSection` struct (title, fields array)
+- `FieldValidationState` struct (level: .ok/.warning/.error, message)
+
+**Computed Properties & Methods:**
+- [ ] `formSections: [AddItemSection]` - "Basics", "Value & Warranty", "Additional Details"
+- [ ] `validationState(for: AddItemField) -> FieldValidationState`
+- [ ] `canSave: Bool` - True if no error-level validations
+
+**Validation Rules:**
+- [ ] Name required (non-empty)
+- [ ] Category required
+- [ ] Purchase price non-negative
+- [ ] Warranty expiry not before purchase date (warning)
+
+**Tests:**
+- [ ] Unit tests for all validation rules
+
+---
+
+#### [ ] P2-07-4 – ReportsTabViewModel: Summary & generation states
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Goal:** State-driven report generation UI
+
+**Presentation Models to Add:**
+- `InventorySummary` struct (totalItems, totalValue, propertiesCount, roomsCount, lastUpdated)
+- `ReportGenerationState` enum (.idle, .generating(String), .ready(URL), .error(String))
+
+**Refactoring:**
+- [ ] Replace boolean flags with `@Published private(set) var fullInventoryState: ReportGenerationState = .idle`
+- [ ] Same for `lossListState`, `warrantyListState`
+- [ ] Implement `makeInventorySummary(items:properties:rooms:)`
+- [ ] Update report generation methods to use state enum
+- [ ] Add user-friendly error messages (not raw error descriptions)
+
+**Tests:**
+- [ ] Unit tests for summary calculations
+- [ ] Unit tests for state transitions
+
+---
+
+#### [ ] P2-07-5 – ItemDetailViewModel: Documentation status & display helpers
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Goal:** Rich documentation metadata and display formatting
+
+**Presentation Models to Add:**
+- `DocumentationStatus` struct with nested types:
+  - `Kind` enum (.receipt, .warranty, .photos, .serialNumber, .insuranceNotes)
+  - `Entry` struct (kind, title, isPresent)
+  - Properties: entries, presentCount, totalCount, completionFraction
+
+**Display Helpers:**
+- [ ] `documentationStatus(for: Item) -> DocumentationStatus`
+- [ ] `locationText(for: Item) -> String?` - "Property › Room › Container"
+- [ ] `warrantyStatusText(expiryDate: Date?) -> String` - "Warranty until..." or "Warranty expired..."
+
+**Tests:**
+- [ ] Unit tests for documentation status (all fields present, partial, none)
+- [ ] Unit tests for location text (nil handling, all levels present)
+- [ ] Unit tests for warranty status (nil, active, expired)
+
+---
+
+### P2-08 – New Hierarchy Views (Build with Polish)
+
+> **Goal:** Build Property/Container/Room detail views with polish from day 1
+> **Blocked-by:** P2-06-2, P2-07-1, P2-02 ✓
+
+#### [ ] P2-08-1 – PropertyDetailView: Card-based layout
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Header: Property icon/color + name + breadcrumb
+- [ ] "Summary" card: total rooms, containers, items, value
+- [ ] "Rooms" card: List with item counts
+- [ ] "Quick Actions" card: Add room, export property report
+- [ ] Empty state: "No rooms yet" + "Add First Room" CTA
+- [ ] Use `.cardStyle()` for all sections, accessibility labels, `#Preview` examples
+
+---
+
+#### [ ] P2-08-2 – RoomDetailView: Card-based layout
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Header: Room icon + name + breadcrumb (Property › Room)
+- [ ] "Summary" card: containers, items, value
+- [ ] "Containers" + "Items" cards with swipe actions (Edit, Delete)
+- [ ] Empty state with "Add Item" / "Add Container" CTAs
+
+---
+
+#### [ ] P2-08-3 – ContainerDetailView: Card-based layout
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Header: Container icon + breadcrumb (Property › Room › Container)
+- [ ] "Summary" + "Contents" cards
+- [ ] Empty state, swipe actions, `#Preview` examples
+
+---
+
+### P2-09 – Inventory Tab & App Shell (Retrofit)
+
+> **Goal:** Modernize existing Inventory tab with cards, sections, rich states
+> **Blocked-by:** P2-06, P2-07-1
+
+#### [ ] P2-09-1 – MainTabView: Modern tab appearance
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] `.symbolVariant(.fill)` for selected tabs
+- [ ] `.toolbarBackground(.visible, for: .tabBar)` for separation
+- [ ] When locked: `.blur(radius: 20)` + `.overlay(Color.black.opacity(0.35))`
+- [ ] Test tab switching animations, accessibility labels
+
+---
+
+#### [ ] P2-09-2 – LockScreenView: System-like design
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] Center card: large lock icon (circular material), "Nestory Locked" title
+- [ ] Subtitle: "Unlock with Face ID or passcode to access your inventory."
+- [ ] Primary button: "Unlock" (`.borderedProminent`, `.controlSize(.large)`)
+- [ ] Face ID failure handling
+
+---
+
+#### [ ] P2-09-3 – InventoryTab: Card sections & states
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Use `groupedSections` from ViewModel, render with `.sectionHeader()`
+- [ ] Each item row: name, breadcrumb, tags, price in `.cardStyle()`
+- [ ] Empty state: hero icon (`archivebox`), "No items yet", "Add Item" button
+- [ ] Loading state: 3 skeleton cards (`.loadingCard()`)
+- [ ] Error state: red error card (`.errorCard()`) with retry
+- [ ] Pull-to-refresh, search metadata chips
+
+---
+
+#### [ ] P2-09-4 – InventoryTab: Item limit warning banner
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Check `itemLimitWarningDisplay.style` from ViewModel
+- [ ] If `.soft`: Yellow banner with "Upgrade" button
+- [ ] If `.hard`: Red banner with "Upgrade Now" button
+- [ ] Dismiss button (stores state in UserDefaults)
+
+---
+
+### P2-10 – Item Detail View (Retrofit)
+
+> **Goal:** Visually rich, documentation-focused ItemDetailView
+> **Blocked-by:** P2-06, P2-07-5
+
+#### [ ] P2-10-1 – ItemDetailView: Hero photo header
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1, P2-07-5
+- Status: Pending
+
+**Subtasks:**
+- [ ] `TabView(.page)` for multiple photos, `RoundedRectangle(24)` clip
+- [ ] Gradient overlay (black → clear), item name + brand/model overlaid
+- [ ] If no photos: placeholder with category icon
+- [ ] Accessibility: "Photo 1 of 3", swipe actions announced
+
+---
+
+#### [ ] P2-10-2 – ItemDetailView: Info cards
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-5
+- Status: Pending
+
+**Subtasks:**
+- [ ] "Basic Info" card: name, brand/model, category, location (use `locationText(for:)`)
+- [ ] Two-column grid: price, purchase date, condition
+- [ ] "Warranty" card: status line (use `warrantyStatusText()`)
+- [ ] Color: expired = red/muted, active = green/accent
+
+---
+
+#### [ ] P2-10-3 – ItemDetailView: Documentation status card
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-5
+- Status: Pending
+
+**Subtasks:**
+- [ ] Show `documentationStatus(for:)` with horizontal progress bar OR circular ring
+- [ ] List entries: receipt ✓, warranty ✓, photos ○, serial ○, notes ✓
+- [ ] "What's missing?" CTA if `completionFraction < 1.0`
+
+---
+
+### P2-11 – Capture Flows (Retrofit)
+
+> **Goal:** Modern, instructional capture UX with clear states
+> **Blocked-by:** P2-06, P2-07-2
+
+#### [ ] P2-11-1 – CaptureTab: Action cards hub
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] Render `captureCards` from ViewModel
+- [ ] Primary card (receipt) larger, secondary cards (barcode, photos, manual) in 2-column grid
+- [ ] "Recent captures" horizontal scroll
+- [ ] Status banner at top (idle/scanning/processing/success/error)
+
+---
+
+#### [ ] P2-11-2 – CaptureTab: Status banner
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] Map `CaptureStatus` to banner: `.ready` hidden, `.scanning` blue spinner, `.success` green checkmark (auto-dismiss 2s), `.error` red with dismiss
+- [ ] Smooth slide-in/out animation
+
+---
+
+#### [ ] P2-11-3 – Camera views: Standardized layout
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Applies to:** `ReceiptCaptureView`, `PhotoCaptureView`, `BarcodeScanView`
+
+**Subtasks:**
+- [ ] Dark background, preview with rounded corners
+- [ ] Instructional text above preview
+- [ ] Bottom control bar: large shutter, Cancel, Flip, Torch
+- [ ] Permission denied state: "Go to Settings" button
+
+---
+
+### P2-12 – Add Item Forms (Retrofit)
+
+> **Goal:** Structured, validating forms driven by VM metadata
+> **Blocked-by:** P2-06, P2-07-3
+
+#### [ ] P2-12-1 – AddItemView: Structured form layout
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-3
+- Status: Pending
+
+**Subtasks:**
+- [ ] Use `formSections` from ViewModel
+- [ ] Implement `fieldView(for: AddItemField)` mapping (TextField, Picker, DatePicker, TextEditor)
+- [ ] For each field, check `validationState(for:)`: `.error` → red tint + caption, `.warning` → yellow tint
+- [ ] Disable "Save" if `!canSave`, show "Fix errors" banner
+- [ ] Keyboard toolbar: Done, Next/Previous field
+
+---
+
+#### [ ] P2-12-2 – QuickAddItemSheet: Minimal form
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-3
+- Status: Pending
+
+**Subtasks:**
+- [ ] Simplified: name, category, room only
+- [ ] Same validation, `.presentationDetents([.medium])`
+- [ ] Toolbar: Cancel, Save (disabled if errors)
+- [ ] Auto-focus on name, discard confirmation
+
+---
+
+### P2-13 – Settings, Paywall, Reports (Retrofit)
+
+> **Goal:** Professional, marketing-quality UI
+> **Blocked-by:** P2-06
+
+#### [ ] P2-13-1 – SettingsTab: Card-based sections
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] `SettingsRowView`: icon (colored circle), title, subtitle, chevron
+- [ ] Sections (`.cardStyle()`): Account & Sync, Backup & Restore, Appearance, Support, About
+- [ ] Inline state: "Last backup: 3 days ago", iCloud sync indicator
+- [ ] When export/import running: `ProgressView` inline
+- [ ] Version number in footer
+
+---
+
+#### [ ] P2-13-2 – ContextualPaywallSheet: Marketing layout
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] Hero icon (120pt), "Upgrade to Nestory Pro" title
+- [ ] Benefits list in card with checkmarks
+- [ ] Primary CTA: "Start 7-Day Free Trial" (`.borderedProminent`, `.controlSize(.large)`)
+- [ ] Secondary: "Maybe Later", legal text in `footnote`
+- [ ] Restore Purchases button, `.presentationDetents([.medium, .large])`
+
+---
+
+#### [ ] P2-13-3 – ReportsTab: Summary dashboard
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-4
+- Status: Pending
+
+**Subtasks:**
+- [ ] Summary cards (from `InventorySummary`): Total Items, Total Value, Properties, Rooms in 2x2 grid
+- [ ] Card groups: "Inventory Reports", "Loss Documentation", "Warranty & Receipts"
+
+---
+
+#### [ ] P2-13-4 – Report generation views: State-driven UI
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2, P2-07-4
+- Status: Pending
+
+**Applies to:** `FullInventoryReportView`, `LossListPDFView`, `WarrantyListView`
+
+**Subtasks:**
+- [ ] Map `ReportGenerationState`: `.idle` → "Generate" button, `.generating(msg)` → spinner + message, `.ready(url)` → document card with Open/Share, `.error(msg)` → red error card with retry
+- [ ] Add print option, AirDrop integration
+
+---
+
+### P2-14 – Accessibility & Inclusive Design
+
+> **Goal:** Ensure all polish improvements are accessible to everyone
+> **Blocked-by:** P2-06, P2-08 to P2-13 (all views complete)
+
+#### [ ] P2-14-1 – VoiceOver labels & hints
+- Checked-out-by: (available)
+- Blocked-by: All view tasks
+- Status: Pending
+
+**Subtasks:**
+- [ ] Audit all interactive elements for `.accessibilityLabel()`
+- [ ] Add `.accessibilityHint()` for non-obvious actions
+- [ ] Examples: "Item card. Double-tap to view details.", "Documentation 60% complete."
+- [ ] Test with VoiceOver enabled on device
+
+---
+
+#### [ ] P2-14-2 – Dynamic Type support
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Test all views at accessibility text sizes (Settings → Accessibility → Larger Text)
+- [ ] Fix truncation issues, use `ViewThatFits` for adaptive layouts
+- [ ] Test at `xxxLarge` and `accessibilityXXXLarge`
+
+---
+
+#### [ ] P2-14-3 – Reduce Motion support
+- Checked-out-by: (available)
+- Blocked-by: P2-15-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Check `@Environment(\.accessibilityReduceMotion)`
+- [ ] Disable spring animations when enabled
+- [ ] Use instant `.opacity` transitions instead of slides
+- [ ] Disable skeleton shimmer, keep essential state changes
+
+---
+
+#### [ ] P2-14-4 – Color contrast audit
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Audit all color combinations for WCAG AA (4.5:1 text, 3:1 UI)
+- [ ] Use contrast checker: https://webaim.org/resources/contrastchecker/
+- [ ] Fix failing combinations, test in light + dark mode
+
+---
+
+#### [ ] P2-14-5 – Accessibility Identifiers (UI Testing)
+- Checked-out-by: (available)
+- Blocked-by: All view tasks
+- Status: Pending
+
+**Subtasks:**
+- [ ] Add `.accessibilityIdentifier()` to key elements (tabs, buttons, cards, forms)
+- [ ] Update `AccessibilityIdentifiers.swift` with constants
+- [ ] Use in UI tests for reliable selection
+
+---
+
+### P2-15 – Animations & Micro-interactions
+
+> **Goal:** Smooth, delightful animations that enhance UX
+> **Blocked-by:** P2-06-1
+
+#### [ ] P2-15-1 – View transitions
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] `.transition(.slide)` for sheets, `.opacity.combined(with: .scale)` for cards
+- [ ] Use `NestoryTheme.Animation.easeOut` for navigation, `.spring` for additions
+- [ ] Test with Reduce Motion (should disable)
+
+---
+
+#### [ ] P2-15-2 – Button press feedback
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Add `.scaleEffect(isPressed ? 0.95 : 1.0)` to all buttons
+- [ ] Apply to cards, primary buttons, tag pills
+- [ ] Test performance with many cards
+
+---
+
+#### [ ] P2-15-3 – Card expansion animations
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] For expandable sections: `.animation(.spring(), value: isExpanded)`
+- [ ] Smooth height transitions
+
+---
+
+#### [ ] P2-15-4 – Loading skeleton animation
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] Shimmer effect: `.redacted(reason: .placeholder)` + animated gradient
+- [ ] Disable if Reduce Motion enabled
+- [ ] Test with 10+ skeleton cards
+
+---
+
+### P2-16 – Haptic Feedback
+
+> **Goal:** Tactile feedback for key interactions
+> **Blocked-by:** P2-06-1
+
+#### [ ] P2-16-1 – Success feedback
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Trigger `NestoryTheme.Haptics.trigger(.success)` for: item added, report generated, backup completed, settings saved
+- [ ] Pair with visual success state
+
+---
+
+#### [ ] P2-16-2 – Error feedback
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Trigger `.error` for validation errors, failures
+- [ ] Pair with visual error state (red banner, error card)
+
+---
+
+#### [ ] P2-16-3 – Selection feedback
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Trigger `.selection` for card taps, tag selections, picker changes, tab switches
+- [ ] Use `.impact(.light)` for toggles
+
+---
+
+### P2-17 – Performance & Loading States
+
+> **Goal:** Smooth performance with large inventories (100+ items)
+> **Blocked-by:** P2-06
+
+#### [ ] P2-17-1 – Image caching strategy
+- Checked-out-by: (available)
+- Blocked-by: P2-06-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Implement `ImageCacheService` (NSCache, max 50MB, LRU eviction)
+- [ ] Load thumbnails (256x256) for lists, full resolution for detail
+- [ ] Background queue for thumbnail generation
+- [ ] Cache clearing in Settings
+
+---
+
+#### [ ] P2-17-2 – Lazy loading for large lists
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] Use `LazyVStack` in all scrolling views
+- [ ] For >50 items: load first 50, then paginate
+- [ ] Loading indicator at bottom, "Load More" fallback
+
+---
+
+#### [ ] P2-17-3 – Progressive disclosure
+- Checked-out-by: (available)
+- Blocked-by: P2-06-2
+- Status: Pending
+
+**Subtasks:**
+- [ ] Hierarchy views: show summary counts initially, load details on expand
+- [ ] Documentation status: percentage first, breakdown on tap
+
+---
+
+### P2-18 – Testing
+
+> **Goal:** Comprehensive test coverage for all new models and UI
+> **Blocked-by:** All implementation tasks
+
+#### [ ] P2-18-1 – ViewModel presentation model tests
+- Checked-out-by: (available)
+- Blocked-by: P2-07
+- Status: Pending
+
+**Subtasks:**
+- [ ] Unit tests for `InventorySection` (grouping, uncategorized, total value)
+- [ ] Unit tests for `SearchMatchMetadata` (parsing filters)
+- [ ] Unit tests for `DocumentationStatus` (completion fraction, entries)
+- [ ] Unit tests for `AddItemField` validation (required, negative price, date validation)
+- [ ] Target: 90%+ coverage for presentation models
+
+---
+
+#### [ ] P2-18-2 – Preview examples
+- Checked-out-by: (available)
+- Blocked-by: All view tasks
+- Status: Pending
+
+**Subtasks:**
+- [ ] Add `#Preview` for every new/modified view (empty, single, multiple, loading, error states)
+- [ ] Use `PreviewContainer` scenarios: `.empty()`, `.withBasicData()`, `.withManyItems(count: 100)`
+
+---
+
+#### [ ] P2-18-3 – Snapshot tests
+- Checked-out-by: (available)
+- Blocked-by: All view tasks, P1-00
+- Status: Pending
+
+**Subtasks:**
+- [ ] Record baselines for: InventoryTab, ItemDetailView, Property/Room/ContainerDetailView, CaptureTab, SettingsTab, Paywall
+- [ ] Use `SnapshotDevice.iPhone17ProMax`, test light + dark
+- [ ] `isRecording = true` for baselines, then `false` for CI
+
+---
+
+#### [ ] P2-18-4 – Accessibility audit
+- Checked-out-by: (available)
+- Blocked-by: P2-14
+- Status: Pending
+
+**Subtasks:**
+- [ ] VoiceOver testing on device (navigate InventoryTab, verify labels/hierarchy)
+- [ ] Dynamic Type testing at `xxxLarge`
+- [ ] Color contrast with Xcode Accessibility Inspector
+- [ ] Reduce Motion testing
+
+---
+
+### P2-19 – Project Integration
+
+> **Goal:** Ensure all new files/components properly integrated into Xcode project
+> **Blocked-by:** All implementation tasks
+
+#### [ ] P2-19-1 – Xcode project file updates
+- Checked-out-by: (available)
+- Blocked-by: All implementation tasks
+- Status: Pending
+
+**Subtasks:**
+- [ ] Verify all new files added to `Nestory-Pro` app target:
+  - `SharedUI/DesignSystem.swift`
+  - `SharedUI/SharedComponents.swift`
+  - Updated ViewModels (InventoryTabViewModel, CaptureTabViewModel, AddItemViewModel, ReportsTabViewModel, ItemDetailViewModel)
+- [ ] Verify all color assets in `Assets.xcassets` (Background, CardBackground, Accent, Border, Muted, ChipBackground, Success, Warning, Error, Info)
+- [ ] Verify light + dark variants for all colors
+- [ ] Run `xcodegen generate` to sync `project.yml` (if using XcodeGen)
+- [ ] Build all schemes (Debug, Beta, Release) and fix errors
+
+---
+
+#### [ ] P2-19-2 – Scheme validation
+- Checked-out-by: (available)
+- Blocked-by: P2-19-1
+- Status: Pending
+
+**Subtasks:**
+- [ ] Build Debug: `xcodebuild -scheme Nestory-Pro -configuration Debug build`
+- [ ] Build Beta: `xcodebuild -scheme Nestory-Pro-Beta -configuration Beta build`
+- [ ] Build Release: `xcodebuild -scheme Nestory-Pro-Release -configuration Release build`
+- [ ] Verify no new warnings
+- [ ] Run tests: `xcodebuild test -scheme Nestory-Pro -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'`
+- [ ] Verify all tests pass
+
+---
+
+### P2-20 – Phase 12 Completion Checklist
+
+> **Goal:** Validate all Phase 12 objectives met before declaring complete
+
+#### [ ] P2-20-1 – Design system validation
+- Checked-out-by: (available)
+- Blocked-by: P2-06
+- Status: Pending
+
+**Checklist:**
+- [ ] `NestoryTheme` tokens defined and documented
+- [ ] All color assets present with light/dark variants
+- [ ] Card modifiers implemented and used consistently
+- [ ] Typography scale applied across app
+- [ ] Animation durations standardized
+- [ ] Haptic patterns implemented
+
+---
+
+#### [ ] P2-20-2 – ViewModel presentation models validation
+- Checked-out-by: (available)
+- Blocked-by: P2-07
+- Status: Pending
+
+**Checklist:**
+- [ ] `InventorySection`, `SearchMatchMetadata`, `ItemLimitWarningDisplay` in InventoryTabViewModel
+- [ ] `CaptureMode`, `CaptureStatus`, `CaptureActionCard` in CaptureTabViewModel
+- [ ] `AddItemField`, `AddItemSection`, `FieldValidationState` in AddItemViewModel
+- [ ] `InventorySummary`, `ReportGenerationState` in ReportsTabViewModel
+- [ ] `DocumentationStatus`, location/warranty helpers in ItemDetailViewModel
+- [ ] All models have unit tests with 90%+ coverage
+
+---
+
+#### [ ] P2-20-3 – View polish validation
+- Checked-out-by: (available)
+- Blocked-by: P2-08 to P2-13
+- Status: Pending
+
+**Checklist:**
+- [ ] All views use `.cardStyle()` for sections
+- [ ] All views have empty states
+- [ ] All views have loading states
+- [ ] All views have error states
+- [ ] All interactive elements have accessibility labels
+- [ ] All views tested in light + dark mode
+- [ ] All views have preview examples
+
+---
+
+#### [ ] P2-20-4 – Accessibility validation
+- Checked-out-by: (available)
+- Blocked-by: P2-14
+- Status: Pending
+
+**Checklist:**
+- [ ] VoiceOver navigation tested on device
+- [ ] Dynamic Type tested at accessibility sizes
+- [ ] Reduce Motion tested and working
+- [ ] Color contrast meets WCAG AA
+- [ ] Accessibility Identifiers added for UI testing
+
+---
+
+#### [ ] P2-20-5 – Performance validation
+- Checked-out-by: (available)
+- Blocked-by: P2-17
+- Status: Pending
+
+**Checklist:**
+- [ ] Image caching working for 100+ items
+- [ ] Lazy loading working for large lists
+- [ ] No frame drops when scrolling inventory
+- [ ] Progressive disclosure working for hierarchy views
+- [ ] Animations smooth at 60fps
+
+---
+
+#### [ ] P2-20-6 – Final build & test
+- Checked-out-by: (available)
+- Blocked-by: All Phase 12 tasks
+- Status: Pending
+
+**Checklist:**
+- [ ] Clean build: `xcodebuild clean build -scheme Nestory-Pro -configuration Debug`
+- [ ] All unit tests pass: `xcodebuild test -only-testing:Nestory-ProTests`
+- [ ] All integration tests pass
+- [ ] Snapshot tests pass (baselines match)
+- [ ] No compiler warnings
+- [ ] No SwiftData threading warnings
+- [ ] Archive succeeds: `xcodebuild archive -scheme Nestory-Pro-Beta`
+
+---
+
+### Phase 12 Agent Notes
+
+**READ BEFORE STARTING ANY PHASE 12 TASK:**
+
+1. **Implementation Order:** P2-06 (Design System) → P2-07 (ViewModels) → P2-08+ (Views) → P2-14-18 (Cross-cutting)
+
+2. **Small PRs:** 1 PR = 1 design system component OR 1 ViewModel + 1 view. Do NOT combine multiple views.
+
+3. **Business Logic vs. Presentation:**
+   - Business logic (parsing, validation, grouping) → ViewModels
+   - Styling (colors, fonts, SF Symbols, layout) → Views or DesignSystem
+   - NEVER put SF Symbols, Colors in ViewModels
+
+4. **Testing Requirements:**
+   - EVERY new ViewModel model/helper needs unit tests
+   - EVERY new view needs `#Preview` examples (empty, single, many)
+   - KEY views need snapshot tests
+   - Run `xcodebuild test -only-testing:Nestory-ProTests` before marking complete
+
+5. **Accessibility is NOT Optional:**
+   - Add `.accessibilityLabel()` to ALL interactive elements
+   - Test with VoiceOver ON before marking view tasks complete
+
+6. **State-Driven UI:** Use enums, NOT boolean flags. Good: `CaptureStatus.processing("Scanning...")`. Bad: `isProcessing = true`
+
+7. **Commit Format:**
+   - `feat(design-system): add NestoryTheme color tokens - closes #P2-06-1`
+   - NO "Generated with Claude Code" attribution
+   - NO Co-Authored-By lines
+
+8. **Discovered Issues:** Add to "Discovered Tasks" section. Do NOT expand scope mid-task.
+
+---
+
+### Phase 12 Completion Criteria
+
+Phase 12 is **complete** when:
+
+✅ All 78 subtasks marked `[x]`
+✅ All unit tests passing (90%+ coverage for presentation models)
+✅ All snapshot baselines recorded and passing
+✅ Accessibility audit complete (VoiceOver, Dynamic Type, Reduce Motion, contrast)
+✅ All schemes build without warnings (Debug, Beta, Release)
+✅ Performance validated with 100+ items (no frame drops)
+✅ TestFlight build uploaded and tested on device
+
+**Estimated Effort:** 4-6 weeks (1-2 developers working in parallel)
+
+**Deliverable:** A visually cohesive, professionally polished iOS app with rich accessibility support and smooth performance at scale.
 
 ---
 
 ### v1.2 Release Checklist
 
-- [ ] Onboarding flow complete with analytics
-- [ ] Tags system functional with filtering
-- [ ] Feedback mechanism operational
-- [ ] Reminder notifications working
+**Completed Features:**
+- [x] Onboarding flow complete with analytics ✓
+- [x] Tags system functional with filtering ✓
+- [x] Feedback mechanism operational ✓
+- [x] Reminder notifications working ✓
+
+**In Progress:**
+- [ ] P2-02: Property/Container hierarchy (models ✓, views ✓, testing pending)
+
+**Phase 12 - Visual Polish:**
+- [ ] **P2-06**: Design system foundation (NestoryTheme, card modifiers, layouts)
+- [ ] **P2-07**: ViewModel presentation models (all 5 ViewModels enriched)
+- [ ] **P2-08**: New hierarchy views polished (Property/Room/Container detail)
+- [ ] **P2-09**: Inventory tab & app shell retrofitted
+- [ ] **P2-10**: Item detail view retrofitted
+- [ ] **P2-11**: Capture flows retrofitted
+- [ ] **P2-12**: Add item forms retrofitted
+- [ ] **P2-13**: Settings, paywall, reports retrofitted
+- [ ] **P2-14**: Accessibility complete (VoiceOver, Dynamic Type, Reduce Motion, contrast)
+- [ ] **P2-15**: Animations & micro-interactions
+- [ ] **P2-16**: Haptic feedback
+- [ ] **P2-17**: Performance & loading states
+- [ ] **P2-18**: Testing (unit, preview, snapshot, accessibility)
+- [ ] **P2-19**: Project integration validated
+- [ ] **P2-20**: Phase 12 completion criteria met
+
+**Deferred:**
+- [ ] Snapshot test baselines (9.3.1-9.3.4) - Waiting for Phase 12 completion
 
 ---
 
@@ -1234,10 +1898,25 @@ Tasks with ~~strikethrough~~ were completed in v1.0 and remain for reference:
 
 ---
 
-*Last Updated: November 29, 2025*
+*Last Updated: November 30, 2025*
 
 ### Changelog
 
+- **2025-11-30**: Added Phase 12 - Visual Polish & Presentation Layer (78 subtasks)
+  - Comprehensive design system (NestoryTheme with colors, typography, metrics, animations, haptics)
+  - ViewModel presentation models for 5 major ViewModels (state-driven UI, no boolean flags)
+  - Card-based layouts for all views (new hierarchy views + retrofitted existing)
+  - Cross-cutting concerns: accessibility, animations, haptics, performance
+  - Complete testing strategy (unit, preview, snapshot, accessibility audit)
+  - Integration & completion validation (project integration, build validation)
+  - Updated v1.2 roadmap: 1 active + 78 Phase 12 + 4 deferred snapshots = 83 total tasks
+  - Estimated 4-6 weeks effort for professional-grade visual polish
+- **2025-11-30**: Archived completed v1.1 and v1.2 tasks to TODO-COMPLETE.md
+  - Moved 9 completed v1.1 tasks (P1-00 through P1-04, infrastructure fixes)
+  - Moved 4 completed v1.2 tasks (P2-01, P2-05, P4-07, P5-03)
+  - Reduced TODO.md line count from 1250 → ~700 lines
+  - Total archived: 118 completed tasks (105 v1.0 + 9 v1.1 + 4 v1.2)
+  - Active tasks: 1 in-progress (P2-02), 4 deferred snapshot tests, 39 pending future work
 - **2025-11-29**: Added Agent Collaboration Rules across all governance docs
   - Added comprehensive collaboration model to CLAUDE.md
   - Added parallel section to WARP.md with version roadmap reference
