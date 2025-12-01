@@ -23,6 +23,7 @@ struct XcodeCloudCLI: AsyncParsableCommand {
             CreateWorkflow.self,
             TriggerBuild.self,
             GetBuild.self,
+            GetIssues.self,
             GetWorkflow.self,
             ListTestDestinations.self,
             MonitorBuild.self,
@@ -338,7 +339,7 @@ extension XcodeCloudCLI {
 extension XcodeCloudCLI {
     struct GetBuild: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Get build status"
+            abstract: "Get build status with action details"
         )
 
         @Option(name: .long, help: "Build ID")
@@ -353,21 +354,218 @@ extension XcodeCloudCLI {
 
             if json {
                 print(String(data: buildData, encoding: .utf8) ?? "")
-            } else {
-                let decoded = try JSONDecoder().decode(BuildRunResponse.self, from: buildData)
-                let build = decoded.data
+                return
+            }
 
-                print("Build \(build.id):")
-                print("=================")
-                print("Status: \(build.attributes.executionProgress)")
-                print("Created: \(build.attributes.createdDate)")
-                if let started = build.attributes.startedDate {
-                    print("Started: \(started)")
+            // Parse build info
+            guard let buildJson = try? JSONSerialization.jsonObject(with: buildData) as? [String: Any],
+                  let data = buildJson["data"] as? [String: Any],
+                  let attributes = data["attributes"] as? [String: Any] else {
+                print("Failed to parse build data")
+                return
+            }
+
+            let buildId = data["id"] as? String ?? build
+            let progress = attributes["executionProgress"] as? String ?? "UNKNOWN"
+            let completion = attributes["completionStatus"] as? String ?? "-"
+            let created = attributes["createdDate"] as? String ?? "N/A"
+            let started = attributes["startedDate"] as? String ?? "N/A"
+            let finished = attributes["finishedDate"] as? String ?? "N/A"
+
+            // Format result
+            let resultIcon: String
+            switch completion {
+            case "SUCCEEDED": resultIcon = "✅"
+            case "FAILED": resultIcon = "❌"
+            case "CANCELED": resultIcon = "⏹️"
+            default: resultIcon = "⏳"
+            }
+
+            print("Build: \(buildId)")
+            print(String(repeating: "=", count: 60))
+            print("Progress: \(progress)")
+            print("Result:   \(resultIcon) \(completion)")
+            print("Created:  \(created)")
+            print("Started:  \(started)")
+            print("Finished: \(finished)")
+
+            // Fetch and show build actions
+            print("\n📋 Build Actions:")
+            print(String(repeating: "-", count: 60))
+
+            let actionsData = try await client.request(
+                endpoint: "/v1/ciBuildRuns/\(build)/actions",
+                method: "GET"
+            )
+
+            if let actionsJson = try? JSONSerialization.jsonObject(with: actionsData) as? [String: Any],
+               let actionsArray = actionsJson["data"] as? [[String: Any]] {
+
+                if actionsArray.isEmpty {
+                    print("No actions found")
+                } else {
+                    for action in actionsArray {
+                        if let actionAttrs = action["attributes"] as? [String: Any] {
+                            let actionName = actionAttrs["name"] as? String ?? "Unknown"
+                            let actionType = actionAttrs["actionType"] as? String ?? "?"
+                            let actionResult = actionAttrs["completionStatus"] as? String ?? "-"
+
+                            let actionIcon: String
+                            switch actionResult {
+                            case "SUCCEEDED": actionIcon = "✅"
+                            case "FAILED": actionIcon = "❌"
+                            case "CANCELED": actionIcon = "⏹️"
+                            default: actionIcon = "⏳"
+                            }
+
+                            print("\(actionIcon) [\(actionType)] \(actionName): \(actionResult)")
+
+                            // Show issues if any
+                            if let issues = actionAttrs["issueCounts"] as? [String: Any] {
+                                let errors = issues["errorCount"] as? Int ?? 0
+                                let warnings = issues["warningCount"] as? Int ?? 0
+                                let testFailures = issues["testFailureCount"] as? Int ?? 0
+
+                                if errors > 0 || warnings > 0 || testFailures > 0 {
+                                    var issueStrs: [String] = []
+                                    if errors > 0 { issueStrs.append("\(errors) errors") }
+                                    if warnings > 0 { issueStrs.append("\(warnings) warnings") }
+                                    if testFailures > 0 { issueStrs.append("\(testFailures) test failures") }
+                                    print("   Issues: \(issueStrs.joined(separator: ", "))")
+                                }
+                            }
+                        }
+                    }
                 }
-                if let finished = build.attributes.finishedDate {
-                    print("Finished: \(finished)")
+            } else {
+                print("Failed to fetch actions")
+            }
+
+            // Provide App Store Connect link
+            print("\n🌐 View in App Store Connect:")
+            print("https://appstoreconnect.apple.com → Apps → Nestory-Pro → Xcode Cloud")
+        }
+    }
+
+    // MARK: - Get Issues
+
+    struct GetIssues: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Get build issues (errors, warnings, test failures)"
+        )
+
+        @Option(name: .long, help: "Build ID")
+        var build: String
+
+        @Flag(name: .long, help: "Show only errors")
+        var errorsOnly = false
+
+        func run() async throws {
+            let client = try AppStoreConnectClient()
+
+            print("🔍 Fetching issues for build \(build)...")
+            print(String(repeating: "=", count: 60))
+
+            // First get the build actions to find action IDs
+            let actionsData = try await client.request(
+                endpoint: "/v1/ciBuildRuns/\(build)/actions",
+                method: "GET"
+            )
+
+            guard let actionsJson = try? JSONSerialization.jsonObject(with: actionsData) as? [String: Any],
+                  let actionsArray = actionsJson["data"] as? [[String: Any]] else {
+                print("Failed to fetch build actions")
+                return
+            }
+
+            if actionsArray.isEmpty {
+                print("No actions found for this build")
+                return
+            }
+
+            var totalErrors = 0
+            var totalWarnings = 0
+            var totalTestFailures = 0
+
+            for action in actionsArray {
+                guard let actionId = action["id"] as? String,
+                      let actionAttrs = action["attributes"] as? [String: Any] else {
+                    continue
+                }
+
+                let actionName = actionAttrs["name"] as? String ?? "Unknown"
+                let actionResult = actionAttrs["completionStatus"] as? String ?? "-"
+
+                print("\n📋 Action: \(actionName) (\(actionResult))")
+                print(String(repeating: "-", count: 50))
+
+                // Fetch issues for this action
+                let issuesData = try await client.request(
+                    endpoint: "/v1/ciBuildActions/\(actionId)/issues",
+                    method: "GET"
+                )
+
+                guard let issuesJson = try? JSONSerialization.jsonObject(with: issuesData) as? [String: Any],
+                      let issuesArray = issuesJson["data"] as? [[String: Any]] else {
+                    print("  No issues data available")
+                    continue
+                }
+
+                if issuesArray.isEmpty {
+                    print("  ✅ No issues")
+                    continue
+                }
+
+                for issue in issuesArray {
+                    guard let issueAttrs = issue["attributes"] as? [String: Any] else {
+                        continue
+                    }
+
+                    let category = issueAttrs["category"] as? String ?? "UNKNOWN"
+                    let message = issueAttrs["message"] as? String ?? "No message"
+                    let fileSource = issueAttrs["fileSource"] as? [String: Any]
+                    let filePath = fileSource?["path"] as? String
+                    let lineNumber = fileSource?["lineNumber"] as? Int
+
+                    // Filter by errors only if flag set
+                    if errorsOnly && category != "ERROR" {
+                        continue
+                    }
+
+                    let icon: String
+                    switch category {
+                    case "ERROR":
+                        icon = "❌"
+                        totalErrors += 1
+                    case "WARNING":
+                        icon = "⚠️"
+                        totalWarnings += 1
+                    case "TEST_FAILURE":
+                        icon = "🔴"
+                        totalTestFailures += 1
+                    default:
+                        icon = "ℹ️"
+                    }
+
+                    print("  \(icon) [\(category)]")
+                    print("     \(message)")
+                    if let path = filePath {
+                        var location = "     📁 \(path)"
+                        if let line = lineNumber {
+                            location += ":\(line)"
+                        }
+                        print(location)
+                    }
+                    print("")
                 }
             }
+
+            // Summary
+            print("\n" + String(repeating: "=", count: 60))
+            print("📊 Summary:")
+            print("   Errors: \(totalErrors)")
+            print("   Warnings: \(totalWarnings)")
+            print("   Test Failures: \(totalTestFailures)")
         }
     }
 
@@ -524,26 +722,44 @@ extension XcodeCloudCLI {
 
                 // Print table header
                 print("Build ID".padding(toLength: 40, withPad: " ", startingAt: 0) +
-                      "Status".padding(toLength: 15, withPad: " ", startingAt: 0) +
-                      "Branch/Tag".padding(toLength: 20, withPad: " ", startingAt: 0) +
-                      "Started")
-                print(String(repeating: "-", count: 80))
+                      "Progress".padding(toLength: 12, withPad: " ", startingAt: 0) +
+                      "Result".padding(toLength: 12, withPad: " ", startingAt: 0) +
+                      "Started".padding(toLength: 22, withPad: " ", startingAt: 0) +
+                      "Commit")
+                print(String(repeating: "-", count: 100))
 
                 for buildData in dataArray {
                     let id = buildData["id"] as? String ?? "N/A"
                     if let attributes = buildData["attributes"] as? [String: Any] {
-                        let status = attributes["executionProgress"] as? String ?? "UNKNOWN"
+                        let progress = attributes["executionProgress"] as? String ?? "UNKNOWN"
+                        let completion = attributes["completionStatus"] as? String ?? "-"
                         let sourceRef = (attributes["sourceCommit"] as? [String: Any])?["commitSha"] as? String ?? "N/A"
                         let started = attributes["startedDate"] as? String ?? "N/A"
 
-                        let shortId = String(id.prefix(8))
-                        let shortRef = String(sourceRef.prefix(20))
-                        let shortStarted = String(started.prefix(20))
+                        // Use full build ID for API compatibility (truncated IDs don't work)
+                        let shortRef = String(sourceRef.prefix(7))
+                        let shortStarted = String(started.prefix(19)).replacingOccurrences(of: "T", with: " ")
 
-                        print(shortId.padding(toLength: 40, withPad: " ", startingAt: 0) +
-                              status.padding(toLength: 15, withPad: " ", startingAt: 0) +
-                              shortRef.padding(toLength: 20, withPad: " ", startingAt: 0) +
-                              shortStarted)
+                        // Format result with emoji indicator
+                        let resultDisplay: String
+                        switch completion {
+                        case "SUCCEEDED":
+                            resultDisplay = "✅ PASS"
+                        case "FAILED":
+                            resultDisplay = "❌ FAIL"
+                        case "CANCELED":
+                            resultDisplay = "⏹️ CANCEL"
+                        case "-":
+                            resultDisplay = "⏳ ..."
+                        default:
+                            resultDisplay = completion
+                        }
+
+                        print(id.padding(toLength: 40, withPad: " ", startingAt: 0) +
+                              progress.padding(toLength: 12, withPad: " ", startingAt: 0) +
+                              resultDisplay.padding(toLength: 12, withPad: " ", startingAt: 0) +
+                              shortStarted.padding(toLength: 22, withPad: " ", startingAt: 0) +
+                              shortRef)
                     }
                 }
             } else {
