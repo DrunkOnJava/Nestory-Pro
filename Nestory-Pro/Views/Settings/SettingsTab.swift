@@ -45,6 +45,9 @@ struct SettingsTab: View {
     @State private var pendingImportURL: URL?
     @State private var restoreStrategy: RestoreStrategy = .merge
 
+    // F6: CSV Import state
+    @State private var showingCSVImportSheet = false
+
     // Feedback state (Task P4-07)
     @State private var showingFeedbackSheet = false
     private let feedbackService = FeedbackService()
@@ -286,6 +289,31 @@ struct SettingsTab: View {
                     .accessibilityIdentifier(AccessibilityIdentifiers.Settings.importDataButton)
                     .accessibilityLabel("Import Data")
                     .accessibilityHint("Double tap to restore inventory from a JSON backup")
+
+                    // F6: Import from CSV/Spreadsheet (Pro only)
+                    Button {
+                        if env.settings.isProUnlocked {
+                            showingCSVImportSheet = true
+                        } else {
+                            showingProPaywall = true
+                        }
+                    } label: {
+                        SettingsRowView(
+                            icon: "tablecells.badge.ellipsis",
+                            iconColor: env.settings.isProUnlocked ? NestoryTheme.Colors.success : NestoryTheme.Colors.muted,
+                            title: "Import from CSV",
+                            subtitle: env.settings.isProUnlocked ? "Batch import from spreadsheet" : nil,
+                            showChevron: false,
+                            trailing: {
+                                if !env.settings.isProUnlocked {
+                                    ProBadge()
+                                }
+                            }
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Import from CSV")
+                    .accessibilityHint("Double tap to batch import items from a CSV spreadsheet file")
                 } header: {
                     settingsSectionHeader("Backup & Restore", icon: "externaldrive.fill")
                 } footer: {
@@ -558,6 +586,10 @@ struct SettingsTab: View {
             // Feedback sheet (Task P4-07)
             .sheet(isPresented: $showingFeedbackSheet) {
                 FeedbackSheet(feedbackService: feedbackService)
+            }
+            // F6: CSV Import sheet
+            .sheet(isPresented: $showingCSVImportSheet) {
+                ImportPreviewView()
             }
             .alert("Email Not Available", isPresented: $showingEmailError) {
                 Button("OK", role: .cancel) { }
