@@ -255,12 +255,12 @@ final class ConcurrencyTests: XCTestCase {
 
         // Act - Process item names as async stream (names are Sendable)
         var processedCount = 0
-        for await _ in AsyncStream<String>({ continuation in
+        for await _ in AsyncStream<String> { continuation in
             for name in itemNames {
                 continuation.yield(name)
             }
             continuation.finish()
-        }) {
+        } {
             processedCount += 1
         }
 
