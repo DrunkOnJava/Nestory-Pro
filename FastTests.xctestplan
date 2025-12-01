@@ -2,11 +2,13 @@
   "configurations" : [
     {
       "id" : "4E5F6A7B-8C9D-4E5F-6A7B-8C9D4E5F6A7B",
-      "name" : "Configuration 1",
+      "name" : "Fast Tests (PR Validation)",
       "options" : {
         "testExecutionOrdering" : "random",
         "testRepetitionMode" : "none",
-        "maximumTestExecutionTimeAllowance" : 60
+        "maximumTestExecutionTimeAllowance" : 60,
+        "parallelizationEnabled" : true,
+        "maximumTestRepetitions" : 1
       }
     }
   ],
@@ -19,6 +21,7 @@
   },
   "testTargets" : [
     {
+      "parallelizable" : true,
       "skippedTests" : [
         "DocumentationScorePerformanceTests",
         "ViewSnapshotTests",

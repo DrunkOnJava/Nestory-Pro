@@ -2,11 +2,13 @@
   "configurations" : [
     {
       "id" : "1A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D",
-      "name" : "Configuration 1",
+      "name" : "Critical Path (Smoke Tests)",
       "options" : {
         "testExecutionOrdering" : "random",
         "testRepetitionMode" : "none",
-        "maximumTestExecutionTimeAllowance" : 30
+        "maximumTestExecutionTimeAllowance" : 30,
+        "parallelizationEnabled" : true,
+        "maximumTestRepetitions" : 1
       }
     }
   ],
@@ -19,6 +21,7 @@
   },
   "testTargets" : [
     {
+      "parallelizable" : true,
       "skippedTests" : [
         "DocumentationScorePerformanceTests",
         "ViewSnapshotTests",

@@ -6,8 +6,9 @@ set -e
 #===============================================================================
 # Creates three workflows optimized for compute hour efficiency:
 # 1. PR Validation (FastTests) - 5 min
-# 2. Main Branch (FullTests + TestFlight) - 12 min
-# 3. Pre-Release (FullTests + all devices) - 20 min
+# 2. Main Branch (FullTests + TestFlight) - 10 min
+# 3. Pre-Release (FullTests) - 12 min
+# All workflows use iPhone 17 Pro Max only for compute efficiency
 #===============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -112,11 +113,6 @@ cat > /tmp/main-branch-workflow.json << 'EOF'
           "platform": "iOS Simulator",
           "device": "iPhone 17 Pro Max",
           "osVersion": "iOS 18.0"
-        },
-        {
-          "platform": "iOS Simulator",
-          "device": "iPhone SE (3rd generation)",
-          "osVersion": "iOS 17.0"
         }
       ],
       "parallelization": true
@@ -171,21 +167,6 @@ cat > /tmp/pre-release-workflow.json << 'EOF'
           "platform": "iOS Simulator",
           "device": "iPhone 17 Pro Max",
           "osVersion": "iOS 18.0"
-        },
-        {
-          "platform": "iOS Simulator",
-          "device": "iPhone 17 Pro",
-          "osVersion": "iOS 18.0"
-        },
-        {
-          "platform": "iOS Simulator",
-          "device": "iPhone SE (3rd generation)",
-          "osVersion": "iOS 17.0"
-        },
-        {
-          "platform": "iOS Simulator",
-          "device": "iPad Pro (12.9-inch)",
-          "osVersion": "iOS 18.0"
         }
       ],
       "parallelization": true
@@ -225,12 +206,12 @@ echo "  1. Review workflow configurations in /tmp/*-workflow.json"
 echo "  2. Create workflows in Xcode Cloud GUI using these specs"
 echo "  3. Or use App Store Connect API to create programmatically"
 echo ""
-echo "Expected Compute Usage:"
+echo "Expected Compute Usage (iPhone 17 Pro Max only):"
 echo "  PR Validation:    5 min × 20/month  = 1.7 hours"
-echo "  Main Branch:     12 min × 30/month  = 6.0 hours"
-echo "  Pre-Release:     20 min × 2/month   = 0.7 hours"
+echo "  Main Branch:     10 min × 30/month  = 5.0 hours"
+echo "  Pre-Release:     12 min × 2/month   = 0.4 hours"
 echo "  ────────────────────────────────────────────"
-echo "  Total:                              = 8.4 hours/month"
+echo "  Total:                              = 7.1 hours/month"
 echo ""
 echo -e "${GREEN}Well within 25 hour free tier!${NC}"
 echo ""
